@@ -40,7 +40,7 @@ object WasmJsPlatformConfigurator : PlatformConfiguratorBase(
     ),
 ) {
     override fun configureModuleComponents(container: StorageComponentContainer) {
-        container.useInstance(WasmNameSuggestion())
+//        container.useImpl<WasmNameSuggestion>()
         container.useImpl<WasmJsCallChecker>()
         container.useImpl<WasmNameClashChecker>()
         container.useImpl<WasmNameCharsChecker>()
@@ -77,7 +77,7 @@ object WasmWasiPlatformConfigurator : PlatformConfiguratorBase(
     ),
 ) {
     override fun configureModuleComponents(container: StorageComponentContainer) {
-        container.useInstance(WasmNameSuggestion())
+//        container.useImpl<WasmNameSuggestion>()
         container.useImpl<WasmNameClashChecker>()
         container.useImpl<WasmNameCharsChecker>()
         container.useImpl<JsReflectionAPICallChecker>()

@@ -9,17 +9,17 @@ import org.jetbrains.kotlin.platform.TargetPlatform
 import org.jetbrains.kotlin.platform.toTargetPlatform
 import org.jetbrains.kotlin.platform.WasmPlatform as CoreWasmPlatform
 
-abstract class WasmPlatform : CoreWasmPlatform() {
+abstract class WasmPlatform(platformName: String) : CoreWasmPlatform(platformName) {
     override val oldFashionedDescription: String
         get() = "Wasm"
 }
 
-object WasmPlatformUnspecifiedTarget : WasmPlatform() {
+object WasmPlatformUnspecifiedTarget : WasmPlatform("Wasm") {
     override val targetName: String
         get() = "general"
 }
 
-class WasmPlatformWithTarget(val target: WasmTarget) : WasmPlatform() {
+class WasmPlatformWithTarget(val target: WasmTarget) : WasmPlatform(target.alias) {
     override val targetName: String
         get() = target.name
 }
@@ -40,7 +40,28 @@ object WasmPlatforms {
 
     val allWasmPlatforms: List<TargetPlatform> = listOf(unspecifiedWasmPlatform) + platforms.values
 
+    fun wasmPlatformByTargets(targets: Collection<WasmTarget>): TargetPlatform {
+        val platforms = targets.map { wasmPlatformByTargetVersion(it) }
+        return when (platforms.size) {
+            0 -> unspecifiedWasmPlatform
+            1 -> platforms.first()
+            else -> TargetPlatform(platforms.flatMap { it.componentPlatforms }.toSet())
+        }
+    }
+
+    fun wasmPlatformByTargetNames(targets: Collection<String>): TargetPlatform =
+        wasmPlatformByTargets(targets.mapNotNull { WasmTarget.fromName(it) })
+
     object Default : TargetPlatform(setOf(WasmPlatformUnspecifiedTarget))
 }
 
 fun TargetPlatform?.isWasm(): Boolean = this?.singleOrNull() is WasmPlatform
+
+fun TargetPlatform?.isWasmJs(): Boolean {
+    val platform = this?.singleOrNull()
+    return platform is WasmPlatformWithTarget && platform.target == WasmTarget.JS
+}
+fun TargetPlatform?.isWasmWasi(): Boolean {
+    val platform = this?.singleOrNull()
+    return platform is WasmPlatformWithTarget && platform.target == WasmTarget.WASI
+}
