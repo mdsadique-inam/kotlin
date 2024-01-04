@@ -273,6 +273,11 @@ class KonanConfig(val project: Project, val configuration: CompilerConfiguration
         configuration.get(BinaryOptions.globalDataLazyInit) ?: true
     }
 
+    val genericSafeCasts: Boolean by lazy {
+        configuration.get(BinaryOptions.genericSafeCasts)
+                ?: !optimizationsEnabled // Disable for optimized compilation due to performance penalty.
+    }
+
     init {
         if (!platformManager.isEnabled(target)) {
             error("Target ${target.visibleName} is not available on the ${HostManager.hostName} host")

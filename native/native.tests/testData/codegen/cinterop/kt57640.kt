@@ -1,4 +1,5 @@
 // TARGET_BACKEND: NATIVE
+// IGNORE_NATIVE: optimizationMode=OPT
 // MODULE: cinterop
 // FILE: kt57640.def
 language = Objective-C

@@ -1792,7 +1792,8 @@ private fun ObjCExportCodeGenerator.findImplementation(irClass: IrClass, method:
     val override = irClass.simpleFunctions().singleOrNull {
         method in it.getLowered().allOverriddenFunctions
     } ?: error("no implementation for ${method.render()}\nin ${irClass.fqNameWhenAvailable}")
-    return OverriddenFunctionInfo(override.getLowered(), method).getImplementation(context)
+    return OverriddenFunctionInfo(override.getLowered(), method,
+            needBridgesWithCasts = context.config.genericSafeCasts).getImplementation(context)
 }
 
 private inline fun ObjCExportCodeGenerator.generateObjCToKotlinSyntheticGetter(
