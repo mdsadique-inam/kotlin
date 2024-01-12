@@ -158,6 +158,79 @@ fun main() {
             }
         }
 
+        // Klib Compatibility tests.
+        testGroup("native/native.tests/tests-gen", "compiler/testData") {
+            testClass<AbstractNativeKlibBCompatLatestWithCurrentTestCase>(
+                suiteTestClassName = "NativeKlibBCompatLatestWithCurrentTestCaseGenerated"
+            ) {
+                model("klib/versionCompatibility/", pattern = "^([^_](.+))$", recursive = false)
+            }
+            testClass<AbstractNativeKlibBCompatLatestWithCurrentTestCase>(
+                suiteTestClassName = "FirNativeKlibBCompatLatestWithCurrentTestCaseGenerated",
+                annotations = listOf(
+                    *frontendFir()
+                )
+            ) {
+                model("klib/versionCompatibility/", pattern = "^([^_](.+))$", recursive = false)
+            }
+
+            testClass<AbstractNativeKlibBCompatLatestWithLatestTestCase>(
+                suiteTestClassName = "NativeKlibBCompatLatestWithLatestTestCaseGenerated"
+            ) {
+                model("klib/versionCompatibility/", pattern = "^([^_](.+))$", recursive = false)
+            }
+            testClass<AbstractNativeKlibBCompatLatestWithLatestTestCase>(
+                suiteTestClassName = "FirNativeKlibBCompatLatestWithLatestTestCaseGenerated",
+                annotations = listOf(
+                    *frontendFir()
+                )
+            ) {
+                model("klib/versionCompatibility/", pattern = "^([^_](.+))$", recursive = false)
+            }
+
+            testClass<AbstractNativeKlibBCompatOldestWithCurrentTestCase>(
+                suiteTestClassName = "NativeKlibBCompatOldestWithCurrentTestCaseGenerated"
+            ) {
+                model("klib/versionCompatibility/", pattern = "^([^_](.+))$", recursive = false)
+            }
+            testClass<AbstractNativeKlibBCompatOldestWithCurrentTestCase>(
+                suiteTestClassName = "FirNativeKlibBCompatOldestWithCurrentTestCaseGenerated",
+                annotations = listOf(
+                    *frontendFir()
+                )
+            ) {
+                model("klib/versionCompatibility/", pattern = "^([^_](.+))$", recursive = false)
+            }
+
+            testClass<AbstractNativeKlibBCompatOldestWithOldestTestCase>(
+                suiteTestClassName = "NativeKlibBCompatOldestWithOldestTestCaseGenerated"
+            ) {
+                model("klib/versionCompatibility/", pattern = "^([^_](.+))$", recursive = false)
+            }
+            testClass<AbstractNativeKlibBCompatOldestWithOldestTestCase>(
+                suiteTestClassName = "FirNativeKlibBCompatOldestWithOldestTestCaseGenerated",
+                annotations = listOf(
+                    *frontendFir()
+                )
+            ) {
+                model("klib/versionCompatibility/", pattern = "^([^_](.+))$", recursive = false)
+            }
+
+            testClass<AbstractNativeKlibFCompatLatestTestCase>(
+                suiteTestClassName = "NativeKlibFCompatLatestTestCaseGenerated"
+            ) {
+                model("klib/versionCompatibility/", pattern = "^([^_](.+))$", recursive = false)
+            }
+            testClass<AbstractNativeKlibFCompatLatestTestCase>(
+                suiteTestClassName = "FirNativeKlibFCompatLatestTestCaseGenerated",
+                annotations = listOf(
+                    *frontendFir()
+                )
+            ) {
+                model("klib/versionCompatibility/", pattern = "^([^_](.+))$", recursive = false)
+            }
+        }
+
         // KLIB evolution tests.
         testGroup("native/native.tests/tests-gen", "compiler/testData") {
             testClass<AbstractNativeKlibEvolutionTest>(
