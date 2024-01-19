@@ -46,6 +46,16 @@ internal val IrClass.isInternalSerializable: Boolean
         return hasSerializableOrMetaAnnotationWithoutArgs()
     }
 
+internal val IrClass.shouldHaveGeneratedMethods: Boolean
+    get() = isInternalSerializable
+            // in the version with the `keepGeneratedSerializer` annotation the enum factory is already present therefore
+            // there is no need to generate additional methods
+            || (hasKeepGeneratedSerializerAnnotation && kind != ClassKind.ENUM_CLASS)
+
+internal val IrClass.hasKeepGeneratedSerializerAnnotation: Boolean
+    get() = hasAnnotation(SerializationAnnotations.keepGeneratedSerializerAnnotationFqName)
+
+
 internal val IrClass.isAbstractOrSealedSerializableClass: Boolean get() = isInternalSerializable && (modality == Modality.ABSTRACT || modality == Modality.SEALED)
 
 internal val IrClass.isStaticSerializable: Boolean get() = this.typeParameters.isEmpty()
@@ -92,6 +102,23 @@ fun IrType.isGeneratedSerializableObject(): Boolean {
 internal val IrClass.isSerializableObject: Boolean
     get() = kind == ClassKind.OBJECT && hasSerializableOrMetaAnnotation()
 
+internal fun IrClass.shouldHaveSerializerCache(serializer: IrClass): Boolean {
+    if (haveCustomObjectSerializer(serializer)) return false
+
+    return isSerializableObject
+            || isAbstractOrSealedSerializableClass
+            || isSerializableEnum()
+}
+
+internal fun IrClass.shouldHaveKeepSerializerCache(): Boolean {
+    return isEnumClass
+}
+
+private fun IrClass.haveCustomObjectSerializer(serializer: IrClass): Boolean {
+    return hasSerializableAnnotationWithArgs() && serializer.isObject
+}
+
+
 internal fun IrClass.hasSerializableOrMetaAnnotationWithoutArgs(): Boolean = checkSerializableOrMetaAnnotationArgs(mustDoNotHaveArgs = true)
 
 fun IrClass.hasSerializableOrMetaAnnotation() = checkSerializableOrMetaAnnotationArgs(mustDoNotHaveArgs = false)
@@ -124,6 +151,8 @@ internal val IrClass.isInheritableSerialInfoAnnotation: Boolean
 internal fun IrClass.shouldHaveGeneratedSerializer(): Boolean =
     (isInternalSerializable && (modality == Modality.FINAL || modality == Modality.OPEN))
             || isEnumWithLegacyGeneratedSerializer()
+            // enum factory must be used for enums
+            || (shouldHaveGeneratedMethods && kind != ClassKind.ENUM_CLASS)
 
 internal val IrClass.shouldHaveGeneratedMethodsInCompanion: Boolean
     get() = this.isSerializableObject || this.isSerializableEnum() || (this.kind == ClassKind.CLASS && hasSerializableOrMetaAnnotation()) || this.isSealedSerializableInterface || this.isSerializableInterfaceWithCustom

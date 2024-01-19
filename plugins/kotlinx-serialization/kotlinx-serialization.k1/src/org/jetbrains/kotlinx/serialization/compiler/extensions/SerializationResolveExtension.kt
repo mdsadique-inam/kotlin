@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.descriptors.ClassConstructorDescriptor
 import org.jetbrains.kotlin.descriptors.ClassDescriptor
 import org.jetbrains.kotlin.descriptors.PropertyDescriptor
 import org.jetbrains.kotlin.descriptors.SimpleFunctionDescriptor
-import org.jetbrains.kotlin.descriptors.annotations.Annotations
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
 import org.jetbrains.kotlin.platform.jvm.isJvm
@@ -35,9 +34,15 @@ open class SerializationResolveExtension @JvmOverloads constructor(val metadataP
     }
 
     override fun getSyntheticFunctionNames(thisDescriptor: ClassDescriptor): List<Name> = when {
-        thisDescriptor.isSerializableObject || thisDescriptor.isCompanionObject && getSerializableClassDescriptorByCompanion(thisDescriptor) != null ->
-            listOf(SerialEntityNames.SERIALIZER_PROVIDER_NAME)
-        thisDescriptor.isInternalSerializable && !thisDescriptor.isInlineClass() && thisDescriptor.platform?.isJvm() == true && !hasCustomizedSerializeMethod(thisDescriptor) -> {
+        thisDescriptor.isSerializableObject || thisDescriptor.isCompanionObject && getSerializableClassDescriptorByCompanion(thisDescriptor) != null -> {
+            if ((thisDescriptor.isSerializableObject && thisDescriptor.keepGeneratedSerializer) || ((thisDescriptor.containingDeclaration as? ClassDescriptor)?.keepGeneratedSerializer == true)) {
+                listOf(SerialEntityNames.SERIALIZER_PROVIDER_NAME, SerialEntityNames.GENERATED_SERIALIZER_PROVIDER_NAME)
+            } else {
+                listOf(SerialEntityNames.SERIALIZER_PROVIDER_NAME)
+            }
+        }
+
+        thisDescriptor.shouldHaveGeneratedMethods && !thisDescriptor.isInlineClass() && thisDescriptor.platform?.isJvm() == true && !hasCustomizedSerializeMethod(thisDescriptor) -> {
             // add write$Self, but only if .serialize was not customized in companion.
             // It works not only on JVM, but I see no reason to enable it on other platforms —
             // private fields there have no access control, and additional function
@@ -95,7 +100,7 @@ open class SerializationResolveExtension @JvmOverloads constructor(val metadataP
         bindingContext: BindingContext,
         result: MutableCollection<ClassConstructorDescriptor>
     ) {
-        if (thisDescriptor.isInternalSerializable) {
+        if (thisDescriptor.shouldHaveGeneratedMethods) {
             // do not add synthetic deserialization constructor if .deserialize method is customized
             if (thisDescriptor.hasCompanionObjectAsSerializer && SerializationDescriptorUtils.getSyntheticLoadMember(thisDescriptor.companionObjectDescriptor!!) == null) return
             if (thisDescriptor.isInlineClass()) return

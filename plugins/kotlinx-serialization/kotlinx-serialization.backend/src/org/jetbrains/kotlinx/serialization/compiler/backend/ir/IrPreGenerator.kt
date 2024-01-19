@@ -44,8 +44,10 @@ class IrPreGenerator(
     private fun preGenerateWriteSelfMethodIfNeeded() {
         // write$Self in K1 is created only on JVM (see SerializationResolveExtension)
         if (!compilerContext.platform.isJvm()) return
-        if (!irClass.isInternalSerializable) return
-        val serializerDescriptor = irClass.classSerializer(compilerContext)?.owner ?: return
+        if (!irClass.shouldHaveGeneratedMethods) return
+
+        val serializerDescriptor = irClass.findSerializerForGeneratedMethods(compilerContext)?.owner ?: return
+
         if (!irClass.shouldHaveSpecificSyntheticMethods {
                 serializerDescriptor.findPluginGeneratedMethod(
                     SerialEntityNames.SAVE,
@@ -109,7 +111,7 @@ class IrPreGenerator(
     }
 
     private fun preGenerateDeserializationConstructorIfNeeded() {
-        if (!irClass.isInternalSerializable) return
+        if (!irClass.shouldHaveGeneratedMethods) return
         // do not add synthetic deserialization constructor if .deserialize method is customized
         if (irClass.hasCompanionObjectAsSerializer && irClass.companionObject()
                 ?.findPluginGeneratedMethod(SerialEntityNames.LOAD, compilerContext.afterK2) == null
@@ -147,7 +149,7 @@ class IrPreGenerator(
             irClass: IrClass,
             compilerContext: SerializationPluginContext
         ) {
-            if (!irClass.isInternalSerializable) return
+            if (!irClass.shouldHaveGeneratedMethods) return
             IrPreGenerator(irClass, compilerContext).generate()
         }
     }

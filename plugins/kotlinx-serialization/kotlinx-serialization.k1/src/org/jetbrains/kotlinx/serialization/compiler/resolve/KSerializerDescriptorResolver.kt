@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.types.*
 import org.jetbrains.kotlin.types.typeUtil.createProjection
 import org.jetbrains.kotlin.types.typeUtil.makeNullable
 import org.jetbrains.kotlinx.serialization.compiler.extensions.SerializationDescriptorSerializerPlugin
+import org.jetbrains.kotlinx.serialization.compiler.resolve.SerialEntityNames.GENERATED_SERIALIZER_PROVIDER_NAME
 import org.jetbrains.kotlinx.serialization.compiler.resolve.SerialEntityNames.IMPL_NAME
 import org.jetbrains.kotlinx.serialization.compiler.resolve.SerialEntityNames.SERIALIZER_CLASS_NAME
 import org.jetbrains.kotlinx.serialization.compiler.resolve.SerialEntityNames.typeArgPrefix
@@ -133,6 +134,9 @@ object KSerializerDescriptorResolver {
         if (name == SerialEntityNames.SERIALIZER_PROVIDER_NAME && result.none { it.valueParameters.size == classDescriptor.declaredTypeParameters.size }) {
             result.add(createSerializerGetterDescriptor(thisDescriptor, classDescriptor))
         }
+        if (name == GENERATED_SERIALIZER_PROVIDER_NAME && result.none { it.valueParameters.size == classDescriptor.declaredTypeParameters.size }) {
+            result.add(createSerializerGetterDescriptor(thisDescriptor, classDescriptor, true))
+        }
 
         if (thisDescriptor.needSerializerFactory() && name == SerialEntityNames.SERIALIZER_PROVIDER_NAME && result.none { it.valueParameters.size == 1 && it.valueParameters.first().isVararg }) {
             result.add(createSerializerFactoryVarargDescriptor(thisDescriptor))
@@ -175,7 +179,7 @@ object KSerializerDescriptorResolver {
     }
 
     fun generateSerializableClassMethods(thisDescriptor: ClassDescriptor, name: Name, result: MutableCollection<SimpleFunctionDescriptor>) {
-        if (thisDescriptor.isInternalSerializable && name == SerialEntityNames.WRITE_SELF_NAME)
+        if (thisDescriptor.shouldHaveGeneratedMethods && name == SerialEntityNames.WRITE_SELF_NAME)
             result.add(createWriteSelfFunctionDescriptor(thisDescriptor))
     }
 
@@ -305,7 +309,7 @@ object KSerializerDescriptorResolver {
         bindingContext: BindingContext,
         metadataPlugin: SerializationDescriptorSerializerPlugin?
     ): ClassConstructorDescriptor {
-        if (!classDescriptor.isInternalSerializable) throw IllegalArgumentException()
+        if (!classDescriptor.shouldHaveGeneratedMethods) throw IllegalArgumentException()
 
         val functionDescriptor = ClassConstructorDescriptorImpl.createSynthesized(
             classDescriptor,
@@ -480,12 +484,15 @@ object KSerializerDescriptorResolver {
 
     private fun createSerializerGetterDescriptor(
         thisClass: ClassDescriptor,
-        serializableClass: ClassDescriptor
+        serializableClass: ClassDescriptor,
+        keepGeneratedFunction: Boolean = false
     ): SimpleFunctionDescriptor {
+        val name = if (!keepGeneratedFunction) SerialEntityNames.SERIALIZER_PROVIDER_NAME else GENERATED_SERIALIZER_PROVIDER_NAME
+
         val f = SimpleFunctionDescriptorImpl.create(
             thisClass,
             Annotations.create(listOfNotNull(thisClass.jsExportIgnore())),
-            SerialEntityNames.SERIALIZER_PROVIDER_NAME,
+            name,
             CallableMemberDescriptor.Kind.SYNTHESIZED,
             thisClass.source
         )

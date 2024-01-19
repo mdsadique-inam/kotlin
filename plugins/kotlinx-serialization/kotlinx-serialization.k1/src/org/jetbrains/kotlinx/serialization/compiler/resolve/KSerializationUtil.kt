@@ -28,6 +28,7 @@ import org.jetbrains.kotlin.types.typeUtil.representativeUpperBound
 import org.jetbrains.kotlinx.serialization.compiler.resolve.SerialEntityNames.ANNOTATED_ENUM_SERIALIZER_FACTORY_FUNC_NAME
 import org.jetbrains.kotlin.utils.addToStdlib.runIf
 import org.jetbrains.kotlinx.serialization.compiler.resolve.SerialEntityNames.ENUM_SERIALIZER_FACTORY_FUNC_NAME
+import org.jetbrains.kotlinx.serialization.compiler.resolve.SerializationAnnotations.keepGeneratedSerializerAnnotationFqName
 import org.jetbrains.kotlinx.serialization.compiler.resolve.SerializationAnnotations.inheritableSerialInfoFqName
 import org.jetbrains.kotlinx.serialization.compiler.resolve.SerializationAnnotations.metaSerializableAnnotationFqName
 import org.jetbrains.kotlinx.serialization.compiler.resolve.SerializationAnnotations.serialInfoFqName
@@ -140,6 +141,12 @@ val ClassDescriptor.isInternalSerializable: Boolean //todo normal checking
         return hasSerializableOrMetaAnnotationWithoutArgs
     }
 
+val ClassDescriptor.shouldHaveGeneratedMethods: Boolean
+    get() = isInternalSerializable
+            // in the version with the `keepGeneratedSerializer` annotation the enum factory is already present therefore
+            // there is no need to generate additional methods
+            || (keepGeneratedSerializer && kind != ClassKind.ENUM_CLASS)
+
 fun ClassDescriptor.isSerializableEnum(): Boolean = kind == ClassKind.ENUM_CLASS && hasSerializableOrMetaAnnotation
 
 fun ClassDescriptor.isEnumWithLegacyGeneratedSerializer(): Boolean = isInternallySerializableEnum() && useGeneratedEnumSerializer
@@ -150,6 +157,8 @@ fun ClassDescriptor.isInternallySerializableEnum(): Boolean =
 val ClassDescriptor.shouldHaveGeneratedSerializer: Boolean
     get() = (isInternalSerializable && (modality == Modality.FINAL || modality == Modality.OPEN))
             || isEnumWithLegacyGeneratedSerializer()
+            // enum factory must be used for enums
+            || (keepGeneratedSerializer && kind != ClassKind.ENUM_CLASS)
 
 val ClassDescriptor.useGeneratedEnumSerializer: Boolean
     get() {
@@ -186,6 +195,9 @@ private val Annotations.hasSerializableAnnotation
 
 val ClassDescriptor.hasMetaSerializableAnnotation: Boolean
     get() = annotations.any { it.isMetaSerializableAnnotation }
+
+val ClassDescriptor.keepGeneratedSerializer: Boolean
+    get() = annotations.hasAnnotation(keepGeneratedSerializerAnnotationFqName)
 
 val AnnotationDescriptor.isMetaSerializableAnnotation: Boolean
     get() = annotationClass?.annotations?.hasAnnotation(metaSerializableAnnotationFqName) ?: false

@@ -57,6 +57,8 @@ object FirSerializationPluginClassChecker : FirClassChecker(MppCheckerKind.Commo
             checkInheritableSerialInfoNotRepeatable(classSymbol, reporter)
             checkEnum(classSymbol, reporter)
             checkExternalSerializer(classSymbol, reporter)
+            checkKeepGeneratedSerializer(classSymbol, reporter)
+
             if (!canBeSerializedInternally(classSymbol, reporter)) return
             if (classSymbol !is FirRegularClassSymbol) return
 
@@ -151,6 +153,29 @@ object FirSerializationPluginClassChecker : FirClassChecker(MppCheckerKind.Commo
             reporter.reportOn(source, error, serializableClassSymbol, serializableKType, this)
         }
 
+    }
+
+    context(CheckerContext)
+    private fun checkKeepGeneratedSerializer(classSymbol: FirClassSymbol<*>, reporter: DiagnosticReporter) {
+        with(session) {
+            if (!classSymbol.keepGeneratedSerializer) return
+
+            val element by lazy {
+                classSymbol.getAnnotationByClassId(SerializationAnnotations.keepGeneratedSerializerAnnotationClassId, session)?.source
+                    ?: classSymbol.source
+            }
+
+            if (classSymbol.hasSerializableOrMetaAnnotation) {
+                if (classSymbol.hasSerializableOrMetaAnnotationWithoutArgs) {
+                    reporter.reportOn(element, FirSerializationErrors.KEEP_SERIALIZER_ANNOTATION_USELESS)
+                }
+                if (classSymbol.isAbstract || classSymbol.isSealed || classSymbol.isInterface) {
+                    reporter.reportOn(element, FirSerializationErrors.KEEP_SERIALIZER_ANNOTATION_ON_POLYMORPHIC)
+                }
+            } else {
+                reporter.reportOn(element, FirSerializationErrors.KEEP_SERIALIZER_ANNOTATION_USELESS)
+            }
+        }
     }
 
     private fun CheckerContext.checkInheritedAnnotations(classSymbol: FirClassSymbol<*>, reporter: DiagnosticReporter) {
@@ -319,7 +344,7 @@ object FirSerializationPluginClassChecker : FirClassChecker(MppCheckerKind.Commo
         // check that we can instantiate supertype
         if (!classSymbol.isEnumClass) { // enums are inherited from java.lang.Enum and can't be inherited from other classes
             val superClassSymbol = classSymbol.superClassOrAny(session)
-            if (!superClassSymbol.isInternalSerializable(session)) {
+            if (!superClassSymbol.shouldHaveGeneratedMethods(session)) {
                 val noArgConstructorSymbol =
                     superClassSymbol.declarationSymbols.firstOrNull { it is FirConstructorSymbol && it.valueParameterSymbols.isEmpty() }
                 if (noArgConstructorSymbol == null) {
@@ -434,7 +459,7 @@ object FirSerializationPluginClassChecker : FirClassChecker(MppCheckerKind.Commo
         reporter: DiagnosticReporter,
     ): FirSerializableProperties? {
         if (!classSymbol.hasSerializableOrMetaAnnotation(session)) return null
-        if (!classSymbol.isInternalSerializable(session)) return null
+        if (!classSymbol.shouldHaveGeneratedMethods(session)) return null
         if (classSymbol.isInternallySerializableObject(session)) return null
 
         val properties = session.serializablePropertiesProvider.getSerializablePropertiesForClass(classSymbol)
