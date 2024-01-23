@@ -19,6 +19,29 @@ import org.jetbrains.kotlin.fir.resolve.ScopeSession
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import java.util.concurrent.atomic.AtomicLong
 
+/**
+ * An [LLFirSession] stores all symbols, components, and configuration needed for the resolution of Kotlin code/binaries from a [KtModule].
+ *
+ * ### Invalidation
+ *
+ * [LLFirSession] will be invalidated by [LLFirSessionInvalidationService] when its [KtModule] or one of the module's dependencies is
+ * modified, or when a global modification event occurs. Sessions are managed by [LLFirSessionCache], which holds a soft reference to its
+ * [LLFirSession]s. This allows a session to be garbage collected when it is softly reachable. The session's [SoftValueCleaner] ensures that
+ * its associated [Disposable] is properly disposed even after garbage collection.
+ *
+ * When a session is invalidated after a modification event, the [LLFirSessionInvalidationService] will publish a
+ * [session invalidation event][LLFirSessionInvalidationTopics]. This allows entities whose lifetime depends on the session's lifetime to be
+ * invalidated with the session. Such an event is not published when the session is garbage collected due to being softly reachable, because
+ * the [SoftValueCleaner] is not guaranteed to be executed in a write action. If we try to publish a session invalidation event outside of a
+ * write action, another thread might already have built another [LLFirSession] for the same [KtModule], causing a race between the new
+ * session and the session invalidation event (which can only refer to the [KtModule] because the session has already been
+ * garbage-collected).
+ *
+ * Because of this, it's important that cached entities which depend on a session's lifetime (and therefore its session invalidation events)
+ * are *exactly as softly reachable* as the [LLFirSession]. This means that the cached entity should keep a strong reference to the session,
+ * but the entity itself should be softly reachable if not currently in use. For example, `KtFirAnalysisSession`s are softly reachable via
+ * `KtFirAnalysisSessionProvider`, but keep a strong reference to the [LLFirSession].
+ */
 @OptIn(PrivateSessionConstructor::class)
 abstract class LLFirSession(
     val ktModule: KtModule,
@@ -114,6 +137,12 @@ abstract class LLFirSession(
 
             value?.isValid = false
             disposable?.let { Disposer.dispose(it) }
+
+            if (value != null) {
+                // `LLFirSessionInvalidationService` only publishes session invalidation events for sessions which haven't been garbage
+                // collected yet.
+                LLFirSessionInvalidationService.getInstance(value.project).handleInvalidatedSession(value)
+            }
         }
     }
 
