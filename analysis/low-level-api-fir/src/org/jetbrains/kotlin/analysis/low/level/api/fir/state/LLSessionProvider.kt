@@ -20,7 +20,7 @@ class LLSessionProvider(
     val useSiteSession: LLFirSession by lazy(LazyThreadSafetyMode.PUBLICATION) { useSiteSessionFactory(useSiteModule) }
 
     /**
-     * Returns a [FirSession] for the [module].
+     * Returns an [LLFirSession] for the [module].
      * For a binary module, the resulting session will be a binary (non-resolvable) one.
      */
     fun getSession(module: KtModule): LLFirSession {
@@ -28,7 +28,7 @@ class LLSessionProvider(
     }
 
     /**
-     * Returns an analyzable [FirSession] for the module.
+     * Returns an analyzable [LLFirSession] for the module.
      * For a binary module, the resulting session will still be a resolvable one.
      *
      * Note: prefer using [getSession] unless you need to perform resolution actively.
