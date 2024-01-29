@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.fir.resolve.transformers.body.resolve
 import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
+import org.jetbrains.kotlin.fir.resolve.fullyExpandedClass
 import org.jetbrains.kotlin.fir.resolve.ResolutionMode
 import org.jetbrains.kotlin.fir.resolve.ScopeSession
 import org.jetbrains.kotlin.fir.resolve.calls.ResolutionContext
@@ -83,11 +84,12 @@ abstract class FirAbstractBodyResolveTransformerDispatcher(
         val resolvedTypeRef = if (typeRef is FirResolvedTypeRef) {
             typeRef
         } else {
+            val expectedScope = data.fullyExpandedClass(components, session)?.staticScope(session, scopeSession)
             typeResolverTransformer.withFile(context.file) {
                 transformTypeRef(
                     typeRef,
                     ScopeClassDeclaration(
-                        components.createCurrentScopeList(),
+                        listOfNotNull(expectedScope) + components.createCurrentScopeList(),
                         context.containingClassDeclarations,
                         context.containers.lastOrNull { it is FirTypeParameterRefsOwner && it !is FirAnonymousFunction }
                     )

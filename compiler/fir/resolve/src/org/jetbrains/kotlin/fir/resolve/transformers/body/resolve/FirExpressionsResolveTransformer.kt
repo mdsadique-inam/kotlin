@@ -873,7 +873,11 @@ open class FirExpressionsResolveTransformer(transformer: FirAbstractBodyResolveT
         // One of the reasons is just consistency with K1 and with the desugared form `a.equals(b)`. See KT-47409 for clarifications.
         val leftArgumentTransformed: FirExpression = arguments[0].transform(transformer, ResolutionMode.ContextIndependent)
         dataFlowAnalyzer.exitEqualityOperatorLhs()
-        val rightArgumentTransformed: FirExpression = arguments[1].transform(transformer, withExpectedType(builtinTypes.nullableAnyType))
+        val leftArgumentType = when {
+            leftArgumentTransformed.isResolved -> leftArgumentTransformed.resolvedType.toFirResolvedTypeRef(leftArgumentTransformed.source)
+            else -> builtinTypes.nullableAnyType
+        }
+        val rightArgumentTransformed: FirExpression = arguments[1].transform(transformer, withExpectedType(leftArgumentType))
 
         equalityOperatorCall
             .transformAnnotations(transformer, ResolutionMode.ContextIndependent)
@@ -922,13 +926,20 @@ open class FirExpressionsResolveTransformer(transformer: FirAbstractBodyResolveT
         typeOperatorCall: FirTypeOperatorCall,
         data: ResolutionMode,
     ): FirStatement {
+        val typeResolutionMode = when {
+            typeOperatorCall.argument.isResolved -> ResolutionMode.WithExpectedType(
+                typeOperatorCall.argument.resolvedType.toFirResolvedTypeRef(typeOperatorCall.argument.source)
+            )
+            else -> ResolutionMode.ContextIndependent
+        }
+
         val resolved = components.typeResolverTransformer.withBareTypes {
             if (typeOperatorCall.operation == IS || typeOperatorCall.operation == NOT_IS) {
                 components.typeResolverTransformer.withIsOperandOfIsOperator {
-                    typeOperatorCall.transformConversionTypeRef(transformer, ResolutionMode.ContextIndependent)
+                    typeOperatorCall.transformConversionTypeRef(transformer, typeResolutionMode)
                 }
             } else {
-                typeOperatorCall.transformConversionTypeRef(transformer, ResolutionMode.ContextIndependent)
+                typeOperatorCall.transformConversionTypeRef(transformer, typeResolutionMode)
             }
         }.transformTypeOperatorCallChildren()
 

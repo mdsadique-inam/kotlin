@@ -61,6 +61,7 @@ class FirTowerResolver(
             TowerDataElementsForName(info.name, components.towerDataContext),
             candidateFactoriesAndCollectors.resultCollector,
             candidateFactoriesAndCollectors.candidateFactory,
+            info.resolutionMode
         )
         when (val receiver = info.explicitReceiver) {
             is FirResolvedQualifier -> {

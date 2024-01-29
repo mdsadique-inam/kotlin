@@ -5,9 +5,12 @@
 
 package org.jetbrains.kotlin.fir.resolve
 
+import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationStatus
+import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.expressions.FirVariableAssignment
 import org.jetbrains.kotlin.fir.render
+import org.jetbrains.kotlin.fir.resolve.calls.fullyExpandedClass
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.fir.types.builder.buildResolvedTypeRef
 
@@ -101,6 +104,9 @@ fun ResolutionMode.expectedType(components: BodyResolveComponents): FirTypeRef? 
     is ResolutionMode.ReceiverResolution -> components.noExpectedType
     else -> null
 }
+
+fun ResolutionMode.fullyExpandedClass(components: BodyResolveComponents, session: FirSession): FirRegularClass? =
+    expectedType(components)?.firClassLike(session)?.fullyExpandedClass(session)
 
 fun withExpectedType(expectedTypeRef: FirTypeRef, expectedTypeMismatchIsReportedInChecker: Boolean = false): ResolutionMode = when {
     expectedTypeRef is FirResolvedTypeRef -> ResolutionMode.WithExpectedType(
