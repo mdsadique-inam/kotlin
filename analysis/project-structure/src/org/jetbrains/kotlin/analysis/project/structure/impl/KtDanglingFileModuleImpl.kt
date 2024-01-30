@@ -81,4 +81,6 @@ public class KtDanglingFileModuleImpl(
     override fun hashCode(): Int {
         return Objects.hash(fileRef.element, contextModule)
     }
+
+    override fun toString(): String = file.name
 }
