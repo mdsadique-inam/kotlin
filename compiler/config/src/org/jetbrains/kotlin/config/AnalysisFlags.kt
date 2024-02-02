@@ -78,6 +78,9 @@ object AnalysisFlags {
 
     @JvmStatic
     val dontWarnOnErrorSuppression by AnalysisFlag.Delegates.Boolean
+
+    @JvmStatic
+    val stdlibCompilation by AnalysisFlag.Delegates.Boolean
 }
 
 fun LanguageVersionSettings.doesDataClassCopyRespectConstructorVisibility(): Boolean {
