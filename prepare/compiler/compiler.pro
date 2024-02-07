@@ -242,6 +242,10 @@
     public static java.lang.String getJarPathForClass(java.lang.Class);
 }
 
+-keepclassmembers class com.intellij.util.containers.ContainerUtil {
+    public static java.util.concurrent.ConcurrentMap createConcurrentSoftMap();
+}
+
 -keep class com.intellij.openapi.roots.ContentIterator  { *; }
 
 -keepclassmembers class com.intellij.openapi.vfs.VfsUtilCore {
