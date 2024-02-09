@@ -1,3 +1,4 @@
+// LANGUAGE: +ExpectedTypeGuidedResolution
 // FILE: JavaEnum.java
 
 public enum JavaEnum {

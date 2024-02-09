@@ -1,3 +1,4 @@
+// LANGUAGE: +ExpectedTypeGuidedResolution
 // FILE: first.kt
 
 package first

@@ -1,3 +1,5 @@
+// LANGUAGE: +ExpectedTypeGuidedResolution
+
 package test
 
 enum class Sample {

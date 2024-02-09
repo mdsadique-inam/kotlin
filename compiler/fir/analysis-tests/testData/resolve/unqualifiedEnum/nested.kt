@@ -1,3 +1,5 @@
+// LANGUAGE: +ExpectedTypeGuidedResolution
+
 enum class Outer {
     FIRST, SECOND;
 }

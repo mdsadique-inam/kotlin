@@ -1,3 +1,5 @@
+// LANGUAGE: +ExpectedTypeGuidedResolution
+
 sealed interface Boo {
     data class Baa(val x: String): Boo
 }

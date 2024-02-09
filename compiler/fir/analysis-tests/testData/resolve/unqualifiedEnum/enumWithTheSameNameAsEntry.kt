@@ -1,3 +1,4 @@
+// LANGUAGE: +ExpectedTypeGuidedResolution
 // KT-58939
 
 enum class A {

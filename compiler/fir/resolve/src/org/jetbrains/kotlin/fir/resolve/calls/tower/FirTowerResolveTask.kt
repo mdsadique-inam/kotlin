@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.fir.resolve.calls.tower
 
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtSourceElement
+import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.fakeElement
 import org.jetbrains.kotlin.fir.declarations.ContextReceiverGroup
 import org.jetbrains.kotlin.fir.declarations.FirTowerDataContext
@@ -16,6 +17,7 @@ import org.jetbrains.kotlin.fir.expressions.FirQualifiedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.FirResolvedQualifier
 import org.jetbrains.kotlin.fir.expressions.builder.buildExpressionStub
 import org.jetbrains.kotlin.fir.expressions.builder.buildResolvedQualifier
+import org.jetbrains.kotlin.fir.languageVersionSettings
 import org.jetbrains.kotlin.fir.resolve.BodyResolveComponents
 import org.jetbrains.kotlin.fir.resolve.DoubleColonLHS
 import org.jetbrains.kotlin.fir.resolve.ResolutionMode
@@ -186,10 +188,12 @@ internal abstract class FirBaseTowerResolveTask(
             }
         }
 
-        val contextClass = resolutionMode?.fullyExpandedClassFromContextTypeIfAny(components, session)
-        val contextScope = contextClass?.staticScope(session, components.scopeSession)
-        if (contextScope != null) {
-            onScope(contextScope, contextClass.symbol, TowerGroup.QualifierOrClassifier)
+        if (session.languageVersionSettings.supportsFeature(LanguageFeature.ExpectedTypeGuidedResolution)) {
+            val contextClass = resolutionMode?.fullyExpandedClassFromContextTypeIfAny(components, session)
+            val contextScope = contextClass?.staticScope(session, components.scopeSession)
+            if (contextScope != null) {
+                onScope(contextScope, contextClass.symbol, TowerGroup.QualifierOrClassifier)
+            }
         }
 
         for ((depth, contextReceiverGroup) in towerDataElementsForName.contextReceiverGroups) {

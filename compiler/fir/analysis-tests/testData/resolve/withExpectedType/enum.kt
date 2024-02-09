@@ -1,3 +1,5 @@
+// LANGUAGE: +ExpectedTypeGuidedResolution
+
 enum class Problem {
     CONNECTION, AUTHENTICATION, DATABASE
 }

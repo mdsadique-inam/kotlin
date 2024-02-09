@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.fir.resolve.transformers.body.resolve
 
+import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.fir.*
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.expressions.*
@@ -84,7 +85,11 @@ abstract class FirAbstractBodyResolveTransformerDispatcher(
         val resolvedTypeRef = if (typeRef is FirResolvedTypeRef) {
             typeRef
         } else {
-            val contextScope = data.fullyExpandedClassFromContextTypeIfAny(components, session)?.staticScope(session, scopeSession)
+            val contextScope = when {
+                session.languageVersionSettings.supportsFeature(LanguageFeature.ExpectedTypeGuidedResolution) ->
+                    data.fullyExpandedClassFromContextTypeIfAny(components, session)?.staticScope(session, scopeSession)
+                else -> null
+            }
             typeResolverTransformer.withFile(context.file) {
                 transformTypeRef(
                     typeRef,
