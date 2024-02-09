@@ -20,7 +20,7 @@ import org.jetbrains.kotlin.fir.resolve.BodyResolveComponents
 import org.jetbrains.kotlin.fir.resolve.DoubleColonLHS
 import org.jetbrains.kotlin.fir.resolve.ResolutionMode
 import org.jetbrains.kotlin.fir.resolve.calls.*
-import org.jetbrains.kotlin.fir.resolve.fullyExpandedClass
+import org.jetbrains.kotlin.fir.resolve.fullyExpandedClassFromContextTypeIfAny
 import org.jetbrains.kotlin.fir.resolve.setTypeOfQualifier
 import org.jetbrains.kotlin.fir.scopes.FirScope
 import org.jetbrains.kotlin.fir.scopes.impl.FirWhenSubjectImportingScope
@@ -186,10 +186,10 @@ internal abstract class FirBaseTowerResolveTask(
             }
         }
 
-        val expectedClass = resolutionMode?.fullyExpandedClass(components, session)
-        val expectedScope = expectedClass?.staticScope(session, components.scopeSession)
-        if (expectedScope != null) {
-            onScope(expectedScope, expectedClass.symbol, TowerGroup.Classifier)
+        val contextClass = resolutionMode?.fullyExpandedClassFromContextTypeIfAny(components, session)
+        val contextScope = contextClass?.staticScope(session, components.scopeSession)
+        if (contextScope != null) {
+            onScope(contextScope, contextClass.symbol, TowerGroup.QualifierOrClassifier)
         }
 
         for ((depth, contextReceiverGroup) in towerDataElementsForName.contextReceiverGroups) {

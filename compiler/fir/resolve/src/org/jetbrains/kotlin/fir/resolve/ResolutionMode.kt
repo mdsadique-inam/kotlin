@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.fir.declarations.FirDeclarationStatus
 import org.jetbrains.kotlin.fir.declarations.FirRegularClass
 import org.jetbrains.kotlin.fir.expressions.FirVariableAssignment
 import org.jetbrains.kotlin.fir.render
-import org.jetbrains.kotlin.fir.resolve.calls.fullyExpandedClass
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.fir.types.builder.buildResolvedTypeRef
 
@@ -41,6 +40,7 @@ sealed class ResolutionMode(
         val shouldBeStrictlyEnforced: Boolean = true,
         // Currently the only case for expected type when we don't force completion are when's branches
         forceFullCompletion: Boolean = true,
+        val contextTypeRef: FirResolvedTypeRef? = null
     ) : ResolutionMode(forceFullCompletion) {
 
         fun copy(
@@ -48,7 +48,7 @@ sealed class ResolutionMode(
             forceFullCompletion: Boolean = this.forceFullCompletion
         ): WithExpectedType = WithExpectedType(
             expectedTypeRef, mayBeCoercionToUnitApplied, expectedTypeMismatchIsReportedInChecker, fromCast, shouldBeStrictlyEnforced,
-            forceFullCompletion
+            forceFullCompletion, contextTypeRef
         )
 
         override fun toString(): String {
@@ -57,7 +57,8 @@ sealed class ResolutionMode(
                     "expectedTypeMismatchIsReportedInChecker=${expectedTypeMismatchIsReportedInChecker}, " +
                     "fromCast=${fromCast}, " +
                     "shouldBeStrictlyEnforced=${shouldBeStrictlyEnforced}, " +
-                    "forceFullCompletion=${forceFullCompletion}, "
+                    "forceFullCompletion=${forceFullCompletion}, " +
+                    "contextType=${contextTypeRef.prettyString()}, "
         }
     }
 
@@ -105,8 +106,15 @@ fun ResolutionMode.expectedType(components: BodyResolveComponents): FirTypeRef? 
     else -> null
 }
 
-fun ResolutionMode.fullyExpandedClass(components: BodyResolveComponents, session: FirSession): FirRegularClass? =
-    expectedType(components)?.firClassLike(session)?.fullyExpandedClass(session)
+fun ResolutionMode.contextType(components: BodyResolveComponents): FirTypeRef? = when (this) {
+    is ResolutionMode.WithExpectedType -> contextTypeRef.takeIf { !this.fromCast }
+    else -> null
+} ?: expectedType(components)
+
+fun ResolutionMode.fullyExpandedClassFromContextTypeIfAny(components: BodyResolveComponents, session: FirSession): FirRegularClass? =
+    contextType(components)?.coneTypeOrNull?.fullyExpandedType(session)
+        ?.unwrapFlexibleAndDefinitelyNotNull()
+        ?.toRegularClassSymbol(session)?.fir
 
 fun withExpectedType(expectedTypeRef: FirTypeRef, expectedTypeMismatchIsReportedInChecker: Boolean = false): ResolutionMode = when {
     expectedTypeRef is FirResolvedTypeRef -> ResolutionMode.WithExpectedType(
@@ -127,6 +135,15 @@ fun withExpectedType(coneType: ConeKotlinType, mayBeCoercionToUnitApplied: Boole
     }
     return ResolutionMode.WithExpectedType(typeRef, mayBeCoercionToUnitApplied)
 }
+
+fun withExpectedAndContextType(expectedTypeRef: FirTypeRef, contextTypeRef: FirTypeRef?): ResolutionMode =
+    when (expectedTypeRef) {
+        is FirResolvedTypeRef -> when (contextTypeRef) {
+            is FirResolvedTypeRef -> ResolutionMode.WithExpectedType(expectedTypeRef, contextTypeRef = contextTypeRef)
+            else -> ResolutionMode.WithExpectedType(expectedTypeRef)
+        }
+        else -> ResolutionMode.ContextIndependent
+    }
 
 fun FirDeclarationStatus.mode(): ResolutionMode =
     ResolutionMode.WithStatus(this)

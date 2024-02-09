@@ -1,4 +1,3 @@
-// LANGUAGE: +ContextSensitiveEnumResolutionInWhen
 // FILE: JavaEnum.java
 
 public enum JavaEnum {

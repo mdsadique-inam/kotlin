@@ -873,11 +873,14 @@ open class FirExpressionsResolveTransformer(transformer: FirAbstractBodyResolveT
         // One of the reasons is just consistency with K1 and with the desugared form `a.equals(b)`. See KT-47409 for clarifications.
         val leftArgumentTransformed: FirExpression = arguments[0].transform(transformer, ResolutionMode.ContextIndependent)
         dataFlowAnalyzer.exitEqualityOperatorLhs()
-        val leftArgumentType = when {
-            leftArgumentTransformed.isResolved -> leftArgumentTransformed.resolvedType.toFirResolvedTypeRef(leftArgumentTransformed.source)
-            else -> builtinTypes.nullableAnyType
+        val leftArgumentMode = when {
+            leftArgumentTransformed.isResolved -> withExpectedAndContextType(
+                builtinTypes.nullableAnyType,
+                leftArgumentTransformed.resolvedType.toFirResolvedTypeRef(leftArgumentTransformed.source)
+            )
+            else -> withExpectedType(builtinTypes.nullableAnyType)
         }
-        val rightArgumentTransformed: FirExpression = arguments[1].transform(transformer, withExpectedType(leftArgumentType))
+        val rightArgumentTransformed: FirExpression = arguments[1].transform(transformer, leftArgumentMode)
 
         equalityOperatorCall
             .transformAnnotations(transformer, ResolutionMode.ContextIndependent)

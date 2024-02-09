@@ -5355,6 +5355,28 @@ public class DiagnosticCompilerTestFirTestdataTestGenerated extends AbstractDiag
         runTest("compiler/fir/analysis-tests/testData/resolve/withAllowedKotlinPackage/extensionFunctionAddedToStdlib.kt");
       }
     }
+
+    @Nested
+    @TestMetadata("compiler/fir/analysis-tests/testData/resolve/withExpectedType")
+    @TestDataPath("$PROJECT_ROOT")
+    public class WithExpectedType {
+      @Test
+      public void testAllFilesPresentInWithExpectedType() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler/fir/analysis-tests/testData/resolve/withExpectedType"), Pattern.compile("^([^.]+)\\.kt$"), null, true);
+      }
+
+      @Test
+      @TestMetadata("enum.kt")
+      public void testEnum() {
+        runTest("compiler/fir/analysis-tests/testData/resolve/withExpectedType/enum.kt");
+      }
+
+      @Test
+      @TestMetadata("nested.kt")
+      public void testNested() {
+        runTest("compiler/fir/analysis-tests/testData/resolve/withExpectedType/nested.kt");
+      }
+    }
   }
 
   @Nested

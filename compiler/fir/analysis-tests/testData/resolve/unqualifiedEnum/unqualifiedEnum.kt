@@ -1,4 +1,3 @@
-// LANGUAGE: +ContextSensitiveEnumResolutionInWhen
 package test
 
 enum class Sample {
@@ -15,9 +14,9 @@ fun trivial(s: Sample): Int {
 
 fun shouldNotWork(s: Sample): Int {
     return when {
-        s == <!UNRESOLVED_REFERENCE!>FIRST<!> -> 1
-        s == <!UNRESOLVED_REFERENCE!>SECOND<!> -> 2
-        s == <!UNRESOLVED_REFERENCE!>THIRD<!> -> 3
+        s == FIRST -> 1
+        s == SECOND -> 2
+        s == THIRD -> 3
         else -> 0
     }
 }

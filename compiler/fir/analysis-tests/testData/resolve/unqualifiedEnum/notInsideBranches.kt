@@ -1,4 +1,3 @@
-// LANGUAGE: +ContextSensitiveEnumResolutionInWhen
 enum class Some {
     FIRST,
     SECOND;
