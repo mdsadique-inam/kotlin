@@ -65,6 +65,12 @@ public class FirIdeNormalAnalysisSourceModuleSymbolByReferenceTestGenerated exte
   }
 
   @Test
+  @TestMetadata("constructorViaTypeAlias.fe10.kt")
+  public void testConstructorViaTypeAlias_fe10() {
+    runTest("analysis/analysis-api/testData/symbols/symbolByReference/constructorViaTypeAlias.fe10.kt");
+  }
+
+  @Test
   @TestMetadata("enumEntries.kt")
   public void testEnumEntries() {
     runTest("analysis/analysis-api/testData/symbols/symbolByReference/enumEntries.kt");
