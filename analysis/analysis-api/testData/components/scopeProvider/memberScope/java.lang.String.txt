@@ -264,7 +264,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: index
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -327,7 +327,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: index
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -390,7 +390,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: beginIndex
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -414,7 +414,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: endIndex
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -477,7 +477,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: index
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -501,7 +501,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: codePointOffset
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -564,7 +564,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: dst
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -587,7 +587,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: dstBegin
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -650,7 +650,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: srcBegin
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -674,7 +674,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: srcEnd
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -698,7 +698,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: dst
+      name: p2
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -721,7 +721,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: dstBegin
+      name: p3
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -787,7 +787,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: srcBegin
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -811,7 +811,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: srcEnd
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -835,7 +835,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: dst
+      name: p2
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -858,7 +858,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: dstBegin
+      name: p3
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -920,7 +920,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: charsetName
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -981,7 +981,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: charset
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -1080,7 +1080,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: anObject
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -1143,7 +1143,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: sb
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -1205,7 +1205,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: cs
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -1267,7 +1267,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: anotherString
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -1329,7 +1329,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: anotherString
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -1391,7 +1391,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: str
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -1453,7 +1453,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: toffset
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -1477,7 +1477,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: other
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -1500,7 +1500,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: ooffset
+      name: p2
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -1524,7 +1524,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: len
+      name: p3
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -1587,7 +1587,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: ignoreCase
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -1611,7 +1611,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: toffset
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -1635,7 +1635,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: other
+      name: p2
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -1658,7 +1658,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: ooffset
+      name: p3
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -1682,7 +1682,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: len
+      name: p4
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -1745,7 +1745,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: prefix
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -1768,7 +1768,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: toffset
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -1831,7 +1831,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: prefix
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -1893,7 +1893,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: suffix
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -1993,7 +1993,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: ch
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2056,7 +2056,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: ch
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2080,7 +2080,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: fromIndex
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2143,7 +2143,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: str
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -2205,7 +2205,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: str
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -2228,7 +2228,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: fromIndex
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2291,7 +2291,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: ch
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2315,7 +2315,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: fromIndex
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2378,7 +2378,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: ch
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2441,7 +2441,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: ch
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2465,7 +2465,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: fromIndex
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2528,7 +2528,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: str
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -2590,7 +2590,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: str
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -2613,7 +2613,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: fromIndex
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2676,7 +2676,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: ch
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2700,7 +2700,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: fromIndex
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2762,7 +2762,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: beginIndex
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2824,7 +2824,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: beginIndex
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2848,7 +2848,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: endIndex
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2911,7 +2911,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: beginIndex
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2935,7 +2935,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: endIndex
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -2997,7 +2997,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: str
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -3058,7 +3058,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: oldChar
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -3082,7 +3082,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: newChar
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -3144,7 +3144,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: target
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -3167,7 +3167,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: replacement
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -3229,7 +3229,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: regex
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -3291,7 +3291,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: s
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -3352,7 +3352,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: regex
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -3375,7 +3375,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: replacement
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -3436,7 +3436,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: regex
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -3459,7 +3459,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: replacement
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -3520,7 +3520,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: regex
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -3543,7 +3543,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: limit
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -3605,7 +3605,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: regex
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -3666,7 +3666,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: locale
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -3764,7 +3764,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: locale
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -4012,7 +4012,7 @@ KtFunctionSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: index
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -4133,7 +4133,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: original
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -4182,7 +4182,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: value
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -4231,7 +4231,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: value
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -4254,7 +4254,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: offset
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -4278,7 +4278,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: count
+      name: p2
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -4328,7 +4328,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: codePoints
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -4351,7 +4351,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: offset
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -4375,7 +4375,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: count
+      name: p2
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -4428,7 +4428,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: ascii
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -4451,7 +4451,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: hibyte
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -4475,7 +4475,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: offset
+      name: p2
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -4499,7 +4499,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: count
+      name: p3
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -4552,7 +4552,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: ascii
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -4575,7 +4575,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: hibyte
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -4625,7 +4625,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: bytes
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -4648,7 +4648,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: offset
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -4672,7 +4672,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: length
+      name: p2
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -4696,7 +4696,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: charsetName
+      name: p3
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -4745,7 +4745,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: bytes
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -4768,7 +4768,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: offset
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -4792,7 +4792,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: length
+      name: p2
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -4816,7 +4816,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: charset
+      name: p3
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -4865,7 +4865,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: bytes
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -4888,7 +4888,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: charsetName
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -4937,7 +4937,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: bytes
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -4960,7 +4960,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: charset
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -5009,7 +5009,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: bytes
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -5032,7 +5032,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: offset
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -5056,7 +5056,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: length
+      name: p2
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -5106,7 +5106,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: bytes
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -5155,7 +5155,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: buffer
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -5204,7 +5204,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: builder
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -5253,7 +5253,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: value
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
@@ -5276,7 +5276,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: share
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -5329,7 +5329,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: offset
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -5353,7 +5353,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: count
+      name: p1
       origin: JAVA
       receiverParameter: null
       returnType: KtUsualClassType:
@@ -5377,7 +5377,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: value
+      name: p2
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:

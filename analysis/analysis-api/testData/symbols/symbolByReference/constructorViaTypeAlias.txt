@@ -34,7 +34,7 @@ KtConstructorSymbol:
       isImplicitLambdaParameter: false
       isNoinline: false
       isVararg: false
-      name: c
+      name: p0
       origin: JAVA
       receiverParameter: null
       returnType: KtFlexibleType:
