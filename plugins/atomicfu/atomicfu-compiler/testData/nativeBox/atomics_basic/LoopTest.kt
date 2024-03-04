@@ -1,6 +1,8 @@
 // TODO(KT-65977): reenable these tests with caches
 //IGNORE_NATIVE: cacheMode=STATIC_EVERYWHERE
 //IGNORE_NATIVE: cacheMode=STATIC_PER_FILE_EVERYWHERE
+// KT-66293
+//IGNORE_NATIVE: optimizationMode=DEBUG
 import kotlinx.atomicfu.*
 import kotlin.test.*
 
