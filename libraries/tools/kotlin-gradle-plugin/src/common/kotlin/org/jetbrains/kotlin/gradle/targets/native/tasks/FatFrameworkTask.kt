@@ -19,6 +19,7 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 import org.jetbrains.kotlin.gradle.plugin.mpp.NativeOutputKind
 import org.jetbrains.kotlin.gradle.utils.appendLine
 import org.jetbrains.kotlin.gradle.utils.getFile
+import org.jetbrains.kotlin.gradle.utils.processPlist
 import org.jetbrains.kotlin.konan.target.Architecture
 import org.jetbrains.kotlin.konan.target.Family
 import org.jetbrains.kotlin.konan.target.HostManager
@@ -26,7 +27,6 @@ import org.jetbrains.kotlin.konan.target.KonanTarget
 import org.jetbrains.kotlin.konan.target.KonanTarget.*
 import org.jetbrains.kotlin.konan.util.visibleName
 import org.jetbrains.kotlin.util.capitalizeDecapitalize.toLowerCaseAsciiOnly
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.nio.file.Files
 import javax.inject.Inject
@@ -194,6 +194,7 @@ internal constructor(
         X64("__x86_64__"),
         X86("__i386__"),
         ARM32("__arm__"),
+
         // We need to distinguish between variants of aarch64, because there are two WatchOS ARM64 targets that we support
         // watchOsArm64 that compiles to arm64_32 architecture
         // watchOsDeviceArm64 that compiles to arm64 architecture
@@ -277,36 +278,6 @@ internal constructor(
             is WATCHOS_ARM32, is WATCHOS_ARM64, is WATCHOS_X64, is WATCHOS_SIMULATOR_ARM64, is WATCHOS_DEVICE_ARM64 -> "WatchOS"
             else -> error("Fat frameworks are not supported for platform `${target.visibleName}`")
         }
-
-    // Runs the PlistBuddy utility with the given commands to configure the given plist file.
-    private fun processPlist(plist: File, commands: PlistBuddyRunner.() -> Unit) =
-        PlistBuddyRunner(plist).apply {
-            commands()
-        }.run()
-
-
-    private inner class PlistBuddyRunner(val plist: File) {
-
-        val commands = mutableListOf<String>()
-        var ignoreExitValue = false
-
-        fun run() = execOperations.exec { exec ->
-            exec.executable = "/usr/libexec/PlistBuddy"
-            commands.forEach {
-                exec.args("-c", it)
-            }
-            exec.args(plist.absolutePath)
-            exec.isIgnoreExitValue = ignoreExitValue
-            // Hide process output.
-            val dummyStream = ByteArrayOutputStream()
-            exec.standardOutput = dummyStream
-            exec.errorOutput = dummyStream
-        }
-
-        fun add(entry: String, value: String) = commands.add("Add \"$entry\" string \"$value\"")
-        fun set(entry: String, value: String) = commands.add("Set \"$entry\" \"$value\"")
-        fun delete(entry: String) = commands.add("Delete \"$entry\"")
-    }
 
     private fun runLipo(inputFiles: Collection<File>, outputFile: File) =
         execOperations.exec { exec ->
@@ -392,7 +363,7 @@ internal constructor(
         }
 
         // Remove required device capabilities (if they exist).
-        processPlist(outputFile) {
+        processPlist(outputFile, execOperations) {
             // Hack: the plist may have no such entry so we need to ignore the exit code of PlistBuddy.
             // TODO: Handle this in a better way.
             ignoreExitValue = true
@@ -400,7 +371,7 @@ internal constructor(
         }
 
         // TODO: What should we do with bundle id?
-        processPlist(outputFile) {
+        processPlist(outputFile, execOperations) {
             // Set framework name in the plist file.
             set(":CFBundleExecutable", frameworkName)
             set(":CFBundleName", frameworkName)
