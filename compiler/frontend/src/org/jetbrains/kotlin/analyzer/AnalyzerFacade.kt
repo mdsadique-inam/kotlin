@@ -301,6 +301,7 @@ interface ResolverForModuleComputationTracker {
     fun onResolverComputed(moduleInfo: ModuleInfo)
 
     companion object {
+        @Suppress("DEPRECATION")
         fun getInstance(project: Project): ResolverForModuleComputationTracker? =
             project.getComponent(ResolverForModuleComputationTracker::class.java) ?: null
     }
