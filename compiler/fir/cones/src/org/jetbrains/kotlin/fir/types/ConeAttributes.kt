@@ -39,6 +39,12 @@ abstract class ConeAttribute<out T : ConeAttribute<T>> : AnnotationMarker {
      */
     open val implementsEquality: Boolean get() = false
 
+    /**
+     * Signals that presence, absence or inequality of values of this attribute
+     * does not affect the check that the two attributes sets are different.
+     */
+    open val isTransparentToTypeComparisons: Boolean get() = false
+
     abstract val key: KClass<out T>
 
     /**
@@ -186,9 +192,14 @@ class ConeAttributes private constructor(attributes: List<ConeAttribute<*>>) : A
             val a = arrayMap[index]
             val b = other.arrayMap[index]
 
-            if (a == null && b == null) continue
-            if ((a == null) != (b == null)) return true
-            if (a!!.implementsEquality && a != b) return true
+            when {
+                a == null && b == null -> continue
+                (a == null) != (b == null) -> when {
+                    (a?.isTransparentToTypeComparisons ?: b?.isTransparentToTypeComparisons) == true -> continue
+                    else -> return true
+                }
+                a!!.implementsEquality && a != b -> return true
+            }
         }
 
         return false
