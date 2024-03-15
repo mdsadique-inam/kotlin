@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 @TestDataPath("$PROJECT_ROOT")
 @Tag("frontend-fir")
 @FirPipeline()
-public class FirNativeKlibBCompatOldestWithCurrentTestCaseGenerated extends AbstractNativeKlibBCompatOldestWithCurrentTestCase {
+public class FirNativeKlibCompatibilityTestGenerated extends AbstractNativeKlibCompatibilityTest {
   @Test
   @TestMetadata("addEnumEntry")
   public void testAddEnumEntry() {

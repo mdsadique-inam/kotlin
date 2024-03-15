@@ -88,10 +88,14 @@ private fun isCompilerDownloaded(targetDirectory: File) = File(targetDirectory.a
 private fun downloadCompiler(artifactFileName: String, version: String): File {
     val artifactFileNameWithExtension = artifactFileName + hostSpecificExtension
 
-    val tempLocation = File(System.getProperty("java.io.tmpdir") + File.separator + artifactFileNameWithExtension)
+    val tempLocation = File.createTempFile(artifactFileName, hostSpecificExtension)
     val url = URL("https://download.jetbrains.com/kotlin/native/builds/releases/$version/$host/$artifactFileNameWithExtension")
 
-    return DependencyDownloader(customProgressCallback = { _, _, _ -> }).download(url, tempLocation)
+    return DependencyDownloader(customProgressCallback = { _, _, _ -> }).download(
+        url,
+        tempLocation,
+        DependencyDownloader.ReplacingMode.REPLACE
+    )
 }
 
 private fun extractCompiler(archive: File, unpackedFolderName: String, targetDirectory: File) {

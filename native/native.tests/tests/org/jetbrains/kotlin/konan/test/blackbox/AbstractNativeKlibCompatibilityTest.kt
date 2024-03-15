@@ -20,22 +20,6 @@ import org.jetbrains.kotlin.konan.test.blackbox.support.group.UsePartialLinkage
 import org.junit.jupiter.api.Tag
 import java.io.File
 
-abstract class AbstractNativeKlibBCompatLatestWithCurrentTestCase :
-    AbstractNativeKlibCompatibilityTest(KlibCompilerChangeScenario.BwLatestWithCurrent)
-
-abstract class AbstractNativeKlibBCompatLatestWithLatestTestCase :
-    AbstractNativeKlibCompatibilityTest(KlibCompilerChangeScenario.BwLatestWithLatest)
-
-abstract class AbstractNativeKlibBCompatOldestWithCurrentTestCase :
-    AbstractNativeKlibCompatibilityTest(KlibCompilerChangeScenario.BwOldestWithCurrent)
-
-abstract class AbstractNativeKlibBCompatOldestWithOldestTestCase :
-    AbstractNativeKlibCompatibilityTest(KlibCompilerChangeScenario.BwOldestWithOldest)
-
-abstract class AbstractNativeKlibFCompatLatestTestCase :
-    AbstractNativeKlibCompatibilityTest(KlibCompilerChangeScenario.FwLatest)
-
-
 /**
  * Testing area: klibs binary compatibility in compiler variance (compiler version or compiler modes).
  * The usual scenario looks like
@@ -48,13 +32,14 @@ abstract class AbstractNativeKlibFCompatLatestTestCase :
  * build and run main against intermediate and bottom(V2).
  */
 @Tag("klib")
-@UsePartialLinkage(UsePartialLinkage.Mode.DEFAULT)
-abstract class AbstractNativeKlibCompatibilityTest(private val compilerChangeScenario: KlibCompilerChangeScenario) :
-    AbstractKlibLinkageTest() {
+@UsePartialLinkage(UsePartialLinkage.Mode.ENABLED_WITH_ERROR)
+abstract class AbstractNativeKlibCompatibilityTest : AbstractKlibLinkageTest() {
 
     // The entry point to generated test classes.
     protected fun runTest(@TestDataFile testPath: String) =
-        PartialLinkageTestUtils.runTest(NativeTestConfiguration(testPath), compilerChangeScenario)
+        KlibCompilerChangeScenario.entries.forEach {
+            PartialLinkageTestUtils.runTest(NativeTestConfiguration(testPath), it)
+        }
 
     override fun buildKlib(
         moduleName: String,

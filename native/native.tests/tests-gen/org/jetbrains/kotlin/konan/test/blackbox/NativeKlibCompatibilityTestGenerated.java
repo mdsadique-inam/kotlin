@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 @SuppressWarnings("all")
 @TestMetadata("compiler/testData/klib/versionCompatibility")
 @TestDataPath("$PROJECT_ROOT")
-public class NativeKlibBCompatLatestWithCurrentTestCaseGenerated extends AbstractNativeKlibBCompatLatestWithCurrentTestCase {
+public class NativeKlibCompatibilityTestGenerated extends AbstractNativeKlibCompatibilityTest {
   @Test
   @TestMetadata("addEnumEntry")
   public void testAddEnumEntry() {
