@@ -35,8 +35,6 @@ import org.jetbrains.kotlin.incremental.js.IncrementalDataProvider
 import org.jetbrains.kotlin.ir.backend.js.*
 import org.jetbrains.kotlin.ir.backend.js.lower.serialization.ir.JsManglerIr
 import org.jetbrains.kotlin.ir.types.IrTypeSystemContextImpl
-import org.jetbrains.kotlin.js.config.JSConfigurationKeys
-import org.jetbrains.kotlin.js.config.WasmTarget
 import org.jetbrains.kotlin.js.resolve.JsPlatformAnalyzerServices
 import org.jetbrains.kotlin.library.KotlinAbiVersion
 import org.jetbrains.kotlin.library.impl.BuiltInsPlatform
@@ -44,8 +42,10 @@ import org.jetbrains.kotlin.library.unresolvedDependencies
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.platform.js.JsPlatforms
 import org.jetbrains.kotlin.platform.wasm.WasmPlatforms
+import org.jetbrains.kotlin.platform.wasm.WasmTarget
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.storage.LockBasedStorageManager
+import org.jetbrains.kotlin.wasm.config.WasmConfigurationKeys
 import org.jetbrains.kotlin.wasm.resolve.WasmJsPlatformAnalyzerServices
 import org.jetbrains.kotlin.wasm.resolve.WasmWasiPlatformAnalyzerServices
 import java.nio.file.Paths
@@ -69,7 +69,7 @@ inline fun <F> compileModuleToAnalyzedFir(
     val escapedMainModuleName = Name.special("<$mainModuleName>")
     val platform = if (useWasmPlatform) WasmPlatforms.Default else JsPlatforms.defaultJsPlatform
     val platformAnalyzerServices = if (useWasmPlatform) {
-        when (moduleStructure.compilerConfiguration.get(JSConfigurationKeys.WASM_TARGET, WasmTarget.JS)) {
+        when (moduleStructure.compilerConfiguration.get(WasmConfigurationKeys.WASM_TARGET, WasmTarget.JS)) {
             WasmTarget.JS -> WasmJsPlatformAnalyzerServices
             WasmTarget.WASI -> WasmWasiPlatformAnalyzerServices
         }

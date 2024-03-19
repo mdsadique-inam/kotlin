@@ -14,6 +14,7 @@ dependencies {
     api(project(":compiler:ir.serialization.js"))
     api(project(":js:js.ast"))
     api(project(":js:js.frontend"))
+    api(project(":wasm:wasm.frontend"))
     api(project(":compiler:backend.js"))
     api(project(":wasm:wasm.ir"))
 
