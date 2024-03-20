@@ -48,7 +48,7 @@ internal val IrClass.isInternalSerializable: Boolean
 
 internal val IrClass.shouldHaveGeneratedMethods: Boolean
     get() = isInternalSerializable
-            // in the version with the `keepGeneratedSerializer` annotation the enum factory is already present therefore
+            // If runtime contains `@KeepGeneratedSerializer`, then it also contains the enum factory, therefore
             // there is no need to generate additional methods
             || (hasKeepGeneratedSerializerAnnotation && kind != ClassKind.ENUM_CLASS)
 
