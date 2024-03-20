@@ -5,7 +5,7 @@
 
 package org.jetbrains.kotlin.platform
 
-object WasmPlatform : SimplePlatform("Wasm") {
+abstract class WasmPlatform : SimplePlatform("Wasm") {
     override val oldFashionedDescription: String
         get() = "Wasm "
 }

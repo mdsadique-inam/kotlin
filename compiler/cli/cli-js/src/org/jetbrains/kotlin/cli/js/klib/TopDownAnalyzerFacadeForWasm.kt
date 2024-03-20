@@ -21,8 +21,6 @@ import org.jetbrains.kotlin.wasm.resolve.WasmJsPlatformAnalyzerServices
 import org.jetbrains.kotlin.wasm.resolve.WasmWasiPlatformAnalyzerServices
 
 abstract class TopDownAnalyzerFacadeForWasm : AbstractTopDownAnalyzerFacadeForWeb() {
-    override val platform: TargetPlatform = WasmPlatforms.Default
-
     override fun loadIncrementalCacheMetadata(
         incrementalData: IncrementalDataProvider,
         moduleContext: ModuleContext,
@@ -47,9 +45,13 @@ abstract class TopDownAnalyzerFacadeForWasm : AbstractTopDownAnalyzerFacadeForWe
 }
 
 object TopDownAnalyzerFacadeForWasmJs : TopDownAnalyzerFacadeForWasm() {
+    override val platform: TargetPlatform = WasmPlatforms.wasmJs
+
     override val analyzerServices: PlatformDependentAnalyzerServices = WasmJsPlatformAnalyzerServices
 }
 
 object TopDownAnalyzerFacadeForWasmWasi : TopDownAnalyzerFacadeForWasm() {
+    override val platform: TargetPlatform = WasmPlatforms.wasmWasi
+
     override val analyzerServices: PlatformDependentAnalyzerServices = WasmWasiPlatformAnalyzerServices
 }

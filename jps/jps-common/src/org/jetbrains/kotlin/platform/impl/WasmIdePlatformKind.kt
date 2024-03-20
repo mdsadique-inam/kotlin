@@ -12,19 +12,25 @@ import org.jetbrains.kotlin.cli.common.arguments.CommonCompilerArguments
 import org.jetbrains.kotlin.cli.common.arguments.K2JSCompilerArguments
 import org.jetbrains.kotlin.platform.*
 import org.jetbrains.kotlin.platform.wasm.WasmPlatforms
+import org.jetbrains.kotlin.platform.wasm.WasmTarget
 
 object WasmIdePlatformKind : IdePlatformKind() {
     override fun supportsTargetPlatform(platform: TargetPlatform): Boolean = platform.isWasm()
 
     override fun platformByCompilerArguments(arguments: CommonCompilerArguments): TargetPlatform? {
-        return if (arguments is K2JSCompilerArguments && arguments.wasm)
-            WasmPlatforms.Default
-        else
-            null
+        return if (arguments is K2JSCompilerArguments && arguments.wasm) {
+            val wasmTarget = arguments.wasmTarget?.let { WasmTarget.fromName(it) }
+            wasmTarget?.let {
+                WasmPlatforms.wasmPlatformByTargetVersion(it)
+            }
+        } else null
     }
 
-    val platforms get() = listOf(WasmPlatforms.Default)
-    override val defaultPlatform get() = WasmPlatforms.Default
+    val platforms
+        get() = WasmTarget.values()
+            .map { target -> WasmPlatforms.wasmPlatformByTargetVersion(target) } + listOf(WasmPlatforms.unspecifiedWasmPlatform)
+
+    override val defaultPlatform get() = WasmPlatforms.unspecifiedWasmPlatform
 
     @Deprecated(
         message = "IdePlatform is deprecated and will be removed soon, please, migrate to org.jetbrains.kotlin.platform.TargetPlatform",

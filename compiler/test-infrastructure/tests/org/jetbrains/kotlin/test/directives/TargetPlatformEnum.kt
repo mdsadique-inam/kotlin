@@ -7,12 +7,12 @@ package org.jetbrains.kotlin.test.directives
 
 import org.jetbrains.kotlin.config.JvmTarget
 import org.jetbrains.kotlin.platform.TargetPlatform
-import org.jetbrains.kotlin.platform.WasmPlatform
 import org.jetbrains.kotlin.platform.js.JsPlatforms
 import org.jetbrains.kotlin.platform.jvm.JdkPlatform
 import org.jetbrains.kotlin.platform.jvm.JvmPlatforms
 import org.jetbrains.kotlin.platform.konan.NativePlatformUnspecifiedTarget
 import org.jetbrains.kotlin.platform.konan.NativePlatforms
+import org.jetbrains.kotlin.platform.wasm.WasmPlatformUnspecifiedTarget
 import org.jetbrains.kotlin.platform.wasm.WasmPlatforms
 
 enum class TargetPlatformEnum(val targetPlatform: TargetPlatform) {
@@ -21,7 +21,7 @@ enum class TargetPlatformEnum(val targetPlatform: TargetPlatform) {
             setOf(
                 JdkPlatform(JvmTarget.DEFAULT),
                 JsPlatforms.DefaultSimpleJsPlatform,
-                WasmPlatform,
+                WasmPlatformUnspecifiedTarget,
                 NativePlatformUnspecifiedTarget
             )
         )
@@ -32,6 +32,6 @@ enum class TargetPlatformEnum(val targetPlatform: TargetPlatform) {
     JVM_1_8(JvmPlatforms.jvm8),
 
     JS(JsPlatforms.defaultJsPlatform),
-    Wasm(WasmPlatforms.Default),
+    Wasm(WasmPlatforms.unspecifiedWasmPlatform),
     Native(NativePlatforms.unspecifiedNativePlatform)
 }

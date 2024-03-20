@@ -67,13 +67,14 @@ inline fun <F> compileModuleToAnalyzedFir(
 
     val mainModuleName = moduleStructure.compilerConfiguration.get(CommonConfigurationKeys.MODULE_NAME)!!
     val escapedMainModuleName = Name.special("<$mainModuleName>")
-    val platform = if (useWasmPlatform) WasmPlatforms.Default else JsPlatforms.defaultJsPlatform
-    val platformAnalyzerServices = if (useWasmPlatform) {
+    val (platform, platformAnalyzerServices) = if (useWasmPlatform) {
         when (moduleStructure.compilerConfiguration.get(WasmConfigurationKeys.WASM_TARGET, WasmTarget.JS)) {
-            WasmTarget.JS -> WasmJsPlatformAnalyzerServices
-            WasmTarget.WASI -> WasmWasiPlatformAnalyzerServices
+            WasmTarget.JS -> WasmPlatforms.wasmJs to WasmJsPlatformAnalyzerServices
+            WasmTarget.WASI -> WasmPlatforms.wasmWasi to WasmWasiPlatformAnalyzerServices
         }
-    } else JsPlatformAnalyzerServices
+    } else {
+        JsPlatforms.defaultJsPlatform to JsPlatformAnalyzerServices
+    }
 
     val binaryModuleData = BinaryModuleData.initialize(escapedMainModuleName, platform, platformAnalyzerServices)
     val dependencyList = DependencyListForCliModule.build(binaryModuleData) {

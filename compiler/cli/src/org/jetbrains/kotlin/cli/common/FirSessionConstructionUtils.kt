@@ -239,12 +239,12 @@ fun <F> prepareWasmSessions(
     lookupTracker: LookupTracker?,
     icData: KlibIcData?,
 ): List<SessionWithSources<F>> {
-    val analyzerServices = when (configuration.get(WasmConfigurationKeys.WASM_TARGET, WasmTarget.JS)) {
-        WasmTarget.JS -> WasmJsPlatformAnalyzerServices
-        WasmTarget.WASI -> WasmWasiPlatformAnalyzerServices
+    val (platform, analyzerServices) = when (configuration.get(WasmConfigurationKeys.WASM_TARGET, WasmTarget.JS)) {
+        WasmTarget.JS -> WasmPlatforms.wasmJs to WasmJsPlatformAnalyzerServices
+        WasmTarget.WASI -> WasmPlatforms.wasmWasi to WasmWasiPlatformAnalyzerServices
     }
     return prepareSessions(
-        files, configuration, rootModuleName, WasmPlatforms.Default, analyzerServices,
+        files, configuration, rootModuleName, platform, analyzerServices,
         metadataCompilationMode = false, libraryList, isCommonSource, isScript = { false },
         fileBelongsToModule,
         createLibrarySession = { sessionProvider ->
