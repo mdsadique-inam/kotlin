@@ -1,0 +1,15 @@
+MODULE main
+	CLASS Outer.class
+		CLASS METADATA
+			CONSTRUCTOR <init>(Ljava/lang/StringBuilder;)V
+				Property: class.metadata.constructor.valueParameters
+					K1
+						(foo: java/lang/StringBuilder /* = kotlin/text/StringBuilder^ */)
+					K2
+						(foo: java/lang/StringBuilder)
+			PROPERTY getFoo()Ljava/lang/StringBuilder;
+				Property: class.metadata.property.returnType
+					K1
+						java/lang/StringBuilder /* = kotlin/text/StringBuilder^ */
+					K2
+						java/lang/StringBuilder

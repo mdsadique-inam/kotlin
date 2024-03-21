@@ -1,0 +1,21 @@
+MODULE lib
+	CLASS LoginSuccessPacket.class
+		CLASS METADATA
+			CONSTRUCTOR <init>(LUuid1;)V
+				Property: class.metadata.constructor.valueParameters
+					K1
+						(id: @MySerializable(c = UuidSerializer::class) Uuid1 /* = Uuid^ */)
+					K2
+						(id: @MySerializable(c = UuidSerializer::class) Uuid1)
+			FUNCTION copy(LUuid1;)LLoginSuccessPacket;
+				Property: class.metadata.function.valueParameters
+					K1
+						(id: @MySerializable(c = UuidSerializer::class) Uuid1 /* = Uuid^ */ /* = ... */)
+					K2
+						(id: @MySerializable(c = UuidSerializer::class) Uuid1 /* = ... */)
+			PROPERTY getId()LUuid1;
+				Property: class.metadata.property.returnType
+					K1
+						@MySerializable(c = UuidSerializer::class) Uuid1 /* = Uuid^ */
+					K2
+						@MySerializable(c = UuidSerializer::class) Uuid1

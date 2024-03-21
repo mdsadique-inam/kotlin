@@ -1,0 +1,9 @@
+MODULE main
+	CLASS SimpleKt.class
+		PACKAGE METADATA
+			FUNCTION first(Ljava/lang/StringBuilder;)C
+				Property: class.metadata.function.receiverParameterType
+					K1
+						java/lang/StringBuilder /* = kotlin/text/StringBuilder^ */
+					K2
+						java/lang/StringBuilder

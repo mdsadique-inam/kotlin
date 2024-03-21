@@ -1,0 +1,9 @@
+MODULE main
+	CLASS LinkViaSignaturesKt.class
+		PACKAGE METADATA
+			PROPERTY getProperty()Ljava/lang/String;
+				Property: class.metadata.property.returnType
+					K1
+						kotlin/String? /* = S^? */
+					K2
+						kotlin/String?

@@ -1,0 +1,9 @@
+MODULE main
+	CLASS A.class
+		CLASS METADATA
+			PROPERTY sb
+				Property: class.metadata.property.returnType
+					K1
+						java/lang/StringBuilder /* = kotlin/text/StringBuilder^ */
+					K2
+						java/lang/StringBuilder

@@ -1,0 +1,9 @@
+MODULE main
+	CLASS TestClassBuilder.class
+		CLASS METADATA
+			FUNCTION newMethod([Ljava/lang/String;)V
+				Property: class.metadata.function.valueParameters
+					K1
+						(exceptions: kotlin/Array<out kotlin/String?>? /* = JvmMethodExceptionTypes^ */)
+					K2
+						(exceptions: kotlin/Array<out kotlin/String?>?)

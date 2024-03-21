@@ -1,0 +1,9 @@
+MODULE main
+	CLASS FooMyUInt.class
+		CLASS METADATA
+			CONSTRUCTOR <init>(ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+				Property: class.metadata.constructor.valueParameters
+					K1
+						(x: kotlin/UInt /* = myUInt^ */)
+					K2
+						(x: kotlin/UInt)

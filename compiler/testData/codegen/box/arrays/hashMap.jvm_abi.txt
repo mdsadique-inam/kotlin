@@ -1,0 +1,9 @@
+MODULE main
+	CLASS HashMapKt.class
+		PACKAGE METADATA
+			FUNCTION set(Ljava/util/HashMap;Ljava/lang/String;Ljava/lang/Integer;)V
+				Property: class.metadata.function.receiverParameterType
+					K1
+						java/util/HashMap<kotlin/String, kotlin/Int?> /* = kotlin/collections/HashMap^<kotlin/String, kotlin/Int?> */
+					K2
+						java/util/HashMap<kotlin/String, kotlin/Int?>

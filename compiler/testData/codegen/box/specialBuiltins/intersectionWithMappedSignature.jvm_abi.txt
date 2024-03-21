@@ -1,0 +1,15 @@
+MODULE main
+	CLASS RemoveOverridden.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[Remove, java/util/ArrayList<kotlin/Int> /* = kotlin/collections/ArrayList^<kotlin/Int> */]
+				K2
+					[Remove, java/util/ArrayList<kotlin/Int>]
+	CLASS RemoveNotOverridden.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[Remove, java/util/ArrayList<kotlin/Int> /* = kotlin/collections/ArrayList^<kotlin/Int> */]
+				K2
+					[Remove, java/util/ArrayList<kotlin/Int>]

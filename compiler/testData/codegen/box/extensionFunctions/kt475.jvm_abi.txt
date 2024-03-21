@@ -1,0 +1,15 @@
+MODULE main
+	CLASS Kt475Kt.class
+		PACKAGE METADATA
+			PROPERTY getLast(Ljava/util/ArrayList;)Ljava/lang/Object;
+				Property: class.metadata.property.receiverParameterType
+					K1
+						java/util/ArrayList<T#0> /* = kotlin/collections/ArrayList^<T#0> */
+					K2
+						java/util/ArrayList<T#0>
+			PROPERTY getLength(Ljava/util/ArrayList;)I
+				Property: class.metadata.property.receiverParameterType
+					K1
+						java/util/ArrayList<T#0> /* = kotlin/collections/ArrayList^<T#0> */
+					K2
+						java/util/ArrayList<T#0>

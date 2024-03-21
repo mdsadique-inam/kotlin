@@ -1,0 +1,9 @@
+MODULE main
+	CLASS TaintedValuesKt.class
+		PACKAGE METADATA
+			FUNCTION isNotEmpty(Ljava/util/ArrayList;)Z
+				Property: class.metadata.function.valueParameters
+					K1
+						(l: java/util/ArrayList<kotlin/Int> /* = kotlin/collections/ArrayList^<kotlin/Int> */)
+					K2
+						(l: java/util/ArrayList<kotlin/Int>)

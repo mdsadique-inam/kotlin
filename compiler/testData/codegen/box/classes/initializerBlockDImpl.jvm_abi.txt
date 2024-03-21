@@ -1,0 +1,9 @@
+MODULE main
+	CLASS World.class
+		CLASS METADATA
+			PROPERTY getItems()Ljava/util/ArrayList;
+				Property: class.metadata.property.returnType
+					K1
+						java/util/ArrayList<World.Item> /* = kotlin/collections/ArrayList^<World.Item> */
+					K2
+						java/util/ArrayList<World.Item>

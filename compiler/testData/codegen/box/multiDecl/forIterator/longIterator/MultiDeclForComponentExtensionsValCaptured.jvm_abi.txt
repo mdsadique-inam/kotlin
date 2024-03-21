@@ -1,0 +1,9 @@
+MODULE main
+	CLASS MultiDeclForComponentExtensionsValCapturedKt.class
+		PACKAGE METADATA
+			FUNCTION doTest(Ljava/util/ArrayList;)Ljava/lang/String;
+				Property: class.metadata.function.valueParameters
+					K1
+						(l: java/util/ArrayList<kotlin/Long> /* = kotlin/collections/ArrayList^<kotlin/Long> */)
+					K2
+						(l: java/util/ArrayList<kotlin/Long>)

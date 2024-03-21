@@ -1,0 +1,9 @@
+MODULE main
+	CLASS MultiDeclForKt.class
+		PACKAGE METADATA
+			FUNCTION doTest(Ljava/util/ArrayList;)Ljava/lang/String;
+				Property: class.metadata.function.valueParameters
+					K1
+						(l: java/util/ArrayList<C> /* = kotlin/collections/ArrayList^<C> */)
+					K2
+						(l: java/util/ArrayList<C>)

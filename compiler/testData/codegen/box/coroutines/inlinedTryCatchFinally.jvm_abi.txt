@@ -1,0 +1,23 @@
+MODULE main
+	CLASS Controller.class
+		CLASS METADATA
+			FUNCTION suspendWithException(Ljava/lang/Exception;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+				Property: class.metadata.function.valueParameters
+					K1
+						(e: java/lang/Exception /* = kotlin/Exception^ */)
+					K2
+						(e: java/lang/Exception)
+	CLASS InlinedTryCatchFinallyKt.class
+		PACKAGE METADATA
+			FUNCTION tryCatch(Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;)Ljava/lang/String;
+				Property: class.metadata.function.valueParameters
+					K1
+						(t: kotlin/Function0<kotlin/String>, onException: kotlin/Function1<java/lang/Exception /* = kotlin/Exception^ */, kotlin/String>)
+					K2
+						(t: kotlin/Function0<kotlin/String>, onException: kotlin/Function1<java/lang/Exception, kotlin/String>)
+			FUNCTION tryCatchFinally(Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;)Ljava/lang/String;
+				Property: class.metadata.function.valueParameters
+					K1
+						(t: kotlin/Function0<kotlin/String>, onException: kotlin/Function1<java/lang/Exception /* = kotlin/Exception^ */, kotlin/String>, f: kotlin/Function0<kotlin/Unit>)
+					K2
+						(t: kotlin/Function0<kotlin/String>, onException: kotlin/Function1<java/lang/Exception, kotlin/String>, f: kotlin/Function0<kotlin/Unit>)

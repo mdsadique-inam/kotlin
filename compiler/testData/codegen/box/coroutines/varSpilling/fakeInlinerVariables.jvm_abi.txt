@@ -1,0 +1,23 @@
+MODULE main
+	CLASS Cache.class
+		CLASS METADATA
+			FUNCTION getOrPutById(Ljava/lang/String;Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+				Property: class.metadata.function.valueParameters
+					K1
+						(id: kotlin/String /* = ID^ */, put: suspend kotlin/Function1<kotlin/coroutines/Continuation<Info>, kotlin/Any?>)
+					K2
+						(id: kotlin/String, put: suspend kotlin/Function1<kotlin/coroutines/Continuation<Info>, kotlin/Any?>)
+			FUNCTION removeById(Ljava/lang/String;LInfo;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+				Property: class.metadata.function.valueParameters
+					K1
+						(id: kotlin/String /* = ID^ */, newValue: Info? /* = ... */)
+					K2
+						(id: kotlin/String, newValue: Info? /* = ... */)
+	CLASS Test.class
+		CLASS METADATA
+			FUNCTION getById(LCache;Ljava/lang/String;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+				Property: class.metadata.function.valueParameters
+					K1
+						(id: kotlin/String /* = ID^ */)
+					K2
+						(id: kotlin/String)

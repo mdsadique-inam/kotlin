@@ -1,0 +1,22 @@
+MODULE main
+	CLASS Exception1.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[java/lang/Exception /* = kotlin/Exception^ */]
+				K2
+					[java/lang/Exception]
+	CLASS Exception2.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[java/lang/Exception /* = kotlin/Exception^ */]
+				K2
+					[java/lang/Exception]
+	CLASS Exception3.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[java/lang/Exception /* = kotlin/Exception^ */]
+				K2
+					[java/lang/Exception]

@@ -1,0 +1,8 @@
+MODULE main
+	CLASS Map1.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[java/util/HashMap<kotlin/String, kotlin/Any?> /* = kotlin/collections/HashMap^<kotlin/String, kotlin/Any?> */]
+				K2
+					[java/util/HashMap<kotlin/String, kotlin/Any?>]

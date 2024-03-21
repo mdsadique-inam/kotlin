@@ -1,0 +1,15 @@
+MODULE main
+	CLASS CollectionGetMultiIndexKt.class
+		PACKAGE METADATA
+			FUNCTION get(Ljava/util/ArrayList;II)Ljava/lang/String;
+				Property: class.metadata.function.receiverParameterType
+					K1
+						java/util/ArrayList<kotlin/String> /* = kotlin/collections/ArrayList^<kotlin/String> */
+					K2
+						java/util/ArrayList<kotlin/String>
+			FUNCTION set(Ljava/util/ArrayList;IILjava/lang/String;)V
+				Property: class.metadata.function.receiverParameterType
+					K1
+						java/util/ArrayList<kotlin/String> /* = kotlin/collections/ArrayList^<kotlin/String> */
+					K2
+						java/util/ArrayList<kotlin/String>

@@ -1,0 +1,9 @@
+MODULE lib
+	CLASS Foo.class
+		CLASS METADATA
+			FUNCTION baz(Lkotlin/jvm/functions/Function1;)Ljava/lang/String;
+				Property: class.metadata.function.valueParameters
+					K1
+						(b: kotlin/Function1<T#0, kotlin/String> /* = Bar^<T#0> */)
+					K2
+						(b: kotlin/Function1<T#0, kotlin/String>)

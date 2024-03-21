@@ -1,0 +1,8 @@
+MODULE main
+	CLASS EmptyList.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[java/util/RandomAccess /* = kotlin/collections/RandomAccess^ */, kotlin/collections/List<kotlin/Nothing>]
+				K2
+					[java/util/RandomAccess, kotlin/collections/List<kotlin/Nothing>]

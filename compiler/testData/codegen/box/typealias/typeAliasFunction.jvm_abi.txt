@@ -1,0 +1,9 @@
+MODULE main
+	CLASS TypeAliasFunctionKt.class
+		PACKAGE METADATA
+			FUNCTION invoke(Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+				Property: class.metadata.function.valueParameters
+					K1
+						(f: kotlin/Function1<T#0?, T#0> /* = F^<T#0> */)
+					K2
+						(f: kotlin/Function1<T#0?, T#0>)

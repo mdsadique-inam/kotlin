@@ -1,0 +1,9 @@
+MODULE main
+	CLASS BKt.class
+		PACKAGE METADATA
+			FUNCTION use(LNumberWithString;Lkotlin/jvm/functions/Function3;)Ljava/lang/String;
+				Property: class.metadata.function.valueParameters
+					K1
+						(ns: NumberWithString<T#0>, process: @kotlin/ExtensionFunctionType kotlin/Function3<kotlin/String, T#0, kotlin/Function2<T#0, kotlin/String, kotlin/Boolean>, kotlin/Boolean> /* = ProcessOverriddenWithBaseScope^<T#0> */)
+					K2
+						(ns: NumberWithString<T#0>, process: @kotlin/ExtensionFunctionType kotlin/Function3<kotlin/String, T#0, kotlin/Function2<T#0, kotlin/String, kotlin/Boolean>, kotlin/Boolean>)

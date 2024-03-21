@@ -1,0 +1,27 @@
+MODULE main
+	CLASS CheckcastOnThrowKt.class
+		PACKAGE METADATA
+			FUNCTION f(Ljava/lang/AssertionError;)V
+				Property: class.metadata.function.valueParameters
+					K1
+						(x: java/lang/AssertionError /* = kotlin/AssertionError^ */)
+					K2
+						(x: java/lang/AssertionError)
+			FUNCTION f(Ljava/lang/Error;)V
+				Property: class.metadata.function.valueParameters
+					K1
+						(x: java/lang/Error /* = kotlin/Error^ */)
+					K2
+						(x: java/lang/Error)
+			FUNCTION f(Ljava/lang/Exception;)V
+				Property: class.metadata.function.valueParameters
+					K1
+						(x: java/lang/Exception /* = kotlin/Exception^ */)
+					K2
+						(x: java/lang/Exception)
+			FUNCTION f(Ljava/lang/RuntimeException;)V
+				Property: class.metadata.function.valueParameters
+					K1
+						(x: java/lang/RuntimeException /* = kotlin/RuntimeException^ */)
+					K2
+						(x: java/lang/RuntimeException)

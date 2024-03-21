@@ -1,0 +1,8 @@
+MODULE main
+	CLASS A.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[java/util/HashMap<kotlin/String, kotlin/Double> /* = kotlin/collections/HashMap^<kotlin/String, kotlin/Double> */]
+				K2
+					[java/util/HashMap<kotlin/String, kotlin/Double>]

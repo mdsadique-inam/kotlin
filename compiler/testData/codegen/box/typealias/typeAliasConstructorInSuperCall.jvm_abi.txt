@@ -1,0 +1,15 @@
+MODULE main
+	CLASS C1.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[Cell<kotlin/String> /* = CT^<kotlin/String> */]
+				K2
+					[Cell<kotlin/String>]
+	CLASS C2.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[Cell<kotlin/String> /* = CStr^ */]
+				K2
+					[Cell<kotlin/String>]

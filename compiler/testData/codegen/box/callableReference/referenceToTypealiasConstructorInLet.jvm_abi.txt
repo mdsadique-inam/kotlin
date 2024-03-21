@@ -1,0 +1,9 @@
+MODULE main
+	CLASS ReferenceToTypealiasConstructorInLetKt.class
+		PACKAGE METADATA
+			FUNCTION test(Ljava/util/EnumMap;LSomeEnum;)Ljava/lang/String;
+				Property: class.metadata.function.valueParameters
+					K1
+						(oldMap: java/util/EnumMap<SomeEnum, kotlin/String> /* = SomeMap^ */, key: SomeEnum)
+					K2
+						(oldMap: java/util/EnumMap<SomeEnum, kotlin/String>, key: SomeEnum)

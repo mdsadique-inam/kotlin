@@ -1,0 +1,9 @@
+MODULE main
+	CLASS RealStringRepeatKt.class
+		PACKAGE METADATA
+			FUNCTION repeat(Ljava/lang/String;ILjava/lang/StringBuilder;)Ljava/lang/String;
+				Property: class.metadata.function.valueParameters
+					K1
+						(num: kotlin/Int, acc: java/lang/StringBuilder /* = kotlin/text/StringBuilder^ */ /* = ... */)
+					K2
+						(num: kotlin/Int, acc: java/lang/StringBuilder /* = ... */)

@@ -1,0 +1,8 @@
+MODULE main
+	CLASS Child.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[javapackage/PublicParentClass /* = Base^ */]
+				K2
+					[javapackage/PublicParentClass]

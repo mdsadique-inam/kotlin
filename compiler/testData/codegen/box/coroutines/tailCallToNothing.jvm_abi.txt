@@ -1,0 +1,8 @@
+MODULE main
+	CLASS Success.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[java/lang/RuntimeException /* = kotlin/RuntimeException^ */]
+				K2
+					[java/lang/RuntimeException]

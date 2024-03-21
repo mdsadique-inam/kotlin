@@ -1,0 +1,8 @@
+MODULE main
+	CLASS IntArrayList.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[java/util/ArrayList<kotlin/Int> /* = kotlin/collections/ArrayList^<kotlin/Int> */]
+				K2
+					[java/util/ArrayList<kotlin/Int>]

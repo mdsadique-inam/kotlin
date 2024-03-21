@@ -1,0 +1,20 @@
+MODULE main
+	CLASS A.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[MyMap<T#0, T#1> /* = MyMapAlias^<T#0, T#1> */]
+				K2
+					[MyMap<T#0, T#1>]
+			CONSTRUCTOR <init>(LMyMap;)V
+				Property: class.metadata.constructor.valueParameters
+					K1
+						(m: MyMap<T#0, T#1> /* = MyMapAlias^<T#0, T#1> */)
+					K2
+						(m: MyMap<T#0, T#1>)
+			PROPERTY getM()LMyMap;
+				Property: class.metadata.property.returnType
+					K1
+						MyMap<T#0, T#1> /* = MyMapAlias^<T#0, T#1> */
+					K2
+						MyMap<T#0, T#1>

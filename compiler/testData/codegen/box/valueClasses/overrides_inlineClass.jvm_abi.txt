@@ -1,0 +1,8 @@
+MODULE main
+	CLASS DataClassException.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[java/lang/Exception /* = kotlin/Exception^ */]
+				K2
+					[java/lang/Exception]

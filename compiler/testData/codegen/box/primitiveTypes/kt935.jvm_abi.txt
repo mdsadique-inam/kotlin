@@ -1,0 +1,9 @@
+MODULE main
+	CLASS bottles/Kt935Kt.class
+		PACKAGE METADATA
+			FUNCTION plusAssign(Ljava/lang/StringBuilder;Ljava/lang/Object;)V
+				Property: class.metadata.function.receiverParameterType
+					K1
+						java/lang/StringBuilder /* = kotlin/text/StringBuilder^ */
+					K2
+						java/lang/StringBuilder

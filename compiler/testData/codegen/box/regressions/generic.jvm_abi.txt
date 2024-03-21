@@ -1,0 +1,9 @@
+MODULE main
+	CLASS GenericKt.class
+		PACKAGE METADATA
+			FUNCTION findAll(Ljava/util/ArrayList;Lkotlin/jvm/functions/Function1;)Ljava/util/ArrayList;
+				Property: class.metadata.function.receiverParameterType
+					K1
+						java/util/ArrayList<T#0> /* = kotlin/collections/ArrayList^<T#0> */
+					K2
+						java/util/ArrayList<T#0>

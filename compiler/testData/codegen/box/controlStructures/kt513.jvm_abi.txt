@@ -1,0 +1,23 @@
+MODULE main
+	CLASS A.class
+		CLASS METADATA
+			FUNCTION add3(Ljava/util/ArrayList;Ljava/lang/Object;)Z
+				Property: class.metadata.function.receiverParameterType
+					K1
+						java/util/ArrayList<T#0> /* = kotlin/collections/ArrayList^<T#0> */
+					K2
+						java/util/ArrayList<T#0>
+			FUNCTION test(Ljava/util/ArrayList;)V
+				Property: class.metadata.function.valueParameters
+					K1
+						(list: java/util/ArrayList<kotlin/Int> /* = kotlin/collections/ArrayList^<kotlin/Int> */)
+					K2
+						(list: java/util/ArrayList<kotlin/Int>)
+	CLASS Kt513Kt.class
+		PACKAGE METADATA
+			FUNCTION add2(Ljava/util/ArrayList;Ljava/lang/Object;)Z
+				Property: class.metadata.function.receiverParameterType
+					K1
+						java/util/ArrayList<T#0> /* = kotlin/collections/ArrayList^<T#0> */
+					K2
+						java/util/ArrayList<T#0>

@@ -1,0 +1,9 @@
+MODULE main
+	CLASS ExtensionFunctionKt.class
+		PACKAGE METADATA
+			FUNCTION myRun(Ljava/lang/Object;Lkotlin/jvm/functions/Function1;)Ljava/lang/Object;
+				Property: class.metadata.function.valueParameters
+					K1
+						(f: @kotlin/ExtensionFunctionType kotlin/Function1<T#0, T#1> /* = F^<T#0, T#1> */)
+					K2
+						(f: @kotlin/ExtensionFunctionType kotlin/Function1<T#0, T#1>)

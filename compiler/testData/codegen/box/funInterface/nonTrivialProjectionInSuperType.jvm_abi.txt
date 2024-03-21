@@ -1,0 +1,9 @@
+MODULE main
+	CLASS NonTrivialProjectionInSuperTypeKt.class
+		PACKAGE METADATA
+			FUNCTION foo(Ljava/util/Comparator;Ljava/lang/Object;Ljava/lang/Object;)I
+				Property: class.metadata.function.valueParameters
+					K1
+						(comparator: java/util/Comparator<in T#0> /* = kotlin/Comparator^<in T#0> */, a: T#0, b: T#0)
+					K2
+						(comparator: java/util/Comparator<in T#0>, a: T#0, b: T#0)

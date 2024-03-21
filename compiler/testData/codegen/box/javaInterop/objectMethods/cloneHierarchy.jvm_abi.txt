@@ -1,0 +1,15 @@
+MODULE main
+	CLASS C.class
+		CLASS METADATA
+			CONSTRUCTOR <init>(Ljava/lang/String;Ljava/util/ArrayList;)V
+				Property: class.metadata.constructor.valueParameters
+					K1
+						(s: kotlin/String, l: java/util/ArrayList<kotlin/Any> /* = kotlin/collections/ArrayList^<kotlin/Any> */)
+					K2
+						(s: kotlin/String, l: java/util/ArrayList<kotlin/Any>)
+			PROPERTY getL()Ljava/util/ArrayList;
+				Property: class.metadata.property.returnType
+					K1
+						java/util/ArrayList<kotlin/Any> /* = kotlin/collections/ArrayList^<kotlin/Any> */
+					K2
+						java/util/ArrayList<kotlin/Any>

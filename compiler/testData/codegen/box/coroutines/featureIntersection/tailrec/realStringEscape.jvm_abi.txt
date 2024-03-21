@@ -1,0 +1,9 @@
+MODULE main
+	CLASS RealStringEscapeKt.class
+		PACKAGE METADATA
+			FUNCTION escape(Ljava/lang/String;ILjava/lang/StringBuilder;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+				Property: class.metadata.function.valueParameters
+					K1
+						(i: kotlin/Int /* = ... */, result: java/lang/StringBuilder /* = kotlin/text/StringBuilder^ */ /* = ... */)
+					K2
+						(i: kotlin/Int /* = ... */, result: java/lang/StringBuilder /* = ... */)

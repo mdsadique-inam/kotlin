@@ -1,0 +1,9 @@
+MODULE main
+	CLASS Kt51951Kt.class
+		PACKAGE METADATA
+			FUNCTION doSomething(Lkotlin/jvm/functions/Function0;)V
+				Property: class.metadata.function.contextReceiverTypes
+					K1
+						[kotlin/Function0<kotlin/String> /* = StringProvider^ */]
+					K2
+						[kotlin/Function0<kotlin/String>]

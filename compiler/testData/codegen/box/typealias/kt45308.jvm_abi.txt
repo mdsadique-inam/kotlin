@@ -1,0 +1,9 @@
+MODULE b
+	CLASS b/BKt.class
+		PACKAGE METADATA
+			FUNCTION foo(Lkotlin/jvm/functions/Function0;)Ljava/lang/String;
+				Property: class.metadata.function.valueParameters
+					K1
+						(f: kotlin/Function0<kotlin/String /* = a/A^ */>)
+					K2
+						(f: kotlin/Function0<kotlin/String>)

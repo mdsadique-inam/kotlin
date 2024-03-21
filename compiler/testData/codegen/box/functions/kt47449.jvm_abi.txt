@@ -1,0 +1,9 @@
+MODULE main
+	CLASS Kt47449Kt.class
+		PACKAGE METADATA
+			FUNCTION tryAndLog(Ljava/lang/String;Ljava/lang/String;Lkotlin/jvm/functions/Function3;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
+				Property: class.metadata.function.valueParameters
+					K1
+						(title: kotlin/String /* = ... */, message: kotlin/String /* = ... */, logger: kotlin/Function3<@kotlin/ParameterName(name = "tag") kotlin/String, @kotlin/ParameterName(name = "message") kotlin/String, @kotlin/ParameterName(name = "throwable") kotlin/Throwable?, *> /* = LoggingFunctionType^<*> */ /* = ... */, throwableAction: kotlin/Function0<T#0> /* = EmptyFunctionResult^<T#0> */)
+					K2
+						(title: kotlin/String /* = ... */, message: kotlin/String /* = ... */, logger: kotlin/Function3<@kotlin/ParameterName(name = "tag") kotlin/String, @kotlin/ParameterName(name = "message") kotlin/String, @kotlin/ParameterName(name = "throwable") kotlin/Throwable?, *> /* = ... */, throwableAction: kotlin/Function0<T#0>)

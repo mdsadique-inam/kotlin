@@ -1,0 +1,8 @@
+MODULE main
+	CLASS N.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[java/util/ArrayList<kotlin/Any> /* = kotlin/collections/ArrayList^<kotlin/Any> */]
+				K2
+					[java/util/ArrayList<kotlin/Any>]

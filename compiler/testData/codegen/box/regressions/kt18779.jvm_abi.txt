@@ -1,0 +1,15 @@
+MODULE main
+	CLASS Result$Failure.class
+		CLASS METADATA
+			CONSTRUCTOR <init>(Ljava/lang/Exception;)V
+				Property: class.metadata.constructor.valueParameters
+					K1
+						(exception: java/lang/Exception /* = kotlin/Exception^ */)
+					K2
+						(exception: java/lang/Exception)
+			PROPERTY getException()Ljava/lang/Exception;
+				Property: class.metadata.property.returnType
+					K1
+						java/lang/Exception /* = kotlin/Exception^ */
+					K2
+						java/lang/Exception

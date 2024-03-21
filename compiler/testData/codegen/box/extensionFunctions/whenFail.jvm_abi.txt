@@ -1,0 +1,15 @@
+MODULE main
+	CLASS WhenFailKt.class
+		PACKAGE METADATA
+			FUNCTION foo(Ljava/lang/StringBuilder;)I
+				Property: class.metadata.function.valueParameters
+					K1
+						(expr: java/lang/StringBuilder /* = kotlin/text/StringBuilder^ */)
+					K2
+						(expr: java/lang/StringBuilder)
+			FUNCTION takeFirst(Ljava/lang/StringBuilder;)C
+				Property: class.metadata.function.receiverParameterType
+					K1
+						java/lang/StringBuilder /* = kotlin/text/StringBuilder^ */
+					K2
+						java/lang/StringBuilder

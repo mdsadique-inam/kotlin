@@ -1,0 +1,9 @@
+MODULE main
+	CLASS UnboxValueOfAnyBeforeMethodInvocationGeneric2Kt.class
+		PACKAGE METADATA
+			PROPERTY getProp()Ljava/util/ArrayList;
+				Property: class.metadata.property.returnType
+					K1
+						java/util/ArrayList<NullableInt<kotlin/Any>> /* = kotlin/collections/ArrayList^<NullableInt<kotlin/Any>> */
+					K2
+						java/util/ArrayList<NullableInt<kotlin/Any>>

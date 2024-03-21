@@ -1,0 +1,15 @@
+MODULE main
+	CLASS CompareToKt.class
+		PACKAGE METADATA
+			FUNCTION compareTo(Ljava/util/Comparator;Ljava/lang/Object;Ljava/lang/Object;)I
+				Property: class.metadata.function.contextReceiverTypes
+					K1
+						[java/util/Comparator<T#0> /* = kotlin/Comparator^<T#0> */]
+					K2
+						[java/util/Comparator<T#0>]
+			PROPERTY getMin(Ljava/util/Comparator;LPair;)Ljava/lang/Object;
+				Property: class.metadata.property.contextReceiverTypes
+					K1
+						[java/util/Comparator<T#0> /* = kotlin/Comparator^<T#0> */]
+					K2
+						[java/util/Comparator<T#0>]

@@ -1,0 +1,15 @@
+MODULE main
+	CLASS B.class
+		CLASS METADATA
+			CONSTRUCTOR <init>(Ljava/util/LinkedHashMap;)V
+				Property: class.metadata.constructor.valueParameters
+					K1
+						(map: java/util/LinkedHashMap<kotlin/String, kotlin/String> /* = kotlin/collections/LinkedHashMap^<kotlin/String, kotlin/String> */)
+					K2
+						(map: java/util/LinkedHashMap<kotlin/String, kotlin/String>)
+			PROPERTY getMap()Ljava/util/LinkedHashMap;
+				Property: class.metadata.property.returnType
+					K1
+						java/util/LinkedHashMap<kotlin/String, kotlin/String> /* = kotlin/collections/LinkedHashMap^<kotlin/String, kotlin/String> */
+					K2
+						java/util/LinkedHashMap<kotlin/String, kotlin/String>

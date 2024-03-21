@@ -1,0 +1,16 @@
+MODULE main
+	CLASS test/_1Kt.class
+		PACKAGE METADATA
+			FUNCTION extensionFun(Lkotlin/jvm/functions/Function0;)Lkotlin/properties/ReadOnlyProperty;
+				Property: class.metadata.function.receiverParameterType
+					K1
+						kotlin/Function0<test/ObjectContainer?> /* = test/ObjectContainerProvider^ */
+					K2
+						kotlin/Function0<test/ObjectContainer?>
+	CLASS DefaultObjectContainerProvider.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[kotlin/Function0<test/ObjectContainer?> /* = test/ObjectContainerProvider^ */]
+				K2
+					[kotlin/Function0<test/ObjectContainer?>]

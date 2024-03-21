@@ -1,0 +1,9 @@
+MODULE main
+	CLASS Controller.class
+		CLASS METADATA
+			FUNCTION suspendWithException(Ljava/lang/Exception;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+				Property: class.metadata.function.valueParameters
+					K1
+						(e: java/lang/Exception /* = kotlin/Exception^ */)
+					K2
+						(e: java/lang/Exception)

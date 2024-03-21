@@ -1,0 +1,8 @@
+MODULE main
+	CLASS Base.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[java/util/HashSet<T#0> /* = kotlin/collections/HashSet^<T#0> */]
+				K2
+					[java/util/HashSet<T#0>]

@@ -1,0 +1,25 @@
+MODULE main
+	CLASS builders/Element.class
+		CLASS METADATA
+			FUNCTION render(Ljava/lang/StringBuilder;Ljava/lang/String;)V
+				Property: class.metadata.function.valueParameters
+					K1
+						(builder: java/lang/StringBuilder /* = kotlin/text/StringBuilder^ */, indent: kotlin/String)
+					K2
+						(builder: java/lang/StringBuilder, indent: kotlin/String)
+	CLASS builders/TextElement.class
+		CLASS METADATA
+			FUNCTION render(Ljava/lang/StringBuilder;Ljava/lang/String;)V
+				Property: class.metadata.function.valueParameters
+					K1
+						(builder: java/lang/StringBuilder /* = kotlin/text/StringBuilder^ */, indent: kotlin/String)
+					K2
+						(builder: java/lang/StringBuilder, indent: kotlin/String)
+	CLASS builders/Tag.class
+		CLASS METADATA
+			FUNCTION render(Ljava/lang/StringBuilder;Ljava/lang/String;)V
+				Property: class.metadata.function.valueParameters
+					K1
+						(builder: java/lang/StringBuilder /* = kotlin/text/StringBuilder^ */, indent: kotlin/String)
+					K2
+						(builder: java/lang/StringBuilder, indent: kotlin/String)

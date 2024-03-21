@@ -1,0 +1,9 @@
+MODULE main
+	CLASS _1Kt.class
+		PACKAGE METADATA
+			FUNCTION testLoggingPassThough(Lkotlin/jvm/functions/Function0;)Ljava/lang/String;
+				Property: class.metadata.function.valueParameters
+					K1
+						(loggerMethod: kotlin/Function0<kotlin/String> /* = LoggingFunctionType^<kotlin/String> */)
+					K2
+						(loggerMethod: kotlin/Function0<kotlin/String>)
