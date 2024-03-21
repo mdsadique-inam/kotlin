@@ -759,7 +759,7 @@ abstract class FirDataFlowAnalyzer(
         if (reassignedNames.isEmpty()) return
         // TODO: only choose the innermost variable for each name, KT-59688
         val possiblyChangedVariables = variableStorage.getAllLocalVariables().filter {
-            val symbol = it.identifier.symbol as FirPropertySymbol
+            val symbol = it.symbol as FirPropertySymbol
             symbol.isVar && symbol.name in reassignedNames
         }
         for (variable in possiblyChangedVariables) {
@@ -1520,8 +1520,8 @@ abstract class FirDataFlowAnalyzer(
 
     private fun MutableFlow.addTypeStatement(info: TypeStatement) {
         val newStatement = logicSystem.addTypeStatement(this, info) ?: return
-        if (newStatement.variable.identifier.isReceiver && this === currentSmartCastPosition) {
-            receiverUpdated(newStatement.variable.identifier.symbol, newStatement)
+        if (newStatement.variable.isReceiver && this === currentSmartCastPosition) {
+            receiverUpdated(newStatement.variable.symbol, newStatement)
         }
     }
 
