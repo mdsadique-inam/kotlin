@@ -26,7 +26,6 @@ import org.jetbrains.kotlin.konan.test.blackbox.support.util.*
 import org.opentest4j.TestAbortedException
 import java.io.File
 
-@UsePartialLinkage(UsePartialLinkage.Mode.DEFAULT)
 abstract class AbstractKlibLinkageTest : AbstractNativeSimpleTest() {
     protected inner class NativeTestConfiguration(testPath: String) : PartialLinkageTestUtils.TestConfiguration {
         override val testDir = getAbsoluteFile(testPath)
@@ -196,7 +195,7 @@ abstract class AbstractKlibLinkageTest : AbstractNativeSimpleTest() {
     private fun KLIB.toFriendDependency() = ExistingDependency(this, FriendLibrary)
     private fun KLIBStaticCache.toDependency() = ExistingDependency(this, LibraryStaticCache)
 
-    private fun KLIB.toStaticCacheArtifact() = KLIBStaticCache(
+    private fun KLIB.toStaticCacheArtifact() = KLIBStaticCacheImpl(
         cacheDir = klibFile.parentFile.resolve(STATIC_CACHE_DIR_NAME).apply { mkdirs() },
         klib = this
     )

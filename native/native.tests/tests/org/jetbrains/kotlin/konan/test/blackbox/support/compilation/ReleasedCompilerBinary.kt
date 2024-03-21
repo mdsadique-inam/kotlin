@@ -15,14 +15,19 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.net.URL
 
-private val konanDirectory = System.getProperty("user.home") + File.separator + ".konan"
-private val compilerExecutableSubDir = File.separator + "bin" + File.separator + "kotlinc-native"
-private val stdlibSubDir = File.separator + "klib" + File.separator + "common" + File.separator + "stdlib"
+private const val DISTRIBS_LOCATION = "https://cache-redirector.jetbrains.com/download.jetbrains.com/kotlin/native/builds/releases"
+private val konanDirectory = File(System.getProperty("user.home"), ".konan")
+private val compilerExecutableSubDir = "bin" + File.separator + "kotlinc-native"
+private val stdlibSubDir = "klib" + File.separator + "common" + File.separator + "stdlib"
 private val lock: Any = Any()
 
 internal fun getReleasedCompiler(version: String): ReleasedCompiler {
-    val nativePrebuildsDir = downloadAndUnpackCompilerBinaries(version)
+    val nativePrebuildsDir = kotlinNativeDistributionDir(version)
     return ReleasedCompiler(nativePrebuildsDir)
+}
+
+internal fun downloadReleasedCompiler(version: String) {
+    downloadAndUnpackCompilerBinaries(version)
 }
 
 internal class ReleasedCompiler(private val nativePrebuildsDir: File) {
@@ -44,14 +49,14 @@ internal class ReleasedCompiler(private val nativePrebuildsDir: File) {
     }
 
     private fun buildCommand(args: List<String>) =
-        listOf(nativePrebuildsDir.absolutePath + compilerExecutableSubDir) + args
+        listOf(File(nativePrebuildsDir, compilerExecutableSubDir).absolutePath) + args
 
     private fun PartialLinkageTestUtils.Dependencies.toCompilerArgs() =
         regularDependencies.replaceStdlib().flatMap { listOf("-library", it.libraryFile.absolutePath) } +
                 friendDependencies.flatMap { listOf("-friend-modules", it.libraryFile.absolutePath) }
 
     private fun Set<PartialLinkageTestUtils.Dependency>.replaceStdlib() = map {
-        val stdlibPath = File(nativePrebuildsDir.absolutePath + stdlibSubDir)
+        val stdlibPath = File(nativePrebuildsDir, stdlibSubDir)
         if (it.moduleName == "stdlib")
             PartialLinkageTestUtils.Dependency("stdlib", stdlibPath)
         else it
@@ -81,15 +86,15 @@ private fun downloadAndUnpackCompilerBinaries(version: String): File = synchroni
 }
 
 private fun kotlinNativeDistributionName(version: String) = "kotlin-native-prebuilt-$host-$version"
-private fun kotlinNativeDistributionDir(version: String) = File(konanDirectory + File.separator + kotlinNativeDistributionName(version))
+private fun kotlinNativeDistributionDir(version: String) = File(konanDirectory, kotlinNativeDistributionName(version))
 
-private fun isCompilerDownloaded(targetDirectory: File) = File(targetDirectory.absolutePath + compilerExecutableSubDir).exists()
+private fun isCompilerDownloaded(targetDirectory: File) = File(targetDirectory, compilerExecutableSubDir).exists()
 
 private fun downloadCompiler(artifactFileName: String, version: String): File {
     val artifactFileNameWithExtension = artifactFileName + hostSpecificExtension
 
     val tempLocation = File.createTempFile(artifactFileName, hostSpecificExtension)
-    val url = URL("https://download.jetbrains.com/kotlin/native/builds/releases/$version/$host/$artifactFileNameWithExtension")
+    val url = URL("$DISTRIBS_LOCATION/$version/$host/$artifactFileNameWithExtension")
 
     return DependencyDownloader(customProgressCallback = { _, _, _ -> }).download(
         url,
@@ -99,8 +104,8 @@ private fun downloadCompiler(artifactFileName: String, version: String): File {
 }
 
 private fun extractCompiler(archive: File, unpackedFolderName: String, targetDirectory: File) {
-    DependencyExtractor().extract(archive, File(konanDirectory), ArchiveType.systemDefault)
-    val unpackedDir = File(konanDirectory + File.separator + unpackedFolderName)
+    DependencyExtractor().extract(archive, konanDirectory, ArchiveType.systemDefault)
+    val unpackedDir = File(konanDirectory, unpackedFolderName)
     unpackedDir.renameTo(targetDirectory)
 }
 

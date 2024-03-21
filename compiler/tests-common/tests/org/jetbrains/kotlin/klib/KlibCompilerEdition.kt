@@ -32,5 +32,7 @@ enum class KlibCompilerChangeScenario(
     BwLatestWithLatest(KlibCompilerEdition.LATEST_RELEASE, KlibCompilerEdition.CURRENT, KlibCompilerEdition.LATEST_RELEASE),
     BwOldestWithCurrent(KlibCompilerEdition.OLDEST_SUPPORTED, KlibCompilerEdition.CURRENT, KlibCompilerEdition.CURRENT),
     BwOldestWithOldest(KlibCompilerEdition.OLDEST_SUPPORTED, KlibCompilerEdition.CURRENT, KlibCompilerEdition.OLDEST_SUPPORTED),
-    FwLatest(KlibCompilerEdition.CURRENT, KlibCompilerEdition.LATEST_RELEASE, KlibCompilerEdition.CURRENT),
+    FwLatest(KlibCompilerEdition.CURRENT, KlibCompilerEdition.LATEST_RELEASE, KlibCompilerEdition.CURRENT);
+
+    override fun toString() = "${this.name}: [$bottomV1 -> $bottomV2, $intermediate]"
 }

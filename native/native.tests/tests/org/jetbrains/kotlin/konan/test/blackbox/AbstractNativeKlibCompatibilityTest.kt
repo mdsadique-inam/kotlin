@@ -6,17 +6,19 @@
 package org.jetbrains.kotlin.konan.test.blackbox
 
 import com.intellij.testFramework.TestDataFile
+import org.jetbrains.kotlin.klib.KlibCompilerChangeScenario
 import org.jetbrains.kotlin.klib.KlibCompilerEdition
 import org.jetbrains.kotlin.klib.KlibCompilerEdition.*
-import org.jetbrains.kotlin.klib.KlibCompilerChangeScenario
 import org.jetbrains.kotlin.klib.PartialLinkageTestUtils
 import org.jetbrains.kotlin.klib.PartialLinkageTestUtils.Dependencies
 import org.jetbrains.kotlin.konan.test.blackbox.support.TestCompilerArgs
 import org.jetbrains.kotlin.konan.test.blackbox.support.compilation.LibraryCompilation
 import org.jetbrains.kotlin.konan.test.blackbox.support.compilation.TestCompilationArtifact.KLIB
 import org.jetbrains.kotlin.konan.test.blackbox.support.compilation.TestCompilationResult.Companion.assertSuccess
+import org.jetbrains.kotlin.konan.test.blackbox.support.compilation.downloadReleasedCompiler
 import org.jetbrains.kotlin.konan.test.blackbox.support.compilation.getReleasedCompiler
 import org.jetbrains.kotlin.konan.test.blackbox.support.group.UsePartialLinkage
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
 import java.io.File
 
@@ -35,10 +37,23 @@ import java.io.File
 @UsePartialLinkage(UsePartialLinkage.Mode.ENABLED_WITH_ERROR)
 abstract class AbstractNativeKlibCompatibilityTest : AbstractKlibLinkageTest() {
 
+    companion object {
+        @JvmStatic
+        @BeforeAll
+        fun setup() {
+            installReleasedCompilers()
+        }
+    }
+
     // The entry point to generated test classes.
     protected fun runTest(@TestDataFile testPath: String) =
         KlibCompilerChangeScenario.entries.forEach {
-            PartialLinkageTestUtils.runTest(NativeTestConfiguration(testPath), it)
+            try {
+                PartialLinkageTestUtils.runTest(NativeTestConfiguration(testPath), it)
+            } catch (e: Throwable) {
+                println("Failure during the test for scenario $it. Error message: ${e.message}")
+                throw e
+            }
         }
 
     override fun buildKlib(
@@ -109,4 +124,11 @@ abstract class AbstractNativeKlibCompatibilityTest : AbstractKlibLinkageTest() {
 
         producedKlibs += ProducedKlib(moduleName, klibArtifact, dependencies) // Remember the artifact with its dependencies.
     }
+}
+
+private fun installReleasedCompilers() {
+    KlibCompilerEdition.entries
+        .map { it.version }
+        .filter { it != KotlinVersion.CURRENT.toString() }
+        .forEach { downloadReleasedCompiler(it) }
 }
