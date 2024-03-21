@@ -22,9 +22,9 @@ import org.jetbrains.kotlin.fir.types.ConeClassLikeType
 import org.jetbrains.kotlin.fir.types.lowerBoundIfFlexible
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.fir.utils.exceptions.withFirEntry
+import org.jetbrains.kotlin.types.SmartcastStability
 import org.jetbrains.kotlin.utils.exceptions.errorWithAttachment
 
-@OptIn(DfaInternals::class)
 class VariableStorageImpl(private val session: FirSession) : VariableStorage() {
     // These are basically hash sets, since they map each key to itself. The only point of having them as maps
     // is to deduplicate equal instances with lookups. The impact of that is questionable, but whatever.
@@ -37,10 +37,10 @@ class VariableStorageImpl(private val session: FirSession) : VariableStorage() {
         get() = realVariables.size + syntheticVariables.size + 1
 
     override fun getLocalVariable(symbol: FirBasedSymbol<*>, isReceiver: Boolean): RealVariable? =
-        RealVariable(symbol, isReceiver, null, null, PropertyStability.STABLE_VALUE, nextVariableIndex).takeIfKnown()
+        RealVariable(symbol, isReceiver, null, null, SmartcastStability.STABLE_VALUE, nextVariableIndex).takeIfKnown()
 
     fun getOrCreateLocalVariable(symbol: FirBasedSymbol<*>, isReceiver: Boolean): RealVariable =
-        RealVariable(symbol, isReceiver, null, null, PropertyStability.STABLE_VALUE, nextVariableIndex).remember()
+        RealVariable(symbol, isReceiver, null, null, SmartcastStability.STABLE_VALUE, nextVariableIndex).remember()
 
     fun getAllLocalVariables(): List<RealVariable> =
         realVariables.values.filter { (it.symbol as? FirPropertySymbol)?.isLocal == true }
@@ -111,6 +111,11 @@ class VariableStorageImpl(private val session: FirSession) : VariableStorage() {
         return unwrapAlias(real, unwrapped)
     }
 
+    private fun SmartcastStability.combineWithReceiverStability(receiverStability: SmartcastStability?): SmartcastStability {
+        if (receiverStability == null) return this
+        return maxOf(this, receiverStability)
+    }
+
     private fun DataFlowVariable.takeSyntheticIfKnown(): DataFlowVariable? =
         if (this is SyntheticVariable) syntheticVariables[fir] else this
 
@@ -144,19 +149,19 @@ class VariableStorageImpl(private val session: FirSession) : VariableStorage() {
         }
     }
 
-    private fun FirBasedSymbol<*>.getStability(qualifiedAccess: FirQualifiedAccessExpression?): PropertyStability? {
-        if (qualifiedAccess is FirThisReceiverExpression) return PropertyStability.STABLE_VALUE
+    private fun FirBasedSymbol<*>.getStability(qualifiedAccess: FirQualifiedAccessExpression?): SmartcastStability? {
+        if (qualifiedAccess is FirThisReceiverExpression) return SmartcastStability.STABLE_VALUE
         when (this) {
             is FirAnonymousObjectSymbol -> return null
-            is FirFunctionSymbol<*>, is FirClassSymbol<*> -> return PropertyStability.STABLE_VALUE
-            is FirBackingFieldSymbol -> return if (isVal) PropertyStability.STABLE_VALUE else PropertyStability.MUTABLE_PROPERTY
+            is FirFunctionSymbol<*>, is FirClassSymbol<*> -> return SmartcastStability.STABLE_VALUE
+            is FirBackingFieldSymbol -> return if (isVal) SmartcastStability.STABLE_VALUE else SmartcastStability.MUTABLE_PROPERTY
         }
-        if (this is FirCallableSymbol && this.isExpect) return PropertyStability.EXPECT_PROPERTY
+        if (this is FirCallableSymbol && this.isExpect) return SmartcastStability.EXPECT_PROPERTY
         if (this !is FirVariableSymbol<*>) return null
-        if (this is FirFieldSymbol && !this.isFinal) return PropertyStability.MUTABLE_PROPERTY
+        if (this is FirFieldSymbol && !this.isFinal) return SmartcastStability.MUTABLE_PROPERTY
 
         val property = when (val variable = this.fir) { // intentionally exhaustive 'when'
-            is FirEnumEntry, is FirErrorProperty, is FirValueParameter -> return PropertyStability.STABLE_VALUE
+            is FirEnumEntry, is FirErrorProperty, is FirValueParameter -> return SmartcastStability.STABLE_VALUE
 
             // NB: FirJavaField is expected here. FirFieldImpl should've been handled by FirBackingFieldSymbol check above
             is FirField -> {
@@ -176,13 +181,13 @@ class VariableStorageImpl(private val session: FirSession) : VariableStorage() {
         }
 
         return when {
-            property.delegate != null -> PropertyStability.DELEGATED_PROPERTY
-            property.isLocal -> if (property.isVal) PropertyStability.STABLE_VALUE else PropertyStability.LOCAL_VAR
-            property.isVar -> PropertyStability.MUTABLE_PROPERTY
-            property.receiverParameter != null -> PropertyStability.PROPERTY_WITH_GETTER
-            property.getter.let { it != null && it !is FirDefaultPropertyAccessor } -> PropertyStability.PROPERTY_WITH_GETTER
-            property.visibility == Visibilities.Private -> PropertyStability.STABLE_VALUE
-            property.modality != Modality.FINAL && qualifiedAccess?.hasFinalDispatchReceiver() != true -> PropertyStability.PROPERTY_WITH_GETTER
+            property.delegate != null -> SmartcastStability.DELEGATED_PROPERTY
+            property.isLocal -> SmartcastStability.STABLE_VALUE
+            property.isVar -> SmartcastStability.MUTABLE_PROPERTY
+            property.receiverParameter != null -> SmartcastStability.PROPERTY_WITH_GETTER
+            property.getter.let { it != null && it !is FirDefaultPropertyAccessor } -> SmartcastStability.PROPERTY_WITH_GETTER
+            property.visibility == Visibilities.Private -> SmartcastStability.STABLE_VALUE
+            property.modality != Modality.FINAL && qualifiedAccess?.hasFinalDispatchReceiver() != true -> SmartcastStability.PROPERTY_WITH_GETTER
             else -> property.determineStabilityByModule()
         }
     }
@@ -194,16 +199,29 @@ class VariableStorageImpl(private val session: FirSession) : VariableStorage() {
         return receiverFir is FirAnonymousObject || receiverFir.modality == Modality.FINAL
     }
 
-    private fun FirVariable.determineStabilityByModule(): PropertyStability {
+    private fun FirVariable.determineStabilityByModule(): SmartcastStability {
         val propertyModuleData = originalOrSelf().moduleData
         val currentModuleData = session.moduleData
         return when (propertyModuleData) {
             currentModuleData,
             in currentModuleData.friendDependencies,
             in currentModuleData.allDependsOnDependencies,
-            -> PropertyStability.STABLE_VALUE
-            else -> PropertyStability.ALIEN_PUBLIC_PROPERTY
+            -> SmartcastStability.STABLE_VALUE
+            else -> SmartcastStability.ALIEN_PUBLIC_PROPERTY
         }
+    }
+}
+
+private tailrec fun FirElement.unwrapElement(): FirElement {
+    return when (this) {
+        is FirWhenSubjectExpression -> whenRef.value.let { it.subjectVariable ?: it.subject ?: return this }.unwrapElement()
+        is FirSmartCastExpression -> originalExpression.unwrapElement()
+        is FirSafeCallExpression -> selector.unwrapElement()
+        is FirCheckedSafeCallSubject -> originalReceiverRef.value.unwrapElement()
+        is FirCheckNotNullCall -> argument.unwrapElement()
+        is FirDesugaredAssignmentValueReferenceExpression -> expressionRef.value.unwrapElement()
+        is FirVariableAssignment -> lValue.unwrapElement()
+        else -> this
     }
 }
 
@@ -212,6 +230,7 @@ private val FirElement.symbol: FirBasedSymbol<*>?
         is FirDeclaration -> symbol.unwrapFakeOverridesIfNecessary()
         is FirResolvable -> calleeReference.symbol.unwrapFakeOverridesIfNecessary()
         is FirResolvedQualifier -> symbol
+        // Only called on the result of `unwrapElement, so handling all those cases here is redundant.
         else -> null
     }?.takeIf {
         this is FirThisReceiverExpression || (it !is FirFunctionSymbol<*> && it !is FirSyntheticPropertySymbol)

@@ -40,6 +40,7 @@ import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.types.ConstantValueKind
+import org.jetbrains.kotlin.types.SmartcastStability
 import org.jetbrains.kotlin.util.OperatorNameConventions
 
 class DataFlowAnalyzerContext(session: FirSession) {
@@ -132,29 +133,32 @@ abstract class FirDataFlowAnalyzer(
     // ----------------------------------- Requests -----------------------------------
 
     /**
-     * When variable access resolution encounters a variable access which has smartcast information, assignments associated with that
-     * variable are checked to determine variable stability, and therefore smartcast stability. These assignments are tracked by
-     * [FirLocalVariableAssignmentAnalyzer], which knows how each assignment may limit variable stability, like assignments within or after
-     * a non-in-place lambda body. So for a given lexical scope (function body, lambda body, and even local class init) and a given
-     * variable, [FirLocalVariableAssignmentAnalyzer] knows all associated assignments (past and/or future) which could limit stability.
+     * `var`s are normally stable because flows track assignments, but they can be captured by blocks that will be evaluated
+     * later (namely local functions, lambdas without "callsInPlace" contracts, and classes). In that case they become unstable
+     * if there are any assignments that could execute while these blocks are accessible, which is tracked by
+     * [FirLocalVariableAssignmentAnalyzer].
      *
-     * When a [targetType] is provided, all assignments are checked for the specified variable access expression:
-     * 1. If there are no assignments, the variable is always considered **stable**.
-     * 2. If there is an unresolved assignment type, the variable is considered **unstable**.
-     * 3. If any resolved assignment type is not a subtype of the [targetType], the variable is considered **unstable**.
-     * 4. If none of the previous conditions are true, the variable is considered **stable**.
+     *    var x = ...
+     *    /* x is stable here */
+     *    if (p) {
+     *      val lambda = { /* x is unstable here - assignment below could execute before the lambda is called */ }
+     *      x = ...
+     *    } else if (p2) {
+     *      val lambda = { /* x is stable here - the assignments above and below cannot affect this lambda */ }
+     *    } else {
+     *      x = ...
+     *    }
      *
-     * When a [targetType] is **not** provided, **any** assignments cause the variable to be considered **unstable**.
+     * When [types] are provided, these assignments are additionally filtered by whether they invalidate this type information:
+     * if the assigned value is known to be a subtype of all provided types, then it actually doesn't matter if the assignment
+     * executed or not -- the smartcast is correct either way, despite the instability.
      *
-     * @param expression The variable access expression.
-     * @param targetType Smartcast target type (optional: see function description).
-     *
-     * @see [getTypeUsingSmartcastInfo]
-     * @see [FirLocalVariableAssignmentAnalyzer.isAccessToUnstableLocalVariable]
-     * @see [FirLocalVariableAssignmentAnalyzer.isStableType]
+     * When [types] are **not** provided, **any** assignments cause the variable to be considered unstable.
      */
-    fun isAccessToUnstableLocalVariable(expression: FirElement, targetType: ConeKotlinType?): Boolean =
-        context.variableAssignmentAnalyzer.isAccessToUnstableLocalVariable(expression, targetType, components.session)
+    private fun RealVariable.stabilityInCurrentScope(types: Set<ConeKotlinType>?): SmartcastStability =
+        if (context.variableAssignmentAnalyzer.isUnstableInCurrentScope(symbol.fir, types, components.session))
+            SmartcastStability.CAPTURED_VARIABLE
+        else stability
 
     /**
      * Retrieve smartcast type information [FirDataFlowAnalyzer] may have for the specified variable access expression. Type information
@@ -162,12 +166,12 @@ abstract class FirDataFlowAnalyzer(
      *
      * @param expression The variable access expression.
      */
-    open fun getTypeUsingSmartcastInfo(expression: FirExpression): Pair<PropertyStability, MutableList<ConeKotlinType>>? {
+    open fun getTypeUsingSmartcastInfo(expression: FirExpression): Pair<SmartcastStability, MutableList<ConeKotlinType>>? {
         val flow = currentSmartCastPosition ?: return null
         // Can have an unstable alias to a stable variable, so don't resolve aliases here.
         val variable = getRealVariableWithoutUnwrappingAlias(flow, expression) ?: return null
         val types = flow.getTypeStatement(variable)?.exactType?.ifEmpty { null } ?: return null
-        return variable.stability to types.toMutableList()
+        return variable.stabilityInCurrentScope(types) to types.toMutableList()
     }
 
     fun returnExpressionsOfAnonymousFunctionOrNull(function: FirAnonymousFunction): Collection<FirAnonymousFunctionReturnExpressionInfo>? =
@@ -1099,13 +1103,15 @@ abstract class FirDataFlowAnalyzer(
             logicSystem.recordNewAssignment(flow, propertyVariable, context.newAssignmentIndex())
         }
 
-        if (propertyVariable.isStable || propertyVariable.hasLocalStability) {
-            val initializerVariable = getOrCreateIfRealWithoutUnwrappingAlias(flow, initializer)
-            if (!hasExplicitType && initializerVariable is RealVariable && initializerVariable.isStableOrLocalStableAccess(initializer)) {
+        if (propertyVariable.stability == SmartcastStability.STABLE_VALUE) {
+            val initializerVariable = getOrCreateVariableIfRealAndStable(flow, initializer)
+            if (!hasExplicitType && initializerVariable is RealVariable &&
+                initializerVariable.stabilityInCurrentScope(types = null) == SmartcastStability.STABLE_VALUE
+            ) {
                 // val a = ...
                 // val b = a
                 // if (b != null) { /* a != null */ }
-                logicSystem.addLocalVariableAlias(flow, propertyVariable, flow.unwrapVariable(initializerVariable))
+                logicSystem.addLocalVariableAlias(flow, propertyVariable, initializerVariable)
             } else if (initializerVariable != null && !(property.isLocal && property.isVar)) {
                 // Case 1:
                 //   val b = x is String // initializer is synthetic, condition is boolean
@@ -1116,10 +1122,8 @@ abstract class FirDataFlowAnalyzer(
                 // Case 3:
                 //   val b = x?.foo // if `foo` is mutable, then initializer is real, but unstable
                 //   if (b != null) { /* x != null, but re-reading x.foo could produce null */ }
-                val unwrappedVariable =
-                    if (initializerVariable is RealVariable) flow.unwrapVariable(initializerVariable) else initializerVariable
                 val translateAll = components.session.languageVersionSettings.supportsFeature(LanguageFeature.DfaBooleanVariables)
-                logicSystem.translateVariableFromConditionInStatements(flow, unwrappedVariable, propertyVariable) {
+                logicSystem.translateVariableFromConditionInStatements(flow, initializerVariable, propertyVariable) {
                     it.takeIf { translateAll || it.condition.operation == Operation.EqNull || it.condition.operation == Operation.NotEqNull }
                 }
             }
@@ -1130,13 +1134,6 @@ abstract class FirDataFlowAnalyzer(
             // a redundant type statement which is fine...probably
             flow.addTypeStatement(flow.unwrapVariable(propertyVariable) typeEq initializer.resolvedType)
         }
-    }
-
-    private val RealVariable.isStable get() = stability == PropertyStability.STABLE_VALUE
-    private val RealVariable.hasLocalStability get() = stability == PropertyStability.LOCAL_VAR
-
-    private fun RealVariable.isStableOrLocalStableAccess(fir: FirElement): Boolean {
-        return isStable || (hasLocalStability && !isAccessToUnstableLocalVariable(fir, targetType = null))
     }
 
     fun exitThrowExceptionNode(throwExpression: FirThrowExpression) {
@@ -1545,43 +1542,32 @@ abstract class FirDataFlowAnalyzer(
     }
 
     private fun getVariableIfStable(flow: Flow, fir: FirElement): DataFlowVariable? {
-        return variableStorage.getIfUsed(fir, unwrapAlias = { variable, element -> variable.unwrapIfStable(flow, element) })
+        return variableStorage.getIfUsed(fir, unwrapAlias = { variable, _ -> flow.unwrapVariableIfStable(variable) })
     }
 
     private fun getOrCreateVariableIfRealAndStable(flow: Flow, fir: FirElement): DataFlowVariable? {
-        return variableStorage.getOrCreateIfReal(fir, unwrapAlias = { variable, element -> variable.unwrapIfStable(flow, element) })
+        return variableStorage.getOrCreateIfReal(fir, unwrapAlias = { variable, _ -> flow.unwrapVariableIfStable(variable) })
     }
 
     private fun getOrCreateVariableIfStable(flow: Flow, fir: FirElement): DataFlowVariable? {
-        return variableStorage.getOrCreate(fir, unwrapAlias = { variable, element -> variable.unwrapIfStable(flow, element) })
+        return variableStorage.getOrCreate(fir, unwrapAlias = { variable, _ -> flow.unwrapVariableIfStable(variable) })
     }
 
     private fun getRealVariableWithoutUnwrappingAlias(flow: Flow, fir: FirElement): RealVariable? {
         return variableStorage.getRealVariableWithoutUnwrappingAlias(
-            fir, unwrapAlias = { variable, element -> variable.unwrapIfStable(flow, element) }
+            fir, unwrapAlias = { variable, _ -> flow.unwrapVariableIfStable(variable) }
         )
     }
 
-    private fun getOrCreateIfRealWithoutUnwrappingAlias(flow: Flow, fir: FirElement): DataFlowVariable? {
-        val realFir = fir.unwrapElement()
-        return variableStorage.getOrCreateIfReal(realFir, unwrapAlias = { variable, element ->
-            // Do not unwrap the variable representing 'fir', but unwrap everything else.
-            if (element !== realFir) variable.unwrapIfStable(flow, element) else variable
-        })
-    }
-
-    private fun getOrCreateRealVariableWithoutUnwrappingAlias(
-        flow: Flow,
-        fir: FirElement,
-    ): RealVariable? {
+    private fun getOrCreateRealVariableWithoutUnwrappingAlias(flow: Flow, fir: FirElement): RealVariable? {
         return variableStorage.getOrCreateRealVariableWithoutUnwrappingAlias(
-            fir, unwrapAlias = { variable, element -> variable.unwrapIfStable(flow, element) }
+            fir, unwrapAlias = { variable, _ -> flow.unwrapVariableIfStable(variable) }
         )
     }
 
-    private fun RealVariable.unwrapIfStable(flow: Flow, fir: FirElement): RealVariable? {
-        val unwrapped = flow.unwrapVariable(this)
-        if (unwrapped != this && !isStableOrLocalStableAccess(fir)) return null
-        return unwrapped
+    private fun Flow.unwrapVariableIfStable(variable: RealVariable): RealVariable? {
+        return unwrapVariable(variable).takeIf {
+            it == variable || variable.stabilityInCurrentScope(types = null) == SmartcastStability.STABLE_VALUE
+        }
     }
 }
