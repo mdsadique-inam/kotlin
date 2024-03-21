@@ -6,4 +6,4 @@ MODULE main
 					K1
 						(block: kotlin/Function0<T#0>, exception: kotlin/Function1<@kotlin/ParameterName(name = "e") java/lang/Exception /* = kotlin/Exception^ */, kotlin/Unit>, finallyBlock: kotlin/Function0<T#0>, res: T#0)
 					K2
-						(block: kotlin/Function0<T#0>, exception: kotlin/Function1<@kotlin/ParameterName(name = "e") java/lang/Exception /* = @kotlin/ParameterName(name = "e") kotlin/Exception^ */, kotlin/Unit>, finallyBlock: kotlin/Function0<T#0>, res: T#0)
+						(block: kotlin/Function0<T#0>, exception: kotlin/Function1<@kotlin/ParameterName(name = "e") java/lang/Exception, kotlin/Unit>, finallyBlock: kotlin/Function0<T#0>, res: T#0)

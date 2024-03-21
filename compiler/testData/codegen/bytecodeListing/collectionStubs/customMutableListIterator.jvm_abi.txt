@@ -7,3 +7,17 @@ MODULE main
 						java/util/ArrayList<T#0> /* = kotlin/collections/ArrayList^<T#0> */
 					K2
 						java/util/ArrayList<T#0>
+	CLASS MyList$MyListIterator.class
+		CLASS METADATA
+			CONSTRUCTOR <init>(Ljava/util/ArrayList;II)V
+				Property: class.metadata.constructor.valueParameters
+					K1
+						(list: java/util/ArrayList<T#1> /* = kotlin/collections/ArrayList^<T#1> */, start: kotlin/Int, end: kotlin/Int)
+					K2
+						(list: java/util/ArrayList<T#1>, start: kotlin/Int, end: kotlin/Int)
+			PROPERTY getList()Ljava/util/ArrayList;
+				Property: class.metadata.property.returnType
+					K1
+						java/util/ArrayList<T#1> /* = kotlin/collections/ArrayList^<T#1> */
+					K2
+						java/util/ArrayList<T#1>

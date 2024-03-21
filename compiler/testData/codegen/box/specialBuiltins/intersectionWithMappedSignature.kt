@@ -1,3 +1,4 @@
+// JVM_ABI_K1_K2_DIFF: KT-65038
 // TARGET_BACKEND: JVM_IR
 // ^Old backend reports CONFLICTING_JVM_DECLARATIONS on C1, K1 with IR is fine.
 // FULL_JDK

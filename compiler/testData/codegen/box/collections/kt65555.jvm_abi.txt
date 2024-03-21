@@ -9,3 +9,15 @@ MODULE main
 				---
 			K2
 				size
+			CONSTRUCTOR <init>(Ljava/util/ArrayList;)V
+				Property: class.metadata.constructor.valueParameters
+					K1
+						(delegate: java/util/ArrayList<kotlin/String> /* = kotlin/collections/ArrayList^<kotlin/String> */)
+					K2
+						(delegate: java/util/ArrayList<kotlin/String>)
+			PROPERTY getDelegate()Ljava/util/ArrayList;
+				Property: class.metadata.property.returnType
+					K1
+						java/util/ArrayList<kotlin/String> /* = kotlin/collections/ArrayList^<kotlin/String> */
+					K2
+						java/util/ArrayList<kotlin/String>

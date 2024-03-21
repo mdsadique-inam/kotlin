@@ -1,3 +1,4 @@
+// JVM_ABI_K1_K2_DIFF: KT-65038
 // WITH_STDLIB
 // TARGET_BACKEND: JVM_IR
 // LANGUAGE: +ValueClasses, +GenericInlineClassParameter

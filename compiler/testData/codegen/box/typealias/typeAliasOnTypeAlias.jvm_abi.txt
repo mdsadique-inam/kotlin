@@ -6,7 +6,7 @@ MODULE main
 					K1
 						OtherA^
 					K2
-						A /* = OtherA^ */
+						A
 				Property: class.metadata.typeAlias.expandedType
 					K1
 						A /* = OtherA^ */

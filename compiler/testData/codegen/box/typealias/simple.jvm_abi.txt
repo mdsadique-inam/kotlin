@@ -1,6 +1,12 @@
 MODULE main
 	CLASS SimpleKt.class
 		PACKAGE METADATA
+			PROPERTY getF()Lkotlin/jvm/functions/Function1;
+				Property: class.metadata.property.returnType
+					K1
+						kotlin/Function1<kotlin/String /* = S^ */, kotlin/String /* = S^ */> /* = SF^<kotlin/String /* = S^ */> */
+					K2
+						kotlin/Function1<kotlin/String, kotlin/String /* = S^ */>
 			TYPE ALIAS SF
 				Property: class.metadata.typeAlias.underlyingType
 					K1

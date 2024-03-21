@@ -1,3 +1,4 @@
+// JVM_ABI_K1_K2_DIFF: KT-65038
 // KJS_WITH_FULL_RUNTIME
 operator fun Long.component1() = this + 1
 operator fun Long.component2() = this + 2

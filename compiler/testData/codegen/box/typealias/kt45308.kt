@@ -1,3 +1,4 @@
+// JVM_ABI_K1_K2_DIFF: KT-65038
 // FIR_IDENTICAL
 // DUMP_IR
 // This test checks that unresolved typealias in an abbreviated type does not crash the compiler or result in a compilation error.

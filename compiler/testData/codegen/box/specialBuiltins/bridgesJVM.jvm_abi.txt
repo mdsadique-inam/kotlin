@@ -1,4 +1,18 @@
 MODULE main
+	CLASS B2.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[I2, java/util/ArrayList<kotlin/String> /* = kotlin/collections/ArrayList^<kotlin/String> */]
+				K2
+					[I2, java/util/ArrayList<kotlin/String>]
+	CLASS B3.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[I3<kotlin/Int>, java/util/ArrayList<kotlin/String> /* = kotlin/collections/ArrayList^<kotlin/String> */]
+				K2
+					[I3<kotlin/Int>, java/util/ArrayList<kotlin/String>]
 	CLASS BridgesJVMKt.class
 		PACKAGE METADATA
 			PROPERTY getList()Ljava/util/ArrayList;

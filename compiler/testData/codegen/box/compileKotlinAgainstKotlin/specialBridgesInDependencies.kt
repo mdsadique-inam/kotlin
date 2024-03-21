@@ -1,3 +1,4 @@
+// JVM_ABI_K1_K2_DIFF: KT-65038
 // NATIVE error: this type is final, so it cannot be inherited from
 // DONT_TARGET_EXACT_BACKEND: NATIVE
 // WITH_STDLIB

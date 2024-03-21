@@ -1,3 +1,12 @@
+MODULE a
+	CLASS C.class
+		CLASS METADATA
+			PROPERTY getFoo()Ljava/util/List;
+				Property: class.metadata.property.returnType
+					K1
+						kotlin/collections/List<kotlin/String>? /* = Foo^<T#0>? */
+					K2
+						kotlin/collections/List<kotlin/String>?
 MODULE b
 	CLASS BKt.class
 		PACKAGE METADATA

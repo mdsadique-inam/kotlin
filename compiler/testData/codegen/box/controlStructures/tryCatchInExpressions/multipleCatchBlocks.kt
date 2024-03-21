@@ -1,3 +1,4 @@
+// JVM_ABI_K1_K2_DIFF: KT-65038
 
 class Exception1(msg: String): Exception(msg)
 class Exception2(msg: String): Exception(msg)

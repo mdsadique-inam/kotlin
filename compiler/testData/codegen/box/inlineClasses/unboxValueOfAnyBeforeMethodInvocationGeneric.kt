@@ -1,3 +1,4 @@
+// JVM_ABI_K1_K2_DIFF: KT-65038
 // WITH_STDLIB
 // WORKS_WHEN_VALUE_CLASS
 // LANGUAGE: +ValueClasses, +GenericInlineClassParameter

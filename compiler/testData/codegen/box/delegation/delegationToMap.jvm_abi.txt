@@ -1,4 +1,11 @@
 MODULE main
+	CLASS MapWithBadDefaults.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[java/util/HashMap<kotlin/String, kotlin/String> /* = kotlin/collections/HashMap^<kotlin/String, kotlin/String> */]
+				K2
+					[java/util/HashMap<kotlin/String, kotlin/String>]
 	CLASS Test.class
 		CLASS METADATA
 			K1

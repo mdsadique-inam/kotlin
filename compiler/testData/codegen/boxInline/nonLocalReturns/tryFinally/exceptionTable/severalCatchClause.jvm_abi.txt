@@ -1,4 +1,18 @@
 MODULE main
+	CLASS test/Exception1.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[java/lang/RuntimeException /* = kotlin/RuntimeException^ */]
+				K2
+					[java/lang/RuntimeException]
+	CLASS test/Exception2.class
+		CLASS METADATA
+			Property: class.metadata.superTypes
+				K1
+					[java/lang/RuntimeException /* = kotlin/RuntimeException^ */]
+				K2
+					[java/lang/RuntimeException]
 	CLASS test/_1Kt.class
 		PACKAGE METADATA
 			FUNCTION doCall(Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;Ljava/lang/String;)Ljava/lang/String;
@@ -6,10 +20,10 @@ MODULE main
 					K1
 						(block: kotlin/Function0<kotlin/String>, exception: kotlin/Function1<@kotlin/ParameterName(name = "e") java/lang/Exception /* = kotlin/Exception^ */, kotlin/Unit>, exception2: kotlin/Function1<@kotlin/ParameterName(name = "e") java/lang/Exception /* = kotlin/Exception^ */, kotlin/Unit>, finallyBlock: kotlin/Function0<kotlin/String>, res: kotlin/String /* = ... */)
 					K2
-						(block: kotlin/Function0<kotlin/String>, exception: kotlin/Function1<@kotlin/ParameterName(name = "e") java/lang/Exception /* = @kotlin/ParameterName(name = "e") kotlin/Exception^ */, kotlin/Unit>, exception2: kotlin/Function1<@kotlin/ParameterName(name = "e") java/lang/Exception /* = @kotlin/ParameterName(name = "e") kotlin/Exception^ */, kotlin/Unit>, finallyBlock: kotlin/Function0<kotlin/String>, res: kotlin/String /* = ... */)
+						(block: kotlin/Function0<kotlin/String>, exception: kotlin/Function1<@kotlin/ParameterName(name = "e") java/lang/Exception, kotlin/Unit>, exception2: kotlin/Function1<@kotlin/ParameterName(name = "e") java/lang/Exception, kotlin/Unit>, finallyBlock: kotlin/Function0<kotlin/String>, res: kotlin/String /* = ... */)
 			FUNCTION doCall2(Lkotlin/jvm/functions/Function0;Lkotlin/jvm/functions/Function1;Lkotlin/jvm/functions/Function0;)Ljava/lang/Object;
 				Property: class.metadata.function.valueParameters
 					K1
 						(block: kotlin/Function0<T#0>, exception: kotlin/Function1<@kotlin/ParameterName(name = "e") java/lang/Exception /* = kotlin/Exception^ */, kotlin/Unit>, finallyBlock: kotlin/Function0<T#0>)
 					K2
-						(block: kotlin/Function0<T#0>, exception: kotlin/Function1<@kotlin/ParameterName(name = "e") java/lang/Exception /* = @kotlin/ParameterName(name = "e") kotlin/Exception^ */, kotlin/Unit>, finallyBlock: kotlin/Function0<T#0>)
+						(block: kotlin/Function0<T#0>, exception: kotlin/Function1<@kotlin/ParameterName(name = "e") java/lang/Exception, kotlin/Unit>, finallyBlock: kotlin/Function0<T#0>)
