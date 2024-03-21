@@ -24,9 +24,7 @@ import org.jetbrains.kotlin.fir.types.ConeClassLikeType
 import org.jetbrains.kotlin.fir.types.lowerBoundIfFlexible
 import org.jetbrains.kotlin.fir.types.resolvedType
 import org.jetbrains.kotlin.fir.utils.exceptions.withFirEntry
-import org.jetbrains.kotlin.fir.utils.exceptions.withFirSymbolEntry
 import org.jetbrains.kotlin.utils.exceptions.errorWithAttachment
-import org.jetbrains.kotlin.utils.exceptions.requireWithAttachment
 
 @OptIn(DfaInternals::class)
 class VariableStorageImpl(private val session: FirSession) : VariableStorage() {
@@ -46,14 +44,8 @@ class VariableStorageImpl(private val session: FirSession) : VariableStorage() {
     ): RealVariable? {
         val realFir = fir.unwrapElement()
         val identifier = getIdentifierBySymbol(symbol, realFir, unwrap) ?: return null
-        val stability = symbol.getStability(realFir)
-        requireWithAttachment(stability != null, { "Stability for initialized variable always should be computable" }) {
-            withFirSymbolEntry("symbol", symbol)
-            withFirEntry("fir", fir)
-            withEntry("identifier", identifier.toString())
-        }
-
-        return _realVariables[identifier] ?: createReal(identifier, realFir, stability, unwrap)
+        val stability = symbol.getStability(realFir) ?: return null
+        return _realVariables[identifier] ?: createReal(identifier, realFir, stability)
     }
 
     override fun getRealVariableWithoutUnwrappingAlias(
@@ -123,20 +115,16 @@ class VariableStorageImpl(private val session: FirSession) : VariableStorage() {
         val symbol = realFir.symbol
 
         val stability = symbol?.getStability(realFir)
-        if (stability == null) {
-            val syntheticVariable = syntheticVariables[realFir]
-            return when {
-                syntheticVariable != null -> syntheticVariable
-                createSynthetic -> createSynthetic(realFir)
-                else -> null
-            }
+        val identifier = if (stability != null) getIdentifierBySymbol(symbol, realFir, unwrapAlias) else null
+        if (stability == null || identifier == null) {
+            return if (createSynthetic) syntheticVariables.getOrPut(realFir) { SyntheticVariable(realFir, counter++) }
+            else syntheticVariables[realFir]
         }
 
-        val identifier = getIdentifierBySymbol(symbol, realFir, unwrapAlias) ?: return null
         val realVariable = _realVariables[identifier]
         return when {
             realVariable != null -> unwrapAlias(realVariable, realFir)
-            createReal -> createReal(identifier, realFir, stability, unwrapAlias)
+            createReal -> createReal(identifier, realFir, stability)
             else -> null
         }
     }
@@ -151,38 +139,27 @@ class VariableStorageImpl(private val session: FirSession) : VariableStorage() {
         unwrapAlias: (RealVariable, FirElement) -> RealVariable?,
     ): Identifier? {
         val expression = fir as? FirQualifiedAccessExpression ?: (fir as? FirVariableAssignment)?.lValue as? FirQualifiedAccessExpression
-
-        // TODO: don't create receiver variables if not going to create the composed variable either?
-        val dispatchReceiver = expression?.dispatchReceiver?.let { getOrCreate(it, unwrapAlias) ?: return null }
-        val extensionReceiver = expression?.extensionReceiver?.let { getOrCreate(it, unwrapAlias) ?: return null }
-        return Identifier(symbol, dispatchReceiver, extensionReceiver)
+        val dispatchReceiverVariable = expression?.dispatchReceiver?.let {
+            getOrCreateIfReal(it, unwrapAlias) as? RealVariable ?: return null
+        }
+        val extensionReceiverVariable = expression?.extensionReceiver?.let {
+            getOrCreateIfReal(it, unwrapAlias) as? RealVariable ?: return null
+        }
+        return Identifier(symbol, dispatchReceiverVariable, extensionReceiverVariable)
     }
 
     private fun createReal(
         identifier: Identifier,
         originalFir: FirElement,
         stability: PropertyStability,
-        unwrapAlias: (RealVariable, FirElement) -> RealVariable?,
-    ): RealVariable? {
-        val receiver: FirExpression?
-        val isThisReference: Boolean
+    ): RealVariable {
         val expression: FirQualifiedAccessExpression? = when (originalFir) {
             is FirQualifiedAccessExpression -> originalFir
             is FirWhenSubjectExpression -> originalFir.whenRef.value.subject as? FirQualifiedAccessExpression
             is FirVariableAssignment -> originalFir.unwrapLValue()
             else -> null
         }
-
-        if (expression != null) {
-            receiver = expression.explicitReceiver
-            isThisReference = expression.calleeReference is FirThisReference
-        } else {
-            receiver = null
-            isThisReference = false
-        }
-
-        val receiverVariable = receiver?.let { getOrCreate(it, unwrapAlias) ?: return null }
-        return RealVariable(identifier, isThisReference, receiverVariable, counter++, stability).also {
+        return RealVariable(identifier, expression?.calleeReference is FirThisReference, counter++, stability).also {
             _realVariables[identifier] = it
         }
     }
@@ -194,18 +171,20 @@ class VariableStorageImpl(private val session: FirSession) : VariableStorage() {
                 extensionReceiver = if (extensionReceiver == from) to else extensionReceiver,
             )
         }
-        return getOrPut(newIdentifier) {
-            with(variable) {
-                RealVariable(
-                    newIdentifier, isThisReference, if (explicitReceiverVariable == from) to else explicitReceiverVariable,
-                    counter++, stability
-                )
-            }
+        return _realVariables.getOrPut(newIdentifier) {
+            RealVariable(newIdentifier, variable.isThisReference, counter++, variable.stability)
         }
     }
 
-    fun getOrPut(identifier: Identifier, factory: () -> RealVariable): RealVariable {
-        return _realVariables.getOrPut(identifier, factory)
+    fun getOrPut(variable: RealVariable): RealVariable {
+        val newIdentifier = with(variable.identifier) {
+            Identifier(symbol, dispatchReceiver?.let(::getOrPut), extensionReceiver?.let(::getOrPut))
+        }
+        return _realVariables.getOrPut(newIdentifier) {
+            if (newIdentifier != variable.identifier) {
+                RealVariable(newIdentifier, variable.isThisReference, counter++, variable.stability)
+            } else variable
+        }
     }
 
     private fun FirBasedSymbol<*>.getStability(realFir: FirElement): PropertyStability? {
