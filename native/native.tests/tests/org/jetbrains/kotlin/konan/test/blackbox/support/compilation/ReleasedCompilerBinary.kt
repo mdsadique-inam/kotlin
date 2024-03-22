@@ -5,8 +5,11 @@
 
 package org.jetbrains.kotlin.konan.test.blackbox.support.compilation
 
+import org.jetbrains.kotlin.incremental.createDirectory
 import org.jetbrains.kotlin.klib.PartialLinkageTestUtils
-import org.jetbrains.kotlin.konan.target.TargetSupportException
+import org.jetbrains.kotlin.konan.target.HostManager
+import org.jetbrains.kotlin.konan.test.blackbox.support.settings.KotlinNativeTargets
+import org.jetbrains.kotlin.konan.test.blackbox.support.settings.SimpleTestRunSettings
 import org.jetbrains.kotlin.konan.util.ArchiveType
 import org.jetbrains.kotlin.konan.util.DependencyDownloader
 import org.jetbrains.kotlin.konan.util.DependencyExtractor
@@ -16,8 +19,13 @@ import java.io.InputStreamReader
 import java.net.URL
 
 private const val DISTRIBS_LOCATION = "https://cache-redirector.jetbrains.com/download.jetbrains.com/kotlin/native/builds/releases"
+
+private val host = HostManager.platformName() // in "os_arch" format
+private val isWindows = HostManager.hostOs() == "windows"
+
+
 private val konanDirectory = File(System.getProperty("user.home"), ".konan")
-private val compilerExecutableSubDir = "bin" + File.separator + "kotlinc-native"
+private val compilerExecutableSubDir = "bin" + File.separator + "kotlinc-native" + if (isWindows) ".bat" else ""
 private val stdlibSubDir = "klib" + File.separator + "common" + File.separator + "stdlib"
 private val lock: Any = Any()
 
@@ -31,9 +39,18 @@ internal fun downloadReleasedCompiler(version: String) {
 }
 
 internal class ReleasedCompiler(private val nativePrebuildsDir: File) {
-    fun buildKlib(sourceFiles: List<File>, dependencies: PartialLinkageTestUtils.Dependencies, outputFile: File) {
+    fun buildKlib(
+        sourceFiles: List<File>,
+        dependencies: PartialLinkageTestUtils.Dependencies,
+        outputFile: File,
+        testRunSettings: SimpleTestRunSettings,
+    ) {
+        val kotlinNativeTargets = testRunSettings.get<KotlinNativeTargets>()
+
         execute(sourceFiles.map { it.absolutePath }
                         + dependencies.toCompilerArgs()
+                        + listOf("-nostdlib")
+                        + listOf("-target", kotlinNativeTargets.testTarget.name)
                         + listOf("-produce", "library", "-o", outputFile.absolutePath))
     }
 
@@ -44,6 +61,7 @@ internal class ReleasedCompiler(private val nativePrebuildsDir: File) {
         val exitCode = process.waitFor()
         if (exitCode != 0) {
             println("Exit code $exitCode")
+            println("Compiler arguments: $args")
             process.logOutput()
         }
     }
@@ -91,50 +109,25 @@ private fun kotlinNativeDistributionDir(version: String) = File(konanDirectory, 
 private fun isCompilerDownloaded(targetDirectory: File) = File(targetDirectory, compilerExecutableSubDir).exists()
 
 private fun downloadCompiler(artifactFileName: String, version: String): File {
-    val artifactFileNameWithExtension = artifactFileName + hostSpecificExtension
+    val artifactFileNameWithExtension = artifactFileName + hostSpecificArchiveExtension
 
-    val tempLocation = File.createTempFile(artifactFileName, hostSpecificExtension)
+    val tempLocation = File.createTempFile(artifactFileName, hostSpecificArchiveExtension)
     val url = URL("$DISTRIBS_LOCATION/$version/$host/$artifactFileNameWithExtension")
 
-    return DependencyDownloader(customProgressCallback = { _, _, _ -> }).download(
-        url,
-        tempLocation,
-        DependencyDownloader.ReplacingMode.REPLACE
-    )
+    return DependencyDownloader(customProgressCallback = progressCallback(version))
+        .download(url, tempLocation, DependencyDownloader.ReplacingMode.REPLACE)
+}
+
+private fun progressCallback(version: String) = { url: String, currentBytes: Long, totalBytes: Long ->
+    println("(ReleasedCompiler) Downloading $version native prebuilt: $url (${currentBytes}/${totalBytes})")
 }
 
 private fun extractCompiler(archive: File, unpackedFolderName: String, targetDirectory: File) {
+    konanDirectory.createDirectory() // archive extract may fail if directory doesn't exist
     DependencyExtractor().extract(archive, konanDirectory, ArchiveType.systemDefault)
     val unpackedDir = File(konanDirectory, unpackedFolderName)
     unpackedDir.renameTo(targetDirectory)
 }
 
-private val hostSpecificExtension: String
-    get() {
-        val javaOsName = System.getProperty("os.name")
-        return when {
-            javaOsName.startsWith("Windows") -> ".zip"
-            else -> ".tar.gz"
-        }
-    }
-
-private val host = "${hostOs()}-${hostArch()}"
-
-private fun hostOs(): String {
-    val javaOsName = System.getProperty("os.name")
-    return when {
-        javaOsName == "Mac OS X" -> "macos"
-        javaOsName == "Linux" -> "linux"
-        javaOsName.startsWith("Windows") -> "windows"
-        else -> throw TargetSupportException("Unknown operating system: $javaOsName")
-    }
-}
-
-private fun hostArch(): String = when (val arch = System.getProperty("os.arch")) {
-    "x86_64" -> "x86_64"
-    "amd64" -> "x86_64"
-    "arm64" -> "aarch64"
-    "aarch64" -> "aarch64"
-    else -> throw TargetSupportException("Unknown hardware platform: $arch")
-}
+private val hostSpecificArchiveExtension: String = if (isWindows) ".zip" else ".tar.gz"
 

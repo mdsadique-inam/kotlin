@@ -120,7 +120,7 @@ abstract class AbstractNativeKlibCompatibilityTest : AbstractKlibLinkageTest() {
             .filter { file -> file.isFile && file.extension == "kt" }.toList()
 
         val compiler = getReleasedCompiler(compilerVersion)
-        compiler.buildKlib(filesToCompile, dependencies, klibFile)
+        compiler.buildKlib(filesToCompile, dependencies, klibFile, testRunSettings)
 
         producedKlibs += ProducedKlib(moduleName, klibArtifact, dependencies) // Remember the artifact with its dependencies.
     }
