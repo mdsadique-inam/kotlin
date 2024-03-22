@@ -108,7 +108,7 @@ object PartialLinkageTestUtils {
 
                     // Include PL utils into the main module.
                     if (moduleName == MAIN_MODULE_NAME) {
-                        val utilsDir = testDir.parentFile.resolve(PL_UTILS_DIR)
+                        val utilsDir = testDir.parentFile.parentFile.resolve(PL_UTILS_DIR)
                         KtUsefulTestCase.assertExists(utilsDir)
 
                         copySources(from = utilsDir, to = moduleBuildDirs.sourceDir) { contents ->
