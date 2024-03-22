@@ -8,8 +8,7 @@ package org.jetbrains.kotlin.konan.test.blackbox.support.compilation
 import org.jetbrains.kotlin.incremental.createDirectory
 import org.jetbrains.kotlin.klib.PartialLinkageTestUtils
 import org.jetbrains.kotlin.konan.target.HostManager
-import org.jetbrains.kotlin.konan.test.blackbox.support.settings.KotlinNativeTargets
-import org.jetbrains.kotlin.konan.test.blackbox.support.settings.SimpleTestRunSettings
+import org.jetbrains.kotlin.konan.target.KonanTarget
 import org.jetbrains.kotlin.konan.util.ArchiveType
 import org.jetbrains.kotlin.konan.util.DependencyDownloader
 import org.jetbrains.kotlin.konan.util.DependencyExtractor
@@ -21,11 +20,9 @@ import java.net.URL
 private const val DISTRIBS_LOCATION = "https://cache-redirector.jetbrains.com/download.jetbrains.com/kotlin/native/builds/releases"
 
 private val host = HostManager.platformName() // in "os_arch" format
-private val isWindows = HostManager.hostOs() == "windows"
-
 
 private val konanDirectory = File(System.getProperty("user.home"), ".konan")
-private val compilerExecutableSubDir = "bin" + File.separator + "kotlinc-native" + if (isWindows) ".bat" else ""
+private val compilerExecutableSubDir = "bin" + File.separator + "kotlinc-native" + if (HostManager.hostIsMingw) ".bat" else ""
 private val stdlibSubDir = "klib" + File.separator + "common" + File.separator + "stdlib"
 private val lock: Any = Any()
 
@@ -43,14 +40,12 @@ internal class ReleasedCompiler(private val nativePrebuildsDir: File) {
         sourceFiles: List<File>,
         dependencies: PartialLinkageTestUtils.Dependencies,
         outputFile: File,
-        testRunSettings: SimpleTestRunSettings,
+        target: KonanTarget,
     ) {
-        val kotlinNativeTargets = testRunSettings.get<KotlinNativeTargets>()
-
         execute(sourceFiles.map { it.absolutePath }
                         + dependencies.toCompilerArgs()
                         + listOf("-nostdlib")
-                        + listOf("-target", kotlinNativeTargets.testTarget.name)
+                        + listOf("-target", target.name)
                         + listOf("-produce", "library", "-o", outputFile.absolutePath))
     }
 
@@ -109,6 +104,7 @@ private fun kotlinNativeDistributionDir(version: String) = File(konanDirectory, 
 private fun isCompilerDownloaded(targetDirectory: File) = File(targetDirectory, compilerExecutableSubDir).exists()
 
 private fun downloadCompiler(artifactFileName: String, version: String): File {
+    val hostSpecificArchiveExtension: String = if (HostManager.hostIsMingw) ".zip" else ".tar.gz"
     val artifactFileNameWithExtension = artifactFileName + hostSpecificArchiveExtension
 
     val tempLocation = File.createTempFile(artifactFileName, hostSpecificArchiveExtension)
@@ -128,6 +124,3 @@ private fun extractCompiler(archive: File, unpackedFolderName: String, targetDir
     val unpackedDir = File(konanDirectory, unpackedFolderName)
     unpackedDir.renameTo(targetDirectory)
 }
-
-private val hostSpecificArchiveExtension: String = if (isWindows) ".zip" else ".tar.gz"
-

@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.konan.test.blackbox.support.compilation.TestCompilat
 import org.jetbrains.kotlin.konan.test.blackbox.support.compilation.downloadReleasedCompiler
 import org.jetbrains.kotlin.konan.test.blackbox.support.compilation.getReleasedCompiler
 import org.jetbrains.kotlin.konan.test.blackbox.support.group.UsePartialLinkage
+import org.jetbrains.kotlin.konan.test.blackbox.support.settings.KotlinNativeTargets
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
 import java.io.File
@@ -41,6 +42,7 @@ abstract class AbstractNativeKlibCompatibilityTest : AbstractKlibLinkageTest() {
         @JvmStatic
         @BeforeAll
         fun setup() {
+            // TODO: Switch to a kotlin-gradle-plugin api for downloading when it will be available (KT-66929)
             installReleasedCompilers()
         }
     }
@@ -118,9 +120,10 @@ abstract class AbstractNativeKlibCompatibilityTest : AbstractKlibLinkageTest() {
 
         val filesToCompile = moduleSourceDir.walk()
             .filter { file -> file.isFile && file.extension == "kt" }.toList()
+        val konanTarget = testRunSettings.get<KotlinNativeTargets>().testTarget
 
         val compiler = getReleasedCompiler(compilerVersion)
-        compiler.buildKlib(filesToCompile, dependencies, klibFile, testRunSettings)
+        compiler.buildKlib(filesToCompile, dependencies, klibFile, konanTarget)
 
         producedKlibs += ProducedKlib(moduleName, klibArtifact, dependencies) // Remember the artifact with its dependencies.
     }
