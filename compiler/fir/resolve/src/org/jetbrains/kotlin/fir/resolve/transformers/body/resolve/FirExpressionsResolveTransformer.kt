@@ -197,7 +197,7 @@ open class FirExpressionsResolveTransformer(transformer: FirAbstractBodyResolveT
             when (result) {
                 is FirQualifiedAccessExpression -> {
                     dataFlowAnalyzer.exitQualifiedAccessExpression(result)
-                    result = components.transformQualifiedAccessUsingSmartcastInfo(result)
+                    result = components.transformExpressionUsingSmartcastInfo(result)
                     if (result is FirSmartCastExpression) {
                         dataFlowAnalyzer.exitSmartCastExpression(result)
                     }
@@ -832,7 +832,7 @@ open class FirExpressionsResolveTransformer(transformer: FirAbstractBodyResolveT
                     expressionRef = FirExpressionRef<FirExpression>().apply { bind(expression.unwrapSmartcastExpression()) }
                 }.let {
                     it.transform<FirStatement, ResolutionMode>(transformer, ResolutionMode.ContextIndependent)
-                    components.transformDesugaredAssignmentValueUsingSmartcastInfo(it)
+                    components.transformExpressionUsingSmartcastInfo(it)
                 }
             } else {
                 val unaryVariable = generateTemporaryVariable(SpecialNames.UNARY, expression)
