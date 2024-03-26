@@ -29593,6 +29593,12 @@ public class DiagnosticCompilerTestFE10TestdataTestGenerated extends AbstractDia
       }
 
       @Test
+      @TestMetadata("NoInapplicableOperatorModifierOnAnyEquals.kt")
+      public void testNoInapplicableOperatorModifierOnAnyEquals() {
+        runTest("compiler/testData/diagnostics/tests/override/NoInapplicableOperatorModifierOnAnyEquals.kt");
+      }
+
+      @Test
       @TestMetadata("NoOverrideAndWeakenedVisibilityOnOneLine.kt")
       public void testNoOverrideAndWeakenedVisibilityOnOneLine() {
         runTest("compiler/testData/diagnostics/tests/override/NoOverrideAndWeakenedVisibilityOnOneLine.kt");
