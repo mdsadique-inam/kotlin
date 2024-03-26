@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.fir.declarations
 
+import org.jetbrains.kotlin.config.AnalysisFlags
 import org.jetbrains.kotlin.config.LanguageFeature
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.containingClassLookupTag
@@ -100,6 +101,8 @@ object OperatorFunctionChecks {
                     if (function.symbol.overriddenFunctions(containingClassSymbol, session, scopeSession)
                             .any { it.containingClassLookupTag()?.classId == StandardClassIds.Any }
                         || (customEqualsSupported && function.isTypedEqualsInValueClass(session))
+                        || (session.languageVersionSettings.getFlag(AnalysisFlags.stdlibCompilation) &&
+                                containingClassSymbol.classId == StandardClassIds.Any)
                     ) {
                         return null
                     }
