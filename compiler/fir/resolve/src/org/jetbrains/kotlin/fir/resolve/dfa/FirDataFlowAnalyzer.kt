@@ -155,10 +155,8 @@ abstract class FirDataFlowAnalyzer(
      *
      * When [types] are **not** provided, **any** assignments cause the variable to be considered unstable.
      */
-    private fun RealVariable.stabilityInCurrentScope(types: Set<ConeKotlinType>?): SmartcastStability =
-        if (context.variableAssignmentAnalyzer.isUnstableInCurrentScope(symbol.fir, types, components.session))
-            SmartcastStability.CAPTURED_VARIABLE
-        else stability
+    private fun RealVariable.isUnstableLocalVar(types: Set<ConeKotlinType>?): Boolean =
+        context.variableAssignmentAnalyzer.isUnstableInCurrentScope(symbol.fir, types, components.session)
 
     /**
      * Retrieve smartcast type information [FirDataFlowAnalyzer] may have for the specified variable access expression. Type information
@@ -171,7 +169,10 @@ abstract class FirDataFlowAnalyzer(
         // Can have an unstable alias to a stable variable, so don't resolve aliases here.
         val variable = getRealVariableWithoutUnwrappingAlias(flow, expression) ?: return null
         val types = flow.getTypeStatement(variable)?.exactType?.ifEmpty { null } ?: return null
-        return variable.stabilityInCurrentScope(types) to types
+        val stability = if (variable.isUnstableLocalVar(types))
+            SmartcastStability.CAPTURED_VARIABLE
+        else variable.getStability(flow, components.session)
+        return stability to types
     }
 
     fun returnExpressionsOfAnonymousFunctionOrNull(function: FirAnonymousFunction): Collection<FirAnonymousFunctionReturnExpressionInfo>? =
@@ -1103,10 +1104,11 @@ abstract class FirDataFlowAnalyzer(
             logicSystem.recordNewAssignment(flow, propertyVariable, context.newAssignmentIndex())
         }
 
-        if (propertyVariable.stability == SmartcastStability.STABLE_VALUE) {
+        if (propertyVariable.getStability(flow, components.session) == SmartcastStability.STABLE_VALUE) {
             val initializerVariable = getOrCreateVariableIfRealAndStable(flow, initializer)
             if (!hasExplicitType && initializerVariable is RealVariable &&
-                initializerVariable.stabilityInCurrentScope(types = null) == SmartcastStability.STABLE_VALUE
+                initializerVariable.getStability(flow, components.session) == SmartcastStability.STABLE_VALUE &&
+                !initializerVariable.isUnstableLocalVar(types = null)
             ) {
                 // val a = ...
                 // val b = a
@@ -1567,7 +1569,7 @@ abstract class FirDataFlowAnalyzer(
 
     private fun Flow.unwrapVariableIfStable(variable: RealVariable): RealVariable? {
         return unwrapVariable(variable).takeIf {
-            it == variable || variable.stabilityInCurrentScope(types = null) == SmartcastStability.STABLE_VALUE
+            it == variable || !variable.isUnstableLocalVar(types = null)
         }
     }
 }

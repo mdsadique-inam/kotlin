@@ -5,7 +5,11 @@
 
 package org.jetbrains.kotlin.fir.resolve.dfa
 
+import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.declarations.FirVariable
 import org.jetbrains.kotlin.fir.expressions.FirOperation
+import org.jetbrains.kotlin.fir.moduleData
+import org.jetbrains.kotlin.fir.originalOrSelf
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.fir.types.ConeTypeContext
 
@@ -23,4 +27,12 @@ fun FirOperation.isEq(): Boolean {
         FirOperation.NOT_EQ, FirOperation.NOT_IDENTITY -> false
         else -> throw IllegalArgumentException("$this should not be there")
     }
+}
+
+fun FirVariable.isInCurrentOrFriendModule(session: FirSession): Boolean {
+    val propertyModuleData = originalOrSelf().moduleData
+    val currentModuleData = session.moduleData
+    return propertyModuleData == currentModuleData ||
+            propertyModuleData in currentModuleData.friendDependencies ||
+            propertyModuleData in currentModuleData.allDependsOnDependencies
 }

@@ -274,7 +274,7 @@ private class ContextCollectorVisitor(
             val flow = cfgNode.flow
 
             for (realVariable in flow.knownVariables) {
-                if (realVariable.stability != SmartcastStability.STABLE_VALUE) {
+                if (realVariable.getStability(flow, session) != SmartcastStability.STABLE_VALUE) {
                     continue
                 }
 

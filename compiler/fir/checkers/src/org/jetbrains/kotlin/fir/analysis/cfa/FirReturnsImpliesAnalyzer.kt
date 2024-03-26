@@ -28,10 +28,7 @@ import org.jetbrains.kotlin.fir.resolve.dfa.cfg.BlockExitNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.CFGNode
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.ControlFlowGraph
 import org.jetbrains.kotlin.fir.resolve.dfa.cfg.JumpNode
-import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertyAccessorSymbol
-import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.types.AbstractTypeChecker
 
@@ -136,7 +133,7 @@ object FirReturnsImpliesAnalyzer : FirControlFlowChecker(MppCheckerKind.Common) 
         ) { logicSystem.approveOperationStatement(flow, it) } ?: return true
 
         return !conditionStatements.values.all { requirement ->
-            val originalType = requirement.variable.symbol.correspondingParameterType ?: return@all true
+            val originalType = requirement.variable.originalType
             val requiredType = requirement.smartCastedType(typeContext, originalType)
             val actualType = flow.getTypeStatement(requirement.variable).smartCastedType(typeContext, originalType)
             actualType.isSubtypeOf(typeContext, requiredType)
@@ -166,11 +163,4 @@ object FirReturnsImpliesAnalyzer : FirControlFlowChecker(MppCheckerKind.Common) 
 
     private val CheckerContext.containingProperty: FirProperty?
         get() = (containingDeclarations.lastOrNull { it is FirProperty } as? FirProperty)
-
-    private val FirBasedSymbol<*>.correspondingParameterType: ConeKotlinType?
-        get() = when (this) {
-            is FirValueParameterSymbol -> resolvedReturnType
-            is FirCallableSymbol<*> -> resolvedReceiverTypeRef?.coneType
-            else -> null
-        }
 }
