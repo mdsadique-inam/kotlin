@@ -1210,6 +1210,11 @@ public class CliTestGenerated extends AbstractCliTest {
       runTest("compiler/testData/cli/jvm/stdlib.args");
     }
 
+    @TestMetadata("stdlibWithIrActualizerErrors.args")
+    public void testStdlibWithIrActualizerErrors() {
+      runTest("compiler/testData/cli/jvm/stdlibWithIrActualizerErrors.args");
+    }
+
     @TestMetadata("suppressAllWarningsJvm.args")
     public void testSuppressAllWarningsJvm() {
       runTest("compiler/testData/cli/jvm/suppressAllWarningsJvm.args");

@@ -1,0 +1,13 @@
+$TESTDATA_DIR$/stdlibWithIrActualizerErrors/common.kt
+$TESTDATA_DIR$/stdlibWithIrActualizerErrors/platform.kt
+-Xcommon-sources=$TESTDATA_DIR$/stdlibWithIrActualizerErrors/common.kt
+-language-version
+2.0
+-cp
+.
+-d
+$TEMP_DIR$
+-XXLanguage\:+MultiPlatformProjects
+-Xallow-kotlin-package
+-Xexpect-actual-classes
+-Xstdlib-compilation

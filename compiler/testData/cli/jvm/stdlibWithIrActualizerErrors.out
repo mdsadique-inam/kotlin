@@ -1,0 +1,16 @@
+warning: ATTENTION!
+This build uses unsafe internal compiler arguments:
+
+-XXLanguage:+MultiPlatformProjects
+
+This mode is not recommended for production use,
+as no stability/compatibility guarantees are given on
+compiler or generated code. Use it at your own risk!
+
+compiler/testData/cli/jvm/stdlibWithIrActualizerErrors/common.kt:7:1: error: expect declaration `Any` is incompatible with actual `Any` because some expected members have no actual ones
+@ActualizeByJvmBuiltinProvider
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+compiler/testData/cli/jvm/stdlibWithIrActualizerErrors/common.kt:9:5: error: expected invalid has no actual declaration in module <main>-common for JVM
+    fun invalid()
+    ^^^^^^^^^^^^^
+COMPILATION_ERROR
