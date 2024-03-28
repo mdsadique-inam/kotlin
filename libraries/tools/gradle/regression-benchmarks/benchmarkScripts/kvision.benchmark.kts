@@ -25,12 +25,6 @@ val repoPatch = {
 runBenchmarks(
     repoPatch,
     suite {
-        scenario {
-            title = "Build Js clean build"
-
-            runTasks("jsJar")
-            runCleanupTasks("clean")
-        }
 
         scenario {
             title = "Build Js IR with ABI change in ObservableList"
@@ -39,28 +33,10 @@ runBenchmarks(
             applyAbiChangeTo("kvision-modules/kvision-state/src/jsMain/kotlin/io/kvision/state/ObservableList.kt")
         }
 
-        scenario {
-            title = "Build Js IR with non-ABI change in ObservableList"
-
-            runTasks("jsJar")
-            applyNonAbiChangeTo("kvision-modules/kvision-state/src/jsMain/kotlin/io/kvision/state/ObservableList.kt")
-        }
 
         scenario {
             title = "Dry run configuration time"
             useGradleArgs("-m")
-
-            runTasks("jsJar")
-        }
-
-        scenario {
-            title = "No-op configuration time"
-
-            runTasks("help")
-        }
-
-        scenario {
-            title = "UP-TO-DATE configuration time"
 
             runTasks("jsJar")
         }
