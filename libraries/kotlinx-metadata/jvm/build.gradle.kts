@@ -89,6 +89,12 @@ tasks.dokkaHtml.configure {
     }
 }
 
+tasks.withType<org.gradle.jvm.tasks.Jar>{
+    manifest {
+        attributes("Automatic-Module-Name" to "kotlinx.metadata.jvm")
+    }
+}
+
 sourcesJar()
 
 javadocJar()
