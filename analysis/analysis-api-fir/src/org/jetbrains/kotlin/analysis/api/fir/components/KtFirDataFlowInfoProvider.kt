@@ -222,10 +222,7 @@ internal class KtFirDataFlowInfoProvider(override val analysisSession: KtFirAnal
                 withFirEntry("firAnchor", firAnchor)
             }
 
-        val exitNodes = HashMap<FirElement, List<CFGNode<*>>>()
-        graph.collectExitNodes(firTargets, exitNodes)
-
-        return exitNodes.values.distinct().size > 1
+        return graph.hasMultipleExitPoints(firTargets)
     }
 
     private fun findControlFlowGraph(anchor: KtElement, firAnchor: FirElement): ControlFlowGraph? {
@@ -241,6 +238,12 @@ internal class KtFirDataFlowInfoProvider(override val analysisSession: KtFirAnal
         }
 
         return null
+    }
+
+    private fun ControlFlowGraph.hasMultipleExitPoints(firTargets: Set<FirElement>): Boolean {
+        val exitNodes = HashMap<FirElement, List<CFGNode<*>>>()
+        collectExitNodes(firTargets, exitNodes)
+        return exitNodes.values.distinct().size > 1
     }
 
     private fun ControlFlowGraph.collectExitNodes(firTargets: Set<FirElement>, exitNodes: MutableMap<FirElement, List<CFGNode<*>>>) {
