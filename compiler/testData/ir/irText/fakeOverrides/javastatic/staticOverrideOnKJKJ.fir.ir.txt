@@ -83,6 +83,9 @@ FILE fqName:<root> fileName:/1.kt
       overridden:
         public open fun toString (): kotlin.String declared in <root>.Java3
       $this: VALUE_PARAMETER name:<this> type:kotlin.Any
+    PROPERTY FAKE_OVERRIDE name:a visibility:public modality:FINAL [fake_override,var]
+      overridden:
+        public final a: kotlin.Int declared in <root>.Java3
   CLASS CLASS name:D modality:FINAL visibility:public superTypes:[<root>.Java3]
     $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.D
     PROPERTY name:a visibility:public modality:FINAL [val]
@@ -129,6 +132,9 @@ FILE fqName:<root> fileName:/1.kt
       $this: VALUE_PARAMETER name:<this> type:<root>.D
       VALUE_PARAMETER name:t index:0 type:kotlin.Any
       BLOCK_BODY
+    PROPERTY FAKE_OVERRIDE name:a visibility:public modality:FINAL [fake_override,var]
+      overridden:
+        public final a: kotlin.Int declared in <root>.Java3
   CLASS CLASS name:E modality:ABSTRACT visibility:public superTypes:[<root>.Java4]
     $this: VALUE_PARAMETER INSTANCE_RECEIVER name:<this> type:<root>.E
     CONSTRUCTOR visibility:public <> () returnType:<root>.E [primary]
@@ -249,6 +255,9 @@ FILE fqName:<root> fileName:/1.kt
       overridden:
         public open fun toString (): kotlin.String declared in <root>.Java5
       $this: VALUE_PARAMETER name:<this> type:kotlin.Any
+    PROPERTY FAKE_OVERRIDE name:a visibility:public modality:FINAL [fake_override,var]
+      overridden:
+        public final a: kotlin.Int declared in <root>.Java5
     PROPERTY FAKE_OVERRIDE name:a visibility:public modality:OPEN [fake_override,val]
       overridden:
         public open a: kotlin.Int declared in <root>.Java5
@@ -295,6 +304,9 @@ FILE fqName:<root> fileName:/1.kt
       $this: VALUE_PARAMETER name:<this> type:<root>.H
       VALUE_PARAMETER name:t index:0 type:kotlin.Int
       BLOCK_BODY
+    PROPERTY FAKE_OVERRIDE name:a visibility:public modality:FINAL [fake_override,var]
+      overridden:
+        public final a: kotlin.Int declared in <root>.Java5
     PROPERTY name:a visibility:public modality:OPEN [val]
       overridden:
         public open a: kotlin.Int declared in <root>.Java5

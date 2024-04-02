@@ -3,6 +3,9 @@
 // FULL_JDK
 // WITH_REFLECT
 
+// IGNORE_CODEGEN_WITH_FIR2IR_FAKE_OVERRIDE_GENERATION: JVM_IR
+// Fir2Ir fake override generator does not generate a in Derived.
+
 // FILE: bar/Base.java
 package bar;
 

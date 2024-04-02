@@ -55612,6 +55612,12 @@ public class FirLightTreeBlackBoxCodegenTestGenerated extends AbstractFirLightTr
     }
 
     @Test
+    @TestMetadata("inheritStaticFieldThroughJavaClass.kt")
+    public void testInheritStaticFieldThroughJavaClass() {
+      runTest("compiler/testData/codegen/box/statics/inheritStaticFieldThroughJavaClass.kt");
+    }
+
+    @Test
     @TestMetadata("inheritedPropertyInClassObject.kt")
     public void testInheritedPropertyInClassObject() {
       runTest("compiler/testData/codegen/box/statics/inheritedPropertyInClassObject.kt");

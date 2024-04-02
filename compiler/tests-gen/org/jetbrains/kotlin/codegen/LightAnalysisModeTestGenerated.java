@@ -44489,6 +44489,11 @@ public class LightAnalysisModeTestGenerated extends AbstractLightAnalysisModeTes
       runTest("compiler/testData/codegen/box/statics/incInObject.kt");
     }
 
+    @TestMetadata("inheritStaticFieldThroughJavaClass.kt")
+    public void testInheritStaticFieldThroughJavaClass() {
+      runTest("compiler/testData/codegen/box/statics/inheritStaticFieldThroughJavaClass.kt");
+    }
+
     @TestMetadata("inheritedPropertyInClassObject.kt")
     public void testInheritedPropertyInClassObject() {
       runTest("compiler/testData/codegen/box/statics/inheritedPropertyInClassObject.kt");
