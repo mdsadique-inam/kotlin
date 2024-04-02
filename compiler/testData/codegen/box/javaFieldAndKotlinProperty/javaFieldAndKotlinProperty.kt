@@ -4,6 +4,9 @@
 // See KT-50082
 // DUMP_IR
 
+// IGNORE_CODEGEN_WITH_FIR2IR_FAKE_OVERRIDE_GENERATION: JVM_IR
+// Fir2Ir fake override generator does not generate a in Derived.
+
 // FILE: BaseJava.java
 public class BaseJava {
     public String a = "FAIL";

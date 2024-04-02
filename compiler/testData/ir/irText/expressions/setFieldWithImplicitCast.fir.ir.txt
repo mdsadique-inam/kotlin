@@ -31,3 +31,6 @@ FILE fqName:<root> fileName:/Derived.kt
                 receiver: GET_VAR '<this>: <root>.Derived declared in <root>.Derived.setValue' type=<root>.Derived origin=null
                 value: TYPE_OP type=kotlin.String origin=IMPLICIT_CAST typeOperand=kotlin.String
                   GET_VAR 'v: kotlin.Any declared in <root>.Derived.setValue' type=kotlin.Any origin=null
+    PROPERTY FAKE_OVERRIDE name:value visibility:public modality:FINAL [fake_override,var]
+      overridden:
+        public final value: @[FlexibleNullability] kotlin.String? declared in <root>.Base

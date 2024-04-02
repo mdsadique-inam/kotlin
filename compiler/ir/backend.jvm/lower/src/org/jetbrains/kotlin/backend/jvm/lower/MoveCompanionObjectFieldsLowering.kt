@@ -104,7 +104,7 @@ private class MoveOrCopyCompanionObjectFieldsLowering(val context: JvmBackendCon
         }
 
     private fun copyConstProperty(oldProperty: IrProperty, newParent: IrClass): IrField {
-        val oldField = oldProperty.backingField!!
+        val oldField = oldProperty.backingField ?: error("No backing field for const property ${oldProperty.render()}")
         return newParent.addField {
             updateFrom(oldField)
             name = oldField.name
