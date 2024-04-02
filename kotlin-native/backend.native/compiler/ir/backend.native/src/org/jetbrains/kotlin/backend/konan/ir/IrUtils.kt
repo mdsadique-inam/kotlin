@@ -80,8 +80,8 @@ private fun IrFunction.typeWithKindAt(index: ParameterIndex) = when (index) {
     else -> TypeWithKind.fromType(this.valueParameters[index.unmap()].type)
 }
 
-private fun IrFunction.needBridgeToAt(target: IrFunction, index: ParameterIndex, needCasts: Boolean) =
-        bridgeDirectionToAt(target, index, needCasts).kind != BridgeDirectionKind.NONE
+private fun IrFunction.needBridgeToAt(target: IrFunction, index: ParameterIndex, policy: BridgesPolicy) =
+        bridgeDirectionToAt(target, index, policy).kind != BridgeDirectionKind.NONE
 
 @JvmInline
 private value class ParameterIndex(val index: Int) {
@@ -101,11 +101,16 @@ private value class ParameterIndex(val index: Int) {
     fun unmap() = index - 3
 }
 
-internal fun IrFunction.needBridgeTo(target: IrFunction, needCasts: Boolean): Boolean {
+internal fun IrFunction.needBridgeTo(target: IrFunction, policy: BridgesPolicy): Boolean {
     ParameterIndex.forEachIndex(this) {
-        if (needBridgeToAt(target, it, needCasts)) return true
+        if (needBridgeToAt(target, it, policy)) return true
     }
     return false
+}
+
+internal enum class BridgesPolicy {
+    BOX_UNBOX_ONLY,
+    BOX_UNBOX_CASTS
 }
 
 internal enum class BridgeDirectionKind {
@@ -172,20 +177,20 @@ private val bridgeDirectionBuilders = arrayOf(
         arrayOf(null, None, Box, Cast, Cast),
 )
 
-private fun IrFunction.bridgeDirectionToAt(overriddenFunction: IrFunction, index: ParameterIndex, needCasts: Boolean): BridgeDirection {
+private fun IrFunction.bridgeDirectionToAt(overriddenFunction: IrFunction, index: ParameterIndex, policy: BridgesPolicy): BridgeDirection {
     val (fromErasedType, fromKind) = typeWithKindAt(index)
     val (toErasedType, toKind) = overriddenFunction.typeWithKindAt(index)
     val bridgeDirectionsBuilder = bridgeDirectionBuilders[fromKind.ordinal][toKind.ordinal]
             ?: error("Invalid combination of (fromKind, toKind): ($fromKind, $toKind)\n" +
                     "from = ${render()}\nto = ${overriddenFunction.render()}")
     val result = bridgeDirectionsBuilder(index, fromErasedType, toErasedType)
-    return if (needCasts || result.kind != BridgeDirectionKind.CAST) result else BridgeDirection.NONE
+    return if ((policy == BridgesPolicy.BOX_UNBOX_CASTS) || result.kind != BridgeDirectionKind.CAST) result else BridgeDirection.NONE
 }
 
 internal class BridgeDirections(private val array: Array<BridgeDirection>) {
-    constructor(irFunction: IrSimpleFunction, overriddenFunction: IrSimpleFunction, needCasts: Boolean)
+    constructor(irFunction: IrSimpleFunction, overriddenFunction: IrSimpleFunction, policy: BridgesPolicy)
             : this(Array<BridgeDirection>(ParameterIndex.allParametersCount(irFunction)) {
-        irFunction.bridgeDirectionToAt(overriddenFunction, ParameterIndex(it), needCasts)
+        irFunction.bridgeDirectionToAt(overriddenFunction, ParameterIndex(it), policy)
     })
 
     fun allNotNeeded(): Boolean = array.all { it.kind == BridgeDirectionKind.NONE }
@@ -226,7 +231,7 @@ internal class BridgeDirections(private val array: Array<BridgeDirection>) {
     }
 
     companion object {
-        fun none(irFunction: IrSimpleFunction) = BridgeDirections(irFunction, irFunction, false)
+        fun none(irFunction: IrSimpleFunction) = BridgeDirections(irFunction, irFunction, BridgesPolicy.BOX_UNBOX_ONLY)
     }
 }
 
@@ -245,13 +250,13 @@ val IrSimpleFunction.allOverriddenFunctions: Set<IrSimpleFunction>
         return result
     }
 
-internal fun IrSimpleFunction.bridgeDirectionsTo(overriddenFunction: IrSimpleFunction, needCasts: Boolean): BridgeDirections {
-    val ourDirections = BridgeDirections(this, overriddenFunction, needCasts)
+internal fun IrSimpleFunction.bridgeDirectionsTo(overriddenFunction: IrSimpleFunction, policy: BridgesPolicy): BridgeDirections {
+    val ourDirections = BridgeDirections(this, overriddenFunction, policy)
 
     val target = this.target
     if (!this.isReal && modality != Modality.ABSTRACT
             && target.overrides(overriddenFunction)
-            && ourDirections == target.bridgeDirectionsTo(overriddenFunction, needCasts)) {
+            && ourDirections == target.bridgeDirectionsTo(overriddenFunction, policy)) {
         // Bridge is inherited from superclass.
         return BridgeDirections.none(this)
     }

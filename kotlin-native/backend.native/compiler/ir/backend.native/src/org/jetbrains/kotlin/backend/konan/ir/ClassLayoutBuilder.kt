@@ -33,13 +33,13 @@ import org.jetbrains.kotlin.ir.visitors.acceptVoid
 internal class OverriddenFunctionInfo(
         val function: IrSimpleFunction,
         val overriddenFunction: IrSimpleFunction,
-        val needBridgesWithCasts: Boolean
+        val policy: BridgesPolicy,
 ) {
     val needBridge: Boolean
-        get() = function.target.needBridgeTo(overriddenFunction, needBridgesWithCasts)
+        get() = function.target.needBridgeTo(overriddenFunction, policy)
 
     val bridgeDirections: BridgeDirections
-        get() = function.target.bridgeDirectionsTo(overriddenFunction, needBridgesWithCasts)
+        get() = function.target.bridgeDirectionsTo(overriddenFunction, policy)
 
     val canBeCalledVirtually: Boolean
         get() {
@@ -53,7 +53,7 @@ internal class OverriddenFunctionInfo(
     val inheritsBridge: Boolean
         get() = !function.isReal
                 && function.target.overrides(overriddenFunction)
-                && function.bridgeDirectionsTo(overriddenFunction, needBridgesWithCasts).allNotNeeded()
+                && function.bridgeDirectionsTo(overriddenFunction, policy).allNotNeeded()
 
     fun getImplementation(context: Context): IrSimpleFunction? {
         val target = function.target
@@ -65,7 +65,7 @@ internal class OverriddenFunctionInfo(
             } else {
                 function
             }
-            context.bridgesSupport.getBridge(OverriddenFunctionInfo(bridgeOwner, overriddenFunction, needBridgesWithCasts))
+            context.bridgesSupport.getBridge(OverriddenFunctionInfo(bridgeOwner, overriddenFunction, policy))
         }
         return if (implementation.modality == Modality.ABSTRACT) null else implementation
     }
@@ -285,7 +285,7 @@ internal fun IrField.requiredAlignment(llvm: CodegenLlvmHelpers): Int {
 
 
 internal class ClassLayoutBuilder(val irClass: IrClass, val context: Context) {
-    private val insertSafeCasts = context.config.genericSafeCasts
+    private val bridgesPolicy = context.config.bridgesPolicy
 
     private fun IrField.toFieldInfo(llvm: CodegenLlvmHelpers): FieldInfo {
         val isConst = correspondingPropertySymbol?.owner?.isConst ?: false
@@ -330,10 +330,10 @@ internal class ClassLayoutBuilder(val irClass: IrClass, val context: Context) {
             overridingMethod.allOverriddenFunctions.forEach {
                 val superMethods = superVtableMap[it]
                 if (superMethods?.isNotEmpty() == true) {
-                    newVtableSlots.add(OverriddenFunctionInfo(overridingMethod, it, insertSafeCasts))
+                    newVtableSlots.add(OverriddenFunctionInfo(overridingMethod, it, bridgesPolicy))
                     superMethods.forEach { superMethod ->
                         overridenVtableSlots[superMethod.overriddenFunction] =
-                                OverriddenFunctionInfo(overridingMethod, superMethod.overriddenFunction, insertSafeCasts)
+                                OverriddenFunctionInfo(overridingMethod, superMethod.overriddenFunction, bridgesPolicy)
                     }
                 }
             }
@@ -347,7 +347,7 @@ internal class ClassLayoutBuilder(val irClass: IrClass, val context: Context) {
         }
 
         // Add all possible (descriptor, overriddenDescriptor) edges for now, redundant will be removed later.
-        methods.mapTo(newVtableSlots) { OverriddenFunctionInfo(it, it, insertSafeCasts) }
+        methods.mapTo(newVtableSlots) { OverriddenFunctionInfo(it, it, bridgesPolicy) }
 
         val inheritedVtableSlotsSet = inheritedVtableSlots.map { it.function to it.bridgeDirections }.toSet()
 
@@ -371,7 +371,7 @@ internal class ClassLayoutBuilder(val irClass: IrClass, val context: Context) {
     }
 
     fun vtableIndex(function: IrSimpleFunction): Int {
-        val bridgeDirections = function.target.bridgeDirectionsTo(function, insertSafeCasts)
+        val bridgeDirections = function.target.bridgeDirectionsTo(function, bridgesPolicy)
         val index = vtableEntries.indexOfFirst { it.function == function && it.bridgeDirections == bridgeDirections }
         require(index >= 0) { "${function.render()} is not found in vtable of ${irClass.render()}" }
         return index
@@ -379,7 +379,7 @@ internal class ClassLayoutBuilder(val irClass: IrClass, val context: Context) {
 
     fun overridingOf(function: IrSimpleFunction) =
             overridableOrOverridingMethods.firstOrNull { function in it.allOverriddenFunctions }?.let {
-                OverriddenFunctionInfo(it, function, insertSafeCasts).getImplementation(context)
+                OverriddenFunctionInfo(it, function, bridgesPolicy).getImplementation(context)
             }
 
     val interfaceVTableEntries: List<IrSimpleFunction> by lazy {
@@ -388,7 +388,7 @@ internal class ClassLayoutBuilder(val irClass: IrClass, val context: Context) {
                 .map { it.getLoweredVersion() }
                 .filter { f ->
                     f.isOverridable && f.bridgeTarget == null
-                            && (f.isReal || f.overriddenSymbols.any { f.needBridgeTo(it.owner, insertSafeCasts) })
+                            && (f.isReal || f.overriddenSymbols.any { f.needBridgeTo(it.owner, bridgesPolicy) })
                 }
                 .sortedBy { it.uniqueName }
     }
