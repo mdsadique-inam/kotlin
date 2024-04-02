@@ -124,7 +124,6 @@ internal enum class BridgeDirectionKind {
 internal data class BridgeDirection(val erasedType: IrType?, val kind: BridgeDirectionKind) {
     companion object {
         val NONE = BridgeDirection(null, BridgeDirectionKind.NONE)
-        val DROP = BridgeDirection(null, BridgeDirectionKind.DROP)
         val UNBOX = BridgeDirection(null, BridgeDirectionKind.UNBOX)
     }
 }
@@ -142,16 +141,16 @@ internal data class BridgeDirection(val erasedType: IrType?, val kind: BridgeDir
  *  +-----+-----+-----+-----+-----+-----+
  *  | VAL |  E  |  U  |  N  |  U  |  U  |
  *  +-----+-----+-----+-----+-----+-----+
- *  | REF |  E  |  N  |  B  |  N  | C^N |
+ *  | REF |  E  |  D  |  B  |  N  | C^N |
  *  +-----+-----+-----+-----+-----+-----+
- *  | <T> |  E  |  N  |  B  | C^N | C^N |
+ *  | <T> |  E  |  D  |  B  | C^N | C^N |
  *  +-----+-----+-----+-----+-----+-----+
  */
 
 private typealias BridgeDirectionBuilder = (ParameterIndex, IrType?, IrType?) -> BridgeDirection
 
 private val None: BridgeDirectionBuilder = { _, _, _ -> BridgeDirection.NONE }
-private val Drop: BridgeDirectionBuilder = { _, _, _ -> BridgeDirection.DROP }
+private val Drop: BridgeDirectionBuilder = { _, _, to -> BridgeDirection(to, BridgeDirectionKind.DROP) }
 private val Box: BridgeDirectionBuilder = { _, _, to -> BridgeDirection(to, BridgeDirectionKind.BOX) }
 private val Unbox: BridgeDirectionBuilder = { _, _, _ -> BridgeDirection.UNBOX }
 private val Cast: BridgeDirectionBuilder = { index, from, to ->
@@ -173,8 +172,8 @@ private val bridgeDirectionBuilders = arrayOf(
         arrayOf(None, null, null, null, null),
         arrayOf(null, None, Drop, Drop, Drop),
         arrayOf(null, Unbox, None, Unbox, Unbox),
-        arrayOf(null, None, Box, None, Cast),
-        arrayOf(null, None, Box, Cast, Cast),
+        arrayOf(null, Drop, Box, None, Cast),
+        arrayOf(null, Drop, Box, Cast, Cast),
 )
 
 private fun IrFunction.bridgeDirectionToAt(overriddenFunction: IrFunction, index: ParameterIndex, policy: BridgesPolicy): BridgeDirection {
