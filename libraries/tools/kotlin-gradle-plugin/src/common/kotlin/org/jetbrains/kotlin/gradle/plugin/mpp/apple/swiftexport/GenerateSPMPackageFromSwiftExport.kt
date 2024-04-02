@@ -46,10 +46,6 @@ internal abstract class GenerateSPMPackageFromSwiftExport : DefaultTask() {
     @get:PathSensitive(PathSensitivity.RELATIVE)
     abstract val headerBridgePath: RegularFileProperty
 
-    @get:InputFile
-    @get:PathSensitive(PathSensitivity.RELATIVE)
-    abstract val libraryPath: RegularFileProperty
-
     @get:OutputDirectory
     abstract val packagePath: DirectoryProperty
 
@@ -59,6 +55,8 @@ internal abstract class GenerateSPMPackageFromSwiftExport : DefaultTask() {
     @get:Internal
     val kotlinRuntimeIncludePath get() = kotlinRuntimeModulePath.resolve("include")
 
+    private val swiftLibrary get() = swiftLibraryName.get()
+    private val kotlinLibrary get() = kotlinLibraryName.get()
     private val swiftApiModule get() = swiftApiModuleName.get()
     private val headerBridgeModule get() = headerBridgeModuleName.get()
     private val spmPackageRootPath get() = packagePath.getFile()
@@ -88,7 +86,7 @@ internal abstract class GenerateSPMPackageFromSwiftExport : DefaultTask() {
 
     private fun createHeaderTarget() {
         headerBridgePath.getFile().copyTo(
-            headerBridgeIncludePath.resolve("Kotlin.h")
+            headerBridgeIncludePath.resolve("${headerBridgeModule}.h")
         )
         headerBridgeIncludePath.resolve("module.modulemap").writeText(
             """
@@ -96,8 +94,8 @@ internal abstract class GenerateSPMPackageFromSwiftExport : DefaultTask() {
                 umbrella "."
                 export *
                 
-                link "${swiftLibraryName.get()}"
-                link "${kotlinLibraryName.get()}"
+                link "$swiftLibrary"
+                link "$kotlinLibrary"
             }
             """.trimIndent()
         )
@@ -114,7 +112,7 @@ internal abstract class GenerateSPMPackageFromSwiftExport : DefaultTask() {
     }
 
     private fun createSwiftTarget() {
-        swiftApiModulePath.resolve("Kotlin.swift").writer().use { kotlinApi ->
+        swiftApiModulePath.resolve("${swiftApiModule}.swift").writer().use { kotlinApi ->
             swiftApiPath.get().asFile.reader().forEachLine {
                 kotlinApi.append(it).appendLine()
             }
@@ -132,7 +130,7 @@ internal abstract class GenerateSPMPackageFromSwiftExport : DefaultTask() {
                 name: "$swiftApiModule",
                 products: [
                     .library(
-                        name: "${swiftApiModule}Library",
+                        name: "$swiftLibrary",
                         targets: ["$swiftApiModule"]
                     ),
                 ],
@@ -152,5 +150,4 @@ internal abstract class GenerateSPMPackageFromSwiftExport : DefaultTask() {
             """.trimIndent()
         )
     }
-
 }

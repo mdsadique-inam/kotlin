@@ -51,6 +51,10 @@ internal abstract class BuildSPMSwiftExportPackage : DefaultTask() {
     val platformName: Provider<String>
         get() = providerFactory.environmentVariable("PLATFORM_NAME")
 
+    @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val workingDir: DirectoryProperty
+
     @get:OutputDirectory
     val interfacesPath: Provider<Directory>
         get() = packageBuildDirectory.map { it.dir("dd-interfaces") }
@@ -87,10 +91,6 @@ internal abstract class BuildSPMSwiftExportPackage : DefaultTask() {
             it.value.get()
         }
 
-        val workingDir = packageBuildDirectory.flatMap {
-            it.dir(swiftApiModuleName)
-        }.mapToFile()
-
         // FIXME: This will not work with dynamic libraries
         runCommand(
             listOf(
@@ -100,7 +100,7 @@ internal abstract class BuildSPMSwiftExportPackage : DefaultTask() {
                 "-destination", destination(),
             ) + (inheritedBuildSettings + intermediatesDestination).map { (k, v) -> "$k=$v" },
             processConfiguration = {
-                directory(workingDir.get())
+                directory(workingDir.getFile())
             }
         )
         return objectFiles
