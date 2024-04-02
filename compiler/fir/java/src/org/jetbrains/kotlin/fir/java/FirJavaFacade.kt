@@ -538,8 +538,6 @@ abstract class FirJavaFacade(
                 ).apply {
                     isStatic = javaField.isStatic
                 }
-                visibility = javaField.visibility
-                modality = javaField.modality
                 returnTypeRef = returnType.toFirJavaTypeRef(session)
                 isVar = !javaField.isFinal
                 annotationBuilder = { javaField.convertAnnotationsToFir(session) }
