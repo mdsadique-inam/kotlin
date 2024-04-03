@@ -1162,8 +1162,8 @@ abstract class FirDataFlowAnalyzer(
         leftExitNode.mergeIncomingFlow()
         rightEnterNode.mergeIncomingFlow { _, flow ->
             val leftOperandVariable = getVariableIfStable(flow, binaryLogicExpression.leftOperand) ?: return@mergeIncomingFlow
-            val isAnd = binaryLogicExpression.kind == LogicOperationKind.AND
-            flow.commitOperationStatement(leftOperandVariable eq isAnd)
+            val saturatingValue = binaryLogicExpression.kind != LogicOperationKind.AND
+            flow.commitOperationStatement(leftOperandVariable eq !saturatingValue)
         }
     }
 
@@ -1172,7 +1172,7 @@ abstract class FirDataFlowAnalyzer(
     }
 
     private fun AbstractBinaryExitNode<FirBinaryLogicExpression>.mergeBinaryLogicOperatorFlow() = mergeIncomingFlow { path, flow ->
-        val isAnd = fir.kind == LogicOperationKind.AND
+        val saturatingValue = fir.kind != LogicOperationKind.AND // the value that short-circuits the expression and skips to the end
         val flowFromLeft = leftOperandNode.getFlow(path)
         val flowFromRight = rightOperandNode.getFlow(path)
 
@@ -1183,34 +1183,35 @@ abstract class FirDataFlowAnalyzer(
             // has to be saturating (true for or, false for and), and it has to be produced by the left operand.
             if (leftIsBoolean) {
                 // Not checking for reassignments is safe since RHS did not execute.
-                flow.commitOperationStatement(leftVariable!! eq !isAnd)
+                flow.commitOperationStatement(leftVariable!! eq saturatingValue)
             }
         } else {
             val rightVariable = getVariableIfStable(flowFromRight, fir.rightOperand)
             val rightIsBoolean = rightVariable != null && fir.rightOperand.resolvedType.isBoolean
             val operatorVariable = variableStorage.createSynthetic(fir)
-            // If `left && right` is true, then both are evaluated to true. If `left || right` is false, then both are false.
-            // Approved type statements for RHS already contain everything implied by the corresponding value of LHS.
-            val bothEvaluated = operatorVariable eq isAnd
-            flow.addAllConditionally(bothEvaluated, flowFromRight)
-            if (rightIsBoolean) {
-                flow.addAllConditionally(bothEvaluated, logicSystem.approveOperationStatement(flowFromRight, rightVariable!! eq isAnd))
-            }
-            // If `left && right` is false, then either `left` is false, or both were evaluated and `right` is false.
-            // If `left || right` is true, then either `left` is true, or both were evaluated and `right` is true.
-            if (leftIsBoolean && rightIsBoolean) {
-                flow.addAllConditionally(
-                    operatorVariable eq !isAnd,
-                    logicSystem.orForTypeStatements(
-                        // Not checking for reassignments is safe since we will only take statements that are also true in RHS
-                        // (so they're true regardless of whether the variable ends up being reassigned or not).
-                        logicSystem.approveOperationStatement(flowFromLeft, leftVariable!! eq !isAnd),
-                        // TODO: and(approved from right, ...)? FE1.0 doesn't seem to handle that correctly either. KT-59690
-                        //   if (x is A || whatever(x as B)) { /* x is (A | B) */ }
-                        logicSystem.approveOperationStatement(flowFromRight, rightVariable!! eq !isAnd),
-                    )
-                )
-            }
+            val statementsFromRight = flow.collectTypeStatements(flowFromRight)
+            // If the result is not saturating, then both sides executed and are not saturating. The fact that the left
+            // side executed and is not saturating is already known in `flowFromRight`, so we don't need to repeat that.
+            val whenNotSaturating = if (rightIsBoolean) logicSystem.andForTypeStatements(
+                statementsFromRight,
+                logicSystem.approveOperationStatement(flowFromRight, rightVariable!! eq !saturatingValue),
+            ) else statementsFromRight
+            // If the result is saturating, then either the left side is saturating, or both sides executed and
+            // the right side is saturating.
+            val whenSaturating = if (leftIsBoolean) {
+                // Not checking for reassignments is safe since we will only take statements that are also true in RHS
+                // (so they're true regardless of whether the variable ends up being reassigned or not).
+                val whenLeftIsSaturating = logicSystem.approveOperationStatement(flowFromLeft, leftVariable!! eq saturatingValue)
+                val whenRightIsSaturating = if (rightIsBoolean) logicSystem.andForTypeStatements(
+                    statementsFromRight,
+                    logicSystem.approveOperationStatement(flowFromRight, rightVariable!! eq saturatingValue),
+                ) else statementsFromRight
+                logicSystem.orForTypeStatements(whenLeftIsSaturating, whenRightIsSaturating)
+            } else emptyMap()
+            // The entire boolean expression has to be true or false, so the `or` of the two is always correct.
+            flow.addAllStatements(logicSystem.orForTypeStatements(whenSaturating, whenNotSaturating))
+            flow.addAllConditionally(operatorVariable eq saturatingValue, whenSaturating)
+            flow.addAllConditionally(operatorVariable eq !saturatingValue, whenNotSaturating)
         }
     }
 
@@ -1542,11 +1543,16 @@ abstract class FirDataFlowAnalyzer(
     }
 
     private fun MutableFlow.addAllConditionally(condition: OperationStatement, from: Flow) {
-        from.knownVariables.forEach {
-            // Only add the statement if this variable is not aliasing another in `this` (but it could be aliasing in `from`).
-            if (unwrapVariable(it) == it) addImplication(condition implies (from.getTypeStatement(it) ?: return@forEach))
-        }
+        addAllConditionally(condition, collectTypeStatements(from))
     }
+
+    private fun MutableFlow.collectTypeStatements(from: Flow): TypeStatements =
+        buildMap {
+            from.knownVariables.forEach {
+                // Only add the statement if this variable is not aliasing another in `this` (but it could be aliasing in `from`).
+                if (unwrapVariable(it) == it) put(it, from.getTypeStatement(it) ?: return@forEach)
+            }
+        }
 
     private fun MutableFlow.commitOperationStatement(statement: OperationStatement) {
         addAllStatements(logicSystem.approveOperationStatement(this, statement, removeApprovedOrImpossible = true))
