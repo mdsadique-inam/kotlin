@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.fir.contracts.description.ConeConditionalEffectDecla
 import org.jetbrains.kotlin.fir.contracts.description.ConeReturnsEffectDeclaration
 import org.jetbrains.kotlin.fir.contracts.effects
 import org.jetbrains.kotlin.fir.declarations.FirContractDescriptionOwner
+import org.jetbrains.kotlin.fir.declarations.FirControlFlowGraphOwner
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.expressions.FirLiteralExpression
@@ -35,9 +36,10 @@ import org.jetbrains.kotlin.types.AbstractTypeChecker
 object FirReturnsImpliesAnalyzer : FirControlFlowChecker(MppCheckerKind.Common) {
 
     override fun analyze(graph: ControlFlowGraph, reporter: DiagnosticReporter, context: CheckerContext) {
+        val variableStorage =
+            (graph.declaration as? FirControlFlowGraphOwner)?.controlFlowGraphReference?.dataFlowInfo?.variableStorage ?: return
         val logicSystem = object : LogicSystem(context.session.typeContext) {
-            override val variableStorage: VariableStorageImpl
-                get() = throw IllegalStateException("shouldn't be called")
+            override val variableStorage = variableStorage
         }
         analyze(graph, reporter, context, logicSystem)
     }
@@ -57,7 +59,6 @@ object FirReturnsImpliesAnalyzer : FirControlFlowChecker(MppCheckerKind.Common) 
         //   1. trivial contracts: `returns() implies (x is T)` when `x`'s original type is `T`
         //   2. tautological contracts: `returnsNotNull() implies (x != null)` with a `return x`
         // In both cases `x` must not have been used in data flow analysis in any way, otherwise it would already have a variable.
-        val variableStorage = function.controlFlowGraphReference?.dataFlowInfo?.variableStorage as? VariableStorageImpl ?: return
         val argumentVariables = Array(function.valueParameters.size + 1) { i ->
             val parameterSymbol = if (i > 0) {
                 function.valueParameters[i - 1].symbol
@@ -68,14 +69,14 @@ object FirReturnsImpliesAnalyzer : FirControlFlowChecker(MppCheckerKind.Common) 
                     null
                 } ?: function.symbol
             }
-            variableStorage.getOrCreateLocalVariable(parameterSymbol, isReceiver = i == 0)
+            logicSystem.variableStorage.getOrCreateLocalVariable(parameterSymbol, isReceiver = i == 0)
         }
 
         for (firEffect in effects) {
             val coneEffect = firEffect.effect as? ConeConditionalEffectDeclaration ?: continue
             val returnValue = coneEffect.effect as? ConeReturnsEffectDeclaration ?: continue
             val wrongCondition = graph.exitNode.previousCfgNodes.any {
-                isWrongConditionOnNode(it, coneEffect, returnValue, function, logicSystem, variableStorage, argumentVariables, context)
+                isWrongConditionOnNode(it, coneEffect, returnValue, function, logicSystem, argumentVariables, context)
             }
             if (wrongCondition) {
                 // TODO, KT-59813: reportOn(firEffect.source, ...)
@@ -90,7 +91,6 @@ object FirReturnsImpliesAnalyzer : FirControlFlowChecker(MppCheckerKind.Common) 
         effect: ConeReturnsEffectDeclaration,
         function: FirFunction,
         logicSystem: LogicSystem,
-        variableStorage: VariableStorageImpl,
         argumentVariables: Array<RealVariable>,
         context: CheckerContext
     ): Boolean {
@@ -106,7 +106,7 @@ object FirReturnsImpliesAnalyzer : FirControlFlowChecker(MppCheckerKind.Common) 
 
         if (isReturn && resultExpression is FirWhenExpression) {
             return node.collectBranchExits().any {
-                isWrongConditionOnNode(it, effectDeclaration, effect, function, logicSystem, variableStorage, argumentVariables, context)
+                isWrongConditionOnNode(it, effectDeclaration, effect, function, logicSystem, argumentVariables, context)
             }
         }
 
@@ -117,8 +117,9 @@ object FirReturnsImpliesAnalyzer : FirControlFlowChecker(MppCheckerKind.Common) 
                 if (!operation.isTrueFor(resultExpression.value)) return false
             } else {
                 if (expressionType != null && !operation.canBeTrueFor(context.session, expressionType)) return false
-                val resultVar =
-                    variableStorage.getOrCreateIfReal(resultExpression, unwrapAlias = { variable, _ -> flow.unwrapVariable(variable) })
+                val resultVar = logicSystem.variableStorage.getOrCreateIfReal(
+                    resultExpression, unwrapAlias = { variable, _ -> flow.unwrapVariable(variable) }
+                )
                 if (resultVar != null) {
                     val impliedByReturnValue = logicSystem.approveOperationStatement(flow, OperationStatement(resultVar, operation))
                     if (impliedByReturnValue.isNotEmpty()) {

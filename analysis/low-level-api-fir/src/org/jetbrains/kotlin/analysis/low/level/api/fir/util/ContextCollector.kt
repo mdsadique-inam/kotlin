@@ -220,7 +220,7 @@ private class ContextCollectorVisitor(
 
     private val context = BodyResolveContext(
         returnTypeCalculator = ReturnTypeCalculatorForFullBodyResolve.Default,
-        dataFlowAnalyzerContext = DataFlowAnalyzerContext(session)
+        dataFlowAnalyzerContext = DataFlowAnalyzerContext()
     )
 
     private val result = HashMap<ContextKey, Context>()

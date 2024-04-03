@@ -43,13 +43,13 @@ import org.jetbrains.kotlin.types.ConstantValueKind
 import org.jetbrains.kotlin.types.SmartcastStability
 import org.jetbrains.kotlin.util.OperatorNameConventions
 
-class DataFlowAnalyzerContext(session: FirSession) {
+class DataFlowAnalyzerContext {
     val graphBuilder = ControlFlowGraphBuilder()
     val preliminaryLoopVisitor = PreliminaryLoopVisitor()
     val variablesClearedBeforeLoop = stackOf<List<RealVariable>>()
     internal val variableAssignmentAnalyzer = FirLocalVariableAssignmentAnalyzer()
 
-    var variableStorage = VariableStorageImpl(session)
+    var variableStorage = VariableStorageImpl()
         private set
 
     private var assignmentCounter = 0
@@ -63,7 +63,7 @@ class DataFlowAnalyzerContext(session: FirSession) {
         preliminaryLoopVisitor.resetState()
         variablesClearedBeforeLoop.reset()
         variableAssignmentAnalyzer.reset()
-        variableStorage = variableStorage.clear()
+        variableStorage = VariableStorageImpl()
     }
 }
 

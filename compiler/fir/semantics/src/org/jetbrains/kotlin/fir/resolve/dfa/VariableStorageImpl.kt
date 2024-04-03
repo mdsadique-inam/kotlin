@@ -6,7 +6,6 @@
 package org.jetbrains.kotlin.fir.resolve.dfa
 
 import org.jetbrains.kotlin.fir.FirElement
-import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.references.symbol
@@ -14,18 +13,16 @@ import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.unwrapFakeOverrides
 
-class VariableStorageImpl(private val session: FirSession) : VariableStorage() {
+class VariableStorageImpl {
     // These are basically hash sets, since they map each key to itself. The only point of having them as maps
     // is to deduplicate equal instances with lookups. The impact of that is questionable, but whatever.
     private val realVariables: MutableMap<RealVariable, RealVariable> = HashMap()
     private val syntheticVariables: MutableMap<FirElement, SyntheticVariable> = HashMap()
 
-    fun clear(): VariableStorageImpl = VariableStorageImpl(session)
-
     private val nextVariableIndex: Int
         get() = realVariables.size + syntheticVariables.size + 1
 
-    override fun getLocalVariable(symbol: FirBasedSymbol<*>, isReceiver: Boolean): RealVariable? =
+    fun getLocalVariable(symbol: FirBasedSymbol<*>, isReceiver: Boolean): RealVariable? =
         RealVariable(symbol, isReceiver, null, null, nextVariableIndex).takeIfKnown()
 
     fun getOrCreateLocalVariable(symbol: FirBasedSymbol<*>, isReceiver: Boolean): RealVariable =
@@ -36,7 +33,7 @@ class VariableStorageImpl(private val session: FirSession) : VariableStorage() {
 
     // Use this when making non-type statements, such as `variable eq true`.
     // Returns null if the statement would be useless (the variable has not been used in any implications).
-    override fun getIfUsed(fir: FirElement, unwrapAlias: (RealVariable, FirElement) -> RealVariable?): DataFlowVariable? =
+    fun getIfUsed(fir: FirElement, unwrapAlias: (RealVariable, FirElement) -> RealVariable?): DataFlowVariable? =
         getImpl(fir, createReal = false, unwrapAlias)?.takeSyntheticIfKnown()
 
     // Use this when making type statements, such as `variable typeEq ...` or `variable notEq null`.
