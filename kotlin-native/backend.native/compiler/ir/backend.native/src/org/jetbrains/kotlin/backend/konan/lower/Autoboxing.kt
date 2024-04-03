@@ -167,8 +167,8 @@ private class AutoboxingTransformer(val context: Context) : AbstractValueUsageTr
         val conversion = context.getTypeConversion(actualType, expectedType)
         return if (conversion == null) {
             val actualClass = actualType.classOrNull?.owner
-            val expectedClass = expectedType.classOrNull?.owner
             val erasedExpectedType = expectedType.erasure()
+            val erasedExpectedClass = erasedExpectedType.classOrFail.owner
             return when {
                 actualType.makeNotNull() == expectedType.makeNotNull() -> this
                 expectedType.isUnit() ->
@@ -178,8 +178,8 @@ private class AutoboxingTransformer(val context: Context) : AbstractValueUsageTr
                         // conservatively insert type check for them (due to unsafe casts).
                         && actualClass?.canBeAssignedTo(erasedExpectedType.getClass()!!) != true
                         && actualType.getInlinedClassNative() == null
-                        && expectedClass?.isObjCForwardDeclaration() != true
-                        && expectedClass?.isObjCMetaClass() != true // See KT-65260 for details.
+                        && !erasedExpectedClass.isObjCForwardDeclaration()
+                        && !erasedExpectedClass.isObjCMetaClass() // See KT-65260 for details.
                 -> {
                     this.checkedCast(actualType, erasedExpectedType)
                 }
