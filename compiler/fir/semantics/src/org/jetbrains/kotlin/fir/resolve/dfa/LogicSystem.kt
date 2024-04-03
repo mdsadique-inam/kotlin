@@ -17,7 +17,7 @@ abstract class LogicSystem(private val context: ConeInferenceContext) {
     private val nullableNothingType = session.builtinTypes.nullableNothingType.type
     private val anyType = session.builtinTypes.anyType.type
 
-    abstract val variableStorage: VariableStorageImpl
+    abstract val variableStorage: VariableStorage
 
     protected open fun ConeKotlinType.isAcceptableForSmartcast(): Boolean {
         return !isNullableNothing

@@ -49,7 +49,7 @@ class DataFlowAnalyzerContext {
     val variablesClearedBeforeLoop = stackOf<List<RealVariable>>()
     internal val variableAssignmentAnalyzer = FirLocalVariableAssignmentAnalyzer()
 
-    var variableStorage = VariableStorageImpl()
+    var variableStorage: VariableStorage = VariableStorage()
         private set
 
     private var assignmentCounter = 0
@@ -63,7 +63,7 @@ class DataFlowAnalyzerContext {
         preliminaryLoopVisitor.resetState()
         variablesClearedBeforeLoop.reset()
         variableAssignmentAnalyzer.reset()
-        variableStorage = VariableStorageImpl()
+        variableStorage = VariableStorage()
     }
 }
 
@@ -92,7 +92,7 @@ abstract class FirDataFlowAnalyzer(
 
                 override val logicSystem: LogicSystem =
                     object : LogicSystem(components.session.typeContext) {
-                        override val variableStorage: VariableStorageImpl
+                        override val variableStorage: VariableStorage
                             get() = dataFlowAnalyzerContext.variableStorage
 
                         override fun ConeKotlinType.isAcceptableForSmartcast(): Boolean {
