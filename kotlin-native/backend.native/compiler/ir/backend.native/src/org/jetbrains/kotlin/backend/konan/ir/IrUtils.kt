@@ -139,7 +139,7 @@ internal data class BridgeDirection(val erasedType: IrType?, val kind: BridgeDir
  *  +-----+-----+-----+-----+-----+-----+
  *  |  () |  E  |  N  |  D  |  D  |  D  |
  *  +-----+-----+-----+-----+-----+-----+
- *  | VAL |  E  |  U  |  N  |  U  |  U  |
+ *  | VAL |  E  |  E  |  N  |  U  |  U  |
  *  +-----+-----+-----+-----+-----+-----+
  *  | REF |  E  |  D  |  B  |  N  | C^N |
  *  +-----+-----+-----+-----+-----+-----+
@@ -171,7 +171,7 @@ private val Cast: BridgeDirectionBuilder = { index, from, to ->
 private val bridgeDirectionBuilders = arrayOf(
         arrayOf(None, null, null, null, null),
         arrayOf(null, None, Drop, Drop, Drop),
-        arrayOf(null, Unbox, None, Unbox, Unbox),
+        arrayOf(null, null, None, Unbox, Unbox),
         arrayOf(null, Drop, Box, None, Cast),
         arrayOf(null, Drop, Box, Cast, Cast),
 )
