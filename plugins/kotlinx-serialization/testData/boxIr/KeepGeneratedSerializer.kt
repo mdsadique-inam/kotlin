@@ -20,6 +20,19 @@ import kotlinx.serialization.json.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.descriptors.*
 
+// == value class
+// == final class ==
+@Serializable(with = ValueSerializer::class)
+@KeepGeneratedSerializer
+value class Value(val i: Int)
+
+object ValueSerializer: ToDoSerializer<Value>("ValueSerializer") {
+    override fun serialize(encoder: Encoder, value: Data) {
+        encoder.encodeInt(value.i + 1)
+    }
+}
+
+
 // == final class ==
 @Serializable(with = DataSerializer::class)
 @KeepGeneratedSerializer
@@ -89,11 +102,25 @@ class ParametrizedSerializer(val serializer: KSerializer<Any>): ToDoSerializer<P
 
 
 fun box(): String {
+    val value = Value(42)
     val data = Data(42)
     val child = Child(1)
     val childCustom = ChildWithCustom(2)
     val myEnum = MyEnum.A
     val param = ParametrizedData<Data>(data)
+
+    val valueJsonImplicit = Json.encodeToString(value)
+    val valueJson = Json.encodeToString(Value.serializer(), value)
+    val valueJsonGenerated = Json.encodeToString(Value.generatedSerializer(), value)
+    if (valueJsonImplicit != "43") {
+        return "value JSON Implicit = " + valueJsonImplicit
+    }
+    if (valueJson != "43") {
+        return "value JSON = " + valueJson
+    }
+    if (jsonGenerated != "42") {
+        return "value JSON Generated = " + jsonGenerated
+    }
 
     val jsonImplicit = Json.encodeToString(data)
     val json = Json.encodeToString(Data.serializer(), data)

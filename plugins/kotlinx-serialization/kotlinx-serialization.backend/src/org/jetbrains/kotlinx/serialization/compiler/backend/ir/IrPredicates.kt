@@ -103,7 +103,7 @@ internal val IrClass.isSerializableObject: Boolean
     get() = kind == ClassKind.OBJECT && hasSerializableOrMetaAnnotation()
 
 internal fun IrClass.shouldHaveSerializerCache(serializer: IrClass): Boolean {
-    if (haveCustomObjectSerializer(serializer)) return false
+    if (hasCustomObjectSerializer(serializer)) return false
 
     return isSerializableObject
             || isAbstractOrSealedSerializableClass
@@ -114,7 +114,7 @@ internal fun IrClass.shouldHaveKeepSerializerCache(): Boolean {
     return isEnumClass
 }
 
-private fun IrClass.haveCustomObjectSerializer(serializer: IrClass): Boolean {
+private fun IrClass.hasCustomObjectSerializer(serializer: IrClass): Boolean {
     return hasSerializableAnnotationWithArgs() && serializer.isObject
 }
 

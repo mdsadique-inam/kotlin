@@ -131,11 +131,8 @@ object KSerializerDescriptorResolver {
     ) {
         val classDescriptor = getSerializableClassDescriptorByCompanion(thisDescriptor) ?: return
 
-        if (name == SerialEntityNames.SERIALIZER_PROVIDER_NAME && result.none { it.valueParameters.size == classDescriptor.declaredTypeParameters.size }) {
-            result.add(createSerializerGetterDescriptor(thisDescriptor, classDescriptor))
-        }
-        if (name == GENERATED_SERIALIZER_PROVIDER_NAME && result.none { it.valueParameters.size == classDescriptor.declaredTypeParameters.size }) {
-            result.add(createSerializerGetterDescriptor(thisDescriptor, classDescriptor, true))
+        if ((name == SerialEntityNames.SERIALIZER_PROVIDER_NAME || name == GENERATED_SERIALIZER_PROVIDER_NAME)  && result.none { it.valueParameters.size == classDescriptor.declaredTypeParameters.size }) {
+            result.add(createSerializerGetterDescriptor(thisDescriptor, classDescriptor, name))
         }
 
         if (thisDescriptor.needSerializerFactory() && name == SerialEntityNames.SERIALIZER_PROVIDER_NAME && result.none { it.valueParameters.size == 1 && it.valueParameters.first().isVararg }) {
@@ -485,14 +482,13 @@ object KSerializerDescriptorResolver {
     private fun createSerializerGetterDescriptor(
         thisClass: ClassDescriptor,
         serializableClass: ClassDescriptor,
-        keepGeneratedFunction: Boolean = false
+        functionName: Name
     ): SimpleFunctionDescriptor {
-        val name = if (!keepGeneratedFunction) SerialEntityNames.SERIALIZER_PROVIDER_NAME else GENERATED_SERIALIZER_PROVIDER_NAME
 
         val f = SimpleFunctionDescriptorImpl.create(
             thisClass,
             Annotations.create(listOfNotNull(thisClass.jsExportIgnore())),
-            name,
+            functionName,
             CallableMemberDescriptor.Kind.SYNTHESIZED,
             thisClass.source
         )

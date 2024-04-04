@@ -34,11 +34,11 @@ class SerializableCompanionIrGenerator(
 ) : BaseIrGenerator(irClass, compilerContext) {
 
     companion object {
-        fun getSerializerGetterFunction(serializableIrClass: IrClass, keepGeneratedFunction: Boolean = false): IrSimpleFunction? {
+        fun getSerializerGetterFunction(serializableIrClass: IrClass, useGeneratedFunction: Boolean = false): IrSimpleFunction? {
             val irClass =
                 if (serializableIrClass.isSerializableObject) serializableIrClass else serializableIrClass.companionObject() ?: return null
             return irClass.findDeclaration<IrSimpleFunction> {
-                it.name == (if (!keepGeneratedFunction) SerialEntityNames.SERIALIZER_PROVIDER_NAME else SerialEntityNames.GENERATED_SERIALIZER_PROVIDER_NAME)
+                it.name == (if (!useGeneratedFunction) SerialEntityNames.SERIALIZER_PROVIDER_NAME else SerialEntityNames.GENERATED_SERIALIZER_PROVIDER_NAME)
                         && it.valueParameters.size == serializableIrClass.typeParameters.size
                         && it.valueParameters.all { p -> p.type.isKSerializer() }
                         && it.returnType.isKSerializer()
@@ -185,7 +185,7 @@ class SerializableCompanionIrGenerator(
     private fun generateSerializerGetter(serializer: IrClassSymbol, methodDescriptor: IrSimpleFunction) {
         addFunctionBody(methodDescriptor) { getter ->
             val args: List<IrExpression> = getter.valueParameters.map { irGet(it) }
-            val expr = serializerInstance(serializer, compilerContext, serializableIrClass.defaultType) { it: Int, _: Any -> args[it] }
+            val expr = serializerInstance(serializer, compilerContext, serializableIrClass.defaultType) { it, _ -> args[it] }
             +irReturn(requireNotNull(expr))
         }
     }
