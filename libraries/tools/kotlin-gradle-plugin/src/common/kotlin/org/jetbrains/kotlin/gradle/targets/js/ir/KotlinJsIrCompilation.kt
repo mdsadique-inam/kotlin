@@ -13,5 +13,6 @@ import javax.inject.Inject
 open class KotlinJsIrCompilation @Inject internal constructor(
     compilation: KotlinCompilationImpl
 ) : KotlinJsCompilation(compilation) {
-    internal var wasmTarget: WasmTarget? = null
+    var wasmTarget: WasmTarget? = null
+        internal set
 }

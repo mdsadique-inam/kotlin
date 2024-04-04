@@ -43,7 +43,7 @@ object WasmPlatforms {
     fun wasmPlatformByTargets(targets: Collection<WasmTarget>): TargetPlatform {
         val platforms = targets.map { wasmPlatformByTargetVersion(it) }
         return when (platforms.size) {
-            0 -> unspecifiedWasmPlatform
+            0 -> wasmJs
             1 -> platforms.first()
             else -> TargetPlatform(platforms.flatMap { it.componentPlatforms }.toSet())
         }
