@@ -91,7 +91,7 @@ tasks.dokkaHtml.configure {
 
 tasks.withType<org.gradle.jvm.tasks.Jar>{
     manifest {
-        attributes("Automatic-Module-Name" to "kotlin.metadata")
+        attributes("Automatic-Module-Name" to "kotlin.metadata.jvm")
     }
 }
 
