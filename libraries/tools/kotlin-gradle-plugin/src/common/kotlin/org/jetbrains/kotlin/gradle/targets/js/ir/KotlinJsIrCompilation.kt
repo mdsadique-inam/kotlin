@@ -11,6 +11,7 @@ import org.jetbrains.kotlin.platform.wasm.WasmTarget
 import javax.inject.Inject
 
 open class KotlinJsIrCompilation @Inject internal constructor(
-    compilation: KotlinCompilationImpl,
-    val wasmTarget: WasmTarget?
-) : KotlinJsCompilation(compilation)
+    compilation: KotlinCompilationImpl
+) : KotlinJsCompilation(compilation) {
+    internal var wasmTarget: WasmTarget? = null
+}

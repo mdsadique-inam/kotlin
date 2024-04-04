@@ -52,6 +52,8 @@ class KotlinJsIrCompilationFactory internal constructor(
     )
 
     override fun create(name: String): KotlinJsIrCompilation = target.project.objects.newInstance(
-        itemClass, compilationImplFactory.create(target, name), target.wasmTargetType?.toCompilerTarget()
-    )
+        itemClass, compilationImplFactory.create(target, name)
+    ).also {
+        it.wasmTarget = target.wasmTargetType?.toCompilerTarget()
+    }
 }
