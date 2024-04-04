@@ -18,31 +18,35 @@ import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.types.SmartcastStability
-import java.util.*
 
-sealed class DataFlowVariable(private val variableIndexForDebug: Int) : Comparable<DataFlowVariable> {
-    final override fun toString(): String {
-        return "d$variableIndexForDebug"
-    }
+sealed class DataFlowVariable
 
-    override fun compareTo(other: DataFlowVariable): Int = variableIndexForDebug.compareTo(other.variableIndexForDebug)
-}
+data class SyntheticVariable(val fir: FirElement) : DataFlowVariable()
 
-class RealVariable(
+data class RealVariable(
     val symbol: FirBasedSymbol<*>,
     val isReceiver: Boolean,
     val dispatchReceiver: RealVariable?,
     val extensionReceiver: RealVariable?,
-    variableIndexForDebug: Int,
-) : DataFlowVariable(variableIndexForDebug) {
-    val dependentVariables = mutableSetOf<RealVariable>()
+) : DataFlowVariable() {
+    companion object {
+        fun local(symbol: FirVariableSymbol<*>): RealVariable =
+            RealVariable(symbol, isReceiver = false, dispatchReceiver = null, extensionReceiver = null)
 
-    override fun equals(other: Any?): Boolean =
-        other is RealVariable && symbol == other.symbol &&
-                dispatchReceiver == other.dispatchReceiver && extensionReceiver == other.extensionReceiver
+        fun receiver(symbol: FirBasedSymbol<*>): RealVariable =
+            RealVariable(symbol, isReceiver = true, dispatchReceiver = null, extensionReceiver = null)
+    }
 
-    override fun hashCode(): Int =
-        Objects.hash(symbol, dispatchReceiver, extensionReceiver)
+    override fun toString(): String =
+        (if (isReceiver) "this@" else "") + when (symbol) {
+            is FirClassSymbol<*> -> "${symbol.classId}"
+            is FirCallableSymbol<*> -> "${symbol.callableId}"
+            else -> "$symbol"
+        } + when {
+            dispatchReceiver != null && extensionReceiver != null -> "(${dispatchReceiver}, ${extensionReceiver})"
+            dispatchReceiver != null || extensionReceiver != null -> "(${dispatchReceiver ?: extensionReceiver})"
+            else -> ""
+        }
 
     val originalType: ConeKotlinType
         get() = when (symbol) {
@@ -101,14 +105,6 @@ class RealVariable(
             }
         }.also { cachedSymbolStability = it }
     }
-}
-
-class SyntheticVariable(val fir: FirElement, variableIndexForDebug: Int) : DataFlowVariable(variableIndexForDebug) {
-    override fun equals(other: Any?): Boolean =
-        other is SyntheticVariable && fir == other.fir
-
-    override fun hashCode(): Int =
-        fir.hashCode()
 }
 
 private fun ConeKotlinType.isFinal(session: FirSession): Boolean = when (this) {
