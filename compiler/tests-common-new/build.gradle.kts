@@ -65,7 +65,7 @@ projectTest(
     workingDir = rootDir
     useJUnitPlatform()
     javaLauncher = javaToolchains.launcherFor {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(11)
     }
 }
 
