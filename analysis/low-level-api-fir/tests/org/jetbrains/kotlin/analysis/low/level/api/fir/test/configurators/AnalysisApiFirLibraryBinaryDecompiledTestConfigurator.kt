@@ -17,7 +17,6 @@ import org.jetbrains.kotlin.analysis.test.framework.project.structure.KtTestModu
 import org.jetbrains.kotlin.analysis.test.framework.project.structure.KtTestModuleStructure
 import org.jetbrains.kotlin.analysis.test.framework.project.structure.TestModuleStructureFactory
 import org.jetbrains.kotlin.analysis.test.framework.services.configuration.AnalysisApiBinaryLibraryIndexingMode
-import org.jetbrains.kotlin.analysis.test.framework.services.configuration.AnalysisApiJvmEnvironmentConfigurator
 import org.jetbrains.kotlin.analysis.test.framework.services.configuration.AnalysisApiIndexingConfiguration
 import org.jetbrains.kotlin.analysis.test.framework.services.libraries.*
 import org.jetbrains.kotlin.analysis.test.framework.test.configurators.AnalysisApiTestConfigurator
@@ -26,8 +25,6 @@ import org.jetbrains.kotlin.analysis.test.framework.test.configurators.FrontendK
 import org.jetbrains.kotlin.test.builders.TestConfigurationBuilder
 import org.jetbrains.kotlin.test.services.TestModuleStructure
 import org.jetbrains.kotlin.test.services.TestServices
-import org.jetbrains.kotlin.test.services.configuration.CommonEnvironmentConfigurator
-import org.jetbrains.kotlin.test.services.configuration.JsEnvironmentConfigurator
 
 object AnalysisApiFirLibraryBinaryDecompiledTestConfigurator : AnalysisApiTestConfigurator() {
     override val analyseInDependentSession: Boolean get() = false
@@ -37,20 +34,8 @@ object AnalysisApiFirLibraryBinaryDecompiledTestConfigurator : AnalysisApiTestCo
         builder.apply {
             useAdditionalService<KtTestModuleFactory> { KtLibraryBinaryDecompiledTestModuleFactory }
             useAdditionalService { AnalysisApiIndexingConfiguration(AnalysisApiBinaryLibraryIndexingMode.INDEX_STUBS) }
-            configureLibraryCompilationSupport(this)
+            configureLibraryCompilationSupport()
             configureOptionalTestCompilerPlugin()
-        }
-    }
-
-    fun configureLibraryCompilationSupport(builder: TestConfigurationBuilder) {
-        builder.apply {
-            useAdditionalService<TestModuleCompiler> { DispatchingTestModuleCompiler() }
-            useAdditionalService<TestModuleDecompiler> { TestModuleDecompilerJar() }
-            useConfigurators(
-                ::CommonEnvironmentConfigurator,
-                ::AnalysisApiJvmEnvironmentConfigurator,
-                ::JsEnvironmentConfigurator
-            )
         }
     }
 
