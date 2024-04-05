@@ -10,143 +10,158 @@ import org.gradle.api.file.*
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.provider.Provider
-import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.tasks.*
-import org.gradle.process.ExecOperations
 import org.gradle.work.DisableCachingByDefault
 import org.jetbrains.kotlin.gradle.utils.getFile
-import org.jetbrains.kotlin.gradle.utils.processPlist
-import org.jetbrains.kotlin.incremental.createDirectory
+import org.jetbrains.kotlin.gradle.utils.relativeOrAbsolute
+import org.jetbrains.kotlin.gradle.utils.runCommand
 import org.jetbrains.kotlin.incremental.deleteRecursivelyOrThrow
 import org.jetbrains.kotlin.konan.target.HostManager
 import java.io.File
 import java.io.Serializable
 import javax.inject.Inject
 
-internal data class FrameworkModule(val name: String, val header: File) : Serializable
+internal data class ModuleDefinition(val name: String, val header: File) : Serializable
 
 @DisableCachingByDefault
 internal abstract class FrameworkTask @Inject constructor(
-    private val execOperations: ExecOperations,
-    private val providerFactory: ProviderFactory,
+    private val fileSystem: FileSystemOperations,
 ) : DefaultTask() {
     init {
         onlyIf { HostManager.hostIsMac }
     }
 
     @get:SkipWhenEmpty
-    @get:InputFile
+    @get:InputFiles
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    abstract val binary: RegularFileProperty
+    abstract val libraries: ConfigurableFileCollection
 
-    @get:InputFile
-    @get:Optional
+    @get:Input
+    abstract val binaryName: Property<String>
+
+    @get:InputDirectory
     @get:PathSensitive(PathSensitivity.RELATIVE)
-    abstract val umbrella: RegularFileProperty
+    abstract val swiftModule: DirectoryProperty
 
+    @get:Input
     @get:Optional
-    @get:Input
-    abstract val modules: ListProperty<FrameworkModule>
+    abstract val headerDefinitions: ListProperty<ModuleDefinition>
 
-    @get:Input
-    abstract val frameworkName: Property<String>
-
-    @get:Input
-    abstract val bundleIdentifier: Property<String>
-
-    @get:Input
-    val platformName: Provider<String>
-        get() = providerFactory.environmentVariable("PLATFORM_NAME")
+    @get:InputDirectory
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val workingDir: DirectoryProperty
 
     @get:Internal
-    abstract val frameworkPath: DirectoryProperty
+    val libraryName: Provider<String>
+        get() = binaryName.map { "lib${it}.a" }
+
+    @get:Internal
+    val frameworkName: Provider<String>
+        get() = binaryName.map { "${it}.xcframework" }
 
     @get:OutputDirectory
-    val frameworkRootPath: Provider<Directory>
-        get() = frameworkPath.map { it.dir("${frameworkName.get()}.framework") }
+    val frameworkPath: Provider<Directory>
+        get() = workingDir.map { it.dir(frameworkName.get()) }
 
-    private val modulePath: Provider<Directory>
-        get() = frameworkRootPath.map { it.dir("Modules") }
+    @get:OutputFile
+    val libraryPath: Provider<RegularFile>
+        get() = workingDir.map { it.file(libraryName.get()) }
 
-    private val headerPath: Provider<Directory>
-        get() = frameworkRootPath.map { it.dir("Headers") }
+    @get:OutputDirectory
+    val headersPath: Provider<Directory>
+        get() = workingDir.map { it.dir("Headers") }
 
     @TaskAction
     fun assembleFramework() {
-        frameworkRootPath.getFile().apply {
+        frameworkPath.getFile().apply {
             if (exists()) {
                 deleteRecursivelyOrThrow()
             }
         }
 
-        modulePath.getFile().createDirectory()
-        headerPath.getFile().createDirectory()
+        libraries.asFileTree.forEach {
+            val exists = it.exists()
+            println("File: ${it.canonicalPath} exists: $exists")
+        }
 
-        copyBinary()
-        copyHeaders()
-        createModuleMap()
-        createInfoPlist()
+        println("Working dir: ${workingDir.getFile()}")
+        println("Swift module: ${swiftModule.getFile()}")
+
+        assembleBinary()
+        prepareHeaders()
+        createXCFramework()
+        copyModule()
+        cleanup()
     }
 
-    private fun copyBinary() {
-        binary.getFile().copyTo(
-            frameworkRootPath.getFile().resolve(frameworkName.get())
-        )
-    }
-
-    private fun createModuleMap() {
-        val umbrellaHeader = umbrella.orNull?.asFile?.let { "umbrella header \"${it.name}\"" }
-        val modules = modules.getOrElse(emptyList())
-
-        modulePath.getFile().resolve("module.modulemap").writeText(
-            """
-            |framework module ${frameworkName.get()} {
-            |   ${umbrellaHeader.orEmpty()}
-            |   export *
-            |   
-            |${
-                modules.joinToString("\n") {
-                    """
-                    |   module ${it.name} {
-                    |       header "${it.header.name}"
-                    |       export *
-                    |   }
-                    """.trimMargin()
-                }
+    private fun assembleBinary() {
+        runCommand(
+            listOf(
+                "libtool",
+                "-static",
+                "-o", libraryPath.getFile().name
+            ) + libraries.asFileTree.map { it.relativeOrAbsolute(workingDir.getFile()) },
+            processConfiguration = {
+                directory(workingDir.getFile())
             }
-            |   
-            |   use Foundation
-            |   requires objc    
-            |}
-            """.trimMargin()
         )
     }
 
-    private fun createInfoPlist() {
-        val info = mapOf(
-            "CFBundleIdentifier" to bundleIdentifier.get(),
-            "CFBundleInfoDictionaryVersion" to "6.0",
-            "CFBundlePackageType" to "FMWK",
-            "CFBundleVersion" to "1",
-            "DTSDKName" to platformName.get(),
-            "CFBundleExecutable" to frameworkName.get(),
-            "CFBundleName" to frameworkName.get()
+    private fun createXCFramework() {
+        runCommand(
+            listOf(
+                "xcodebuild",
+                "-create-xcframework",
+                "-library", libraryPath.getFile().name,
+                "-headers", headersPath.getFile().relativeOrAbsolute(workingDir.getFile()),
+                "-allow-internal-distribution",
+                "-output", binaryName.map { "$it.xcframework" }.get()
+            ),
+            processConfiguration = {
+                directory(workingDir.getFile())
+            }
         )
+    }
 
-        val outputFile = frameworkRootPath.getFile().resolve("Info.plist")
+    private fun prepareHeaders() {
+        val modulemap = headersPath.getFile().resolve("module.modulemap")
+        headerDefinitions.getOrElse(emptyList()).forEach { moduleDef ->
+            modulemap.appendText(
+                """
+                |module ${moduleDef.name} {
+                |   header "${moduleDef.header.name}"
+                |   export *
+                |}
+                |
+                """.trimMargin()
+            )
 
-        processPlist(outputFile, execOperations) {
-            info.forEach {
-                add(":${it.key}", it.value)
+            fileSystem.copy {
+                it.from(moduleDef.header)
+                it.into(headersPath)
             }
         }
     }
 
-    private fun copyHeaders() {
-        modules.getOrElse(emptyList()).map { it.header }.forEach {
-            it.copyTo(
-                headerPath.getFile().resolve(it.name)
-            )
+    private fun copyModule() {
+        frameworkPath.getFile().listFiles()?.let { arch ->
+            arch.filter {
+                it.isDirectory
+            }.forEach { targetFramework ->
+                fileSystem.copy {
+                    it.from(swiftModule)
+                    it.into(targetFramework.resolve(swiftModule.asFile.get().name))
+                }
+            }
+        }
+    }
+
+    private fun cleanup() {
+        fileSystem.delete {
+            it.delete(libraryPath)
+        }
+        fileSystem.delete {
+            it.delete(headersPath)
         }
     }
 }

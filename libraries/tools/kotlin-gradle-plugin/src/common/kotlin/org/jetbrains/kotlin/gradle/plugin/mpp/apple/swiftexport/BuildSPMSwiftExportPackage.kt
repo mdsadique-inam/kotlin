@@ -59,16 +59,21 @@ internal abstract class BuildSPMSwiftExportPackage : DefaultTask() {
     val interfacesPath: Provider<Directory>
         get() = packageBuildDirectory.map { it.dir("dd-interfaces") }
 
-    private val objectFilesPath
+    @get:OutputDirectory
+    val objectFilesPath: Provider<Directory>
         get() = packageBuildDirectory.map { it.dir("dd-o-files") }
+
+    @get:OutputDirectory
+    val buildIntermediatesPath: Provider<Directory>
+        get() = packageBuildDirectory.map { it.dir("dd-other") }
 
     @get:OutputFile
     val packageLibraryPath: Provider<RegularFile>
         get() = objectFilesPath.map { it.file("lib${swiftLibraryName.get()}.a") }
 
     @get:OutputDirectory
-    val buildIntermediatesPath: Provider<Directory>
-        get() = packageBuildDirectory.map { it.dir("dd-other") }
+    val swiftModulePath: Provider<Directory>
+        get() = interfacesPath.map { it.dir("${swiftApiModuleName.get()}.swiftmodule") }
 
     @get:Internal
     abstract val packageBuildDirectory: DirectoryProperty
