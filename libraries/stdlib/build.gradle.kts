@@ -45,6 +45,7 @@ fun KotlinCommonCompilerOptions.mainCompilationWithK1() {
     languageVersion = KotlinVersion.KOTLIN_2_0
     apiVersion = KotlinVersion.KOTLIN_2_0
 //    freeCompilerArgs.add("-Xsuppress-api-version-greater-than-language-version-error")
+    freeCompilerArgs.add("-Xstdlib-compilation")
 }
 
 val configurationBuiltins = resolvingConfiguration("builtins") {
@@ -236,6 +237,7 @@ kotlin {
                     freeCompilerArgs += listOf(
                         "-Xallow-kotlin-package",
                         "-Xexpect-actual-classes",
+                        "-Xstdlib-compilation",
                     )
                 }
             }
@@ -268,6 +270,7 @@ kotlin {
                 kotlinOptions.freeCompilerArgs += listOfNotNull(
                     "-Xallow-kotlin-package",
                     "-Xexpect-actual-classes",
+                    "-Xstdlib-compilation",
                     diagnosticNamesArg
                 )
             }
