@@ -20,9 +20,9 @@ package kotlin
  * The `String` class represents character strings. All string literals in Kotlin programs, such as `"abc"`, are
  * implemented as instances of this class.
  */
-public class String : Comparable<String>, CharSequence {
+public expect class String : Comparable<String>, CharSequence {
     companion object {}
-    
+
     /**
      * Returns a string obtained by concatenating this string with the string representation of the given [other] object.
      */

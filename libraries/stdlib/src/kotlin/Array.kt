@@ -12,7 +12,7 @@ package kotlin
  * See [Kotlin language documentation](https://kotlinlang.org/docs/reference/basic-types.html#arrays)
  * for more information on arrays.
  */
-public class Array<T> {
+public expect class Array<T> {
     /**
      * Creates a new array with the specified [size], where each element is calculated by calling the specified
      * [init] function.

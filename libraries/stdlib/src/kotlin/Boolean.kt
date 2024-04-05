@@ -12,7 +12,7 @@ package kotlin
  * Represents a value which is either `true` or `false`.
  * On the JVM, non-nullable values of this type are represented as values of the primitive type `boolean`.
  */
-public class Boolean private constructor() : Comparable<Boolean> {
+public expect class Boolean private constructor() : Comparable<Boolean> {
     @SinceKotlin("1.3")
     public companion object {}
 

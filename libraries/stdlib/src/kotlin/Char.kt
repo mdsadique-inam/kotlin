@@ -12,7 +12,7 @@ package kotlin
  * Represents a 16-bit Unicode character.
  * On the JVM, non-nullable values of this type are represented as values of the primitive type `char`.
  */
-public class Char private constructor() : Comparable<Char> {
+public expect class Char private constructor() : Comparable<Char> {
     /**
      * Compares this value with the specified value for order.
      *

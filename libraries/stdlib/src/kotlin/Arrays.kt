@@ -13,7 +13,7 @@ package kotlin
  * @constructor Creates a new array of the specified [size], with all elements initialized to zero.
  * @throws RuntimeException if the specified [size] is negative.
  */
-public class ByteArray(size: Int) {
+public expect class ByteArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
      * [init] function.
@@ -53,7 +53,7 @@ public class ByteArray(size: Int) {
  * @constructor Creates a new array of the specified [size], with all elements initialized to null char (`\u0000').
  * @throws RuntimeException if the specified [size] is negative.
  */
-public class CharArray(size: Int) {
+public expect class CharArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
      * [init] function.
@@ -93,7 +93,7 @@ public class CharArray(size: Int) {
  * @constructor Creates a new array of the specified [size], with all elements initialized to zero.
  * @throws RuntimeException if the specified [size] is negative.
  */
-public class ShortArray(size: Int) {
+public expect class ShortArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
      * [init] function.
@@ -133,7 +133,7 @@ public class ShortArray(size: Int) {
  * @constructor Creates a new array of the specified [size], with all elements initialized to zero.
  * @throws RuntimeException if the specified [size] is negative.
  */
-public class IntArray(size: Int) {
+public expect class IntArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
      * [init] function.
@@ -173,7 +173,7 @@ public class IntArray(size: Int) {
  * @constructor Creates a new array of the specified [size], with all elements initialized to zero.
  * @throws RuntimeException if the specified [size] is negative.
  */
-public class LongArray(size: Int) {
+public expect class LongArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
      * [init] function.
@@ -213,7 +213,7 @@ public class LongArray(size: Int) {
  * @constructor Creates a new array of the specified [size], with all elements initialized to zero.
  * @throws RuntimeException if the specified [size] is negative.
  */
-public class FloatArray(size: Int) {
+public expect class FloatArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
      * [init] function.
@@ -253,7 +253,7 @@ public class FloatArray(size: Int) {
  * @constructor Creates a new array of the specified [size], with all elements initialized to zero.
  * @throws RuntimeException if the specified [size] is negative.
  */
-public class DoubleArray(size: Int) {
+public expect class DoubleArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
      * [init] function.
@@ -293,7 +293,7 @@ public class DoubleArray(size: Int) {
  * @constructor Creates a new array of the specified [size], with all elements initialized to `false`.
  * @throws RuntimeException if the specified [size] is negative.
  */
-public class BooleanArray(size: Int) {
+public expect class BooleanArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
      * [init] function.

@@ -10,7 +10,7 @@ package kotlin
  * See the [Kotlin language documentation](https://kotlinlang.org/docs/reference/enum-classes.html) for more
  * information on enum classes.
  */
-public abstract class Enum<E : Enum<E>>(name: String, ordinal: Int): Comparable<E> {
+public expect abstract class Enum<E : Enum<E>>(name: String, ordinal: Int): Comparable<E> {
     companion object {}
 
     /**
