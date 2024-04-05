@@ -22,10 +22,13 @@ package kotlin
  * @param message the detail message string.
  * @param cause the cause of this throwable.
  */
-public expect open class Throwable(open val message: String?, open val cause: Throwable?) {
-    constructor(message: String?) : this(message, null)
+public expect open class Throwable {
+    public open val message: String?
+    public open val cause: Throwable?
 
-    constructor(cause: Throwable?) : this(cause?.toString(), cause)
+    public constructor(message: String?) //: this(message, null)
 
-    constructor() : this(null, null)
+    public constructor(cause: Throwable?) //: this(cause?.toString(), cause)
+
+    public constructor() //: this(null, null)
 }
