@@ -8,6 +8,7 @@ $TESTDATA_DIR$/stdlib/platform.kt
 -d
 $TEMP_DIR$
 -XXLanguage\:+MultiPlatformProjects
+-Xdont-warn-on-error-suppression
 -Xallow-kotlin-package
 -Xexpect-actual-classes
 -Xstdlib-compilation

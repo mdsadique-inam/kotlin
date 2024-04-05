@@ -1,5 +1,8 @@
 package kotlin
 
+@AnnotationWithInt(Int.MAX_VALUE)
+class TestClassInPlatform
+
 enum class TestEnumInPlatform {
     D, E, F
 }

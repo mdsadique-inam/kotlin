@@ -1,5 +1,7 @@
 // ISSUE: KT-65841
 
+@file:Suppress("EXPECTED_PROPERTY_INITIALIZER")
+
 package kotlin
 
 internal annotation class ActualizeByJvmBuiltinProvider
@@ -18,7 +20,10 @@ expect class Boolean
 
 @ActualizeByJvmBuiltinProvider
 expect class Int {
-    companion object { }
+    companion object {
+        const val MIN_VALUE: Int = -2147483648
+        const val MAX_VALUE: Int = 2147483647
+    }
 }
 
 @ActualizeByJvmBuiltinProvider
@@ -41,3 +46,8 @@ public expect open class Throwable() {
 
     public constructor(cause: Throwable?)
 }
+
+annotation class AnnotationWithInt(val value: Int)
+
+@AnnotationWithInt(Int.MAX_VALUE)
+class TestClassInCommon
