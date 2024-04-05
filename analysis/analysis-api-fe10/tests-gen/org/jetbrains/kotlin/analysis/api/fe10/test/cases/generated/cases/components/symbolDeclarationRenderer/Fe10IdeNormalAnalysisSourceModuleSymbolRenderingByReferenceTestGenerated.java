@@ -68,4 +68,10 @@ public class Fe10IdeNormalAnalysisSourceModuleSymbolRenderingByReferenceTestGene
   public void testJavaMethodWithTypeParametersBound() {
     runTest("analysis/analysis-api/testData/components/symbolDeclarationRenderer/symbolRenderingByReference/javaMethodWithTypeParametersBound.kt");
   }
+
+  @Test
+  @TestMetadata("jsrAnnotation.kt")
+  public void testJsrAnnotation() {
+    runTest("analysis/analysis-api/testData/components/symbolDeclarationRenderer/symbolRenderingByReference/jsrAnnotation.kt");
+  }
 }
