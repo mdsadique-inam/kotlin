@@ -95,6 +95,10 @@ internal abstract class FrameworkTask @Inject constructor(
     }
 
     private fun assembleBinary() {
+        if (libraries.asFileTree.count() <= 1) {
+            return
+        }
+
         runCommand(
             listOf(
                 "libtool",
