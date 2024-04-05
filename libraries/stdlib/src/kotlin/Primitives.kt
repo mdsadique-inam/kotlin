@@ -14,7 +14,7 @@ package kotlin
  * Represents a 8-bit signed integer.
  * On the JVM, non-nullable values of this type are represented as values of the primitive type `byte`.
  */
-public expect class Byte private constructor() : Number(), Comparable<Byte> {
+public expect class Byte private constructor() : Number, Comparable<Byte> {
     public companion object {
         /**
          * A constant holding the minimum value an instance of Byte can have.
@@ -384,7 +384,7 @@ public expect class Byte private constructor() : Number(), Comparable<Byte> {
  * Represents a 16-bit signed integer.
  * On the JVM, non-nullable values of this type are represented as values of the primitive type `short`.
  */
-public expect class Short private constructor() : Number(), Comparable<Short> {
+public expect class Short private constructor() : Number, Comparable<Short> {
     public companion object {
         /**
          * A constant holding the minimum value an instance of Short can have.
@@ -752,7 +752,7 @@ public expect class Short private constructor() : Number(), Comparable<Short> {
  * Represents a 32-bit signed integer.
  * On the JVM, non-nullable values of this type are represented as values of the primitive type `int`.
  */
-public expect class Int private constructor() : Number(), Comparable<Int> {
+public expect class Int private constructor() : Number, Comparable<Int> {
     public companion object {
         /**
          * A constant holding the minimum value an instance of Int can have.
@@ -1166,7 +1166,7 @@ public expect class Int private constructor() : Number(), Comparable<Int> {
  * Represents a 64-bit signed integer.
  * On the JVM, non-nullable values of this type are represented as values of the primitive type `long`.
  */
-public expect class Long private constructor() : Number(), Comparable<Long> {
+public expect class Long private constructor() : Number, Comparable<Long> {
     public companion object {
         /**
          * A constant holding the minimum value an instance of Long can have.
@@ -1583,7 +1583,7 @@ public expect class Long private constructor() : Number(), Comparable<Long> {
  * Represents a single-precision 32-bit IEEE 754 floating point number.
  * On the JVM, non-nullable values of this type are represented as values of the primitive type `float`.
  */
-public expect class Float private constructor() : Number(), Comparable<Float> {
+public expect class Float private constructor() : Number, Comparable<Float> {
     public companion object {
         /**
          * A constant holding the smallest *positive* nonzero value of Float.
@@ -1916,7 +1916,7 @@ public expect class Float private constructor() : Number(), Comparable<Float> {
  * Represents a double-precision 64-bit IEEE 754 floating point number.
  * On the JVM, non-nullable values of this type are represented as values of the primitive type `double`.
  */
-public expect class Double private constructor() : Number(), Comparable<Double> {
+public expect class Double private constructor() : Number, Comparable<Double> {
     public companion object {
         /**
          * A constant holding the smallest *positive* nonzero value of Double.
