@@ -23,6 +23,7 @@ public expect class ByteArray(size: Int) {
      *
      * @throws RuntimeException if the specified [size] is negative.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Byte)
 
     /**
@@ -63,6 +64,7 @@ public expect class CharArray(size: Int) {
      *
      * @throws RuntimeException if the specified [size] is negative.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Char)
 
     /**
@@ -103,6 +105,7 @@ public expect class ShortArray(size: Int) {
      *
      * @throws RuntimeException if the specified [size] is negative.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Short)
 
     /**
@@ -143,6 +146,7 @@ public expect class IntArray(size: Int) {
      *
      * @throws RuntimeException if the specified [size] is negative.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Int)
 
     /**
@@ -183,6 +187,7 @@ public expect class LongArray(size: Int) {
      *
      * @throws RuntimeException if the specified [size] is negative.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Long)
 
     /**
@@ -223,6 +228,7 @@ public expect class FloatArray(size: Int) {
      *
      * @throws RuntimeException if the specified [size] is negative.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Float)
 
     /**
@@ -263,6 +269,7 @@ public expect class DoubleArray(size: Int) {
      *
      * @throws RuntimeException if the specified [size] is negative.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Double)
 
     /**
@@ -303,6 +310,7 @@ public expect class BooleanArray(size: Int) {
      *
      * @throws RuntimeException if the specified [size] is negative.
      */
+    @Suppress("WRONG_MODIFIER_TARGET")
     public inline constructor(size: Int, init: (Int) -> Boolean)
 
     /**
