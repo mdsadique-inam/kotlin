@@ -14,6 +14,7 @@ package kotlin
  * Represents a 8-bit signed integer.
  * On the JVM, non-nullable values of this type are represented as values of the primitive type `byte`.
  */
+@ActualizeByJvmBuiltinProvider
 public expect class Byte private constructor() : Number, Comparable<Byte> {
     public companion object {
         /**
@@ -384,6 +385,7 @@ public expect class Byte private constructor() : Number, Comparable<Byte> {
  * Represents a 16-bit signed integer.
  * On the JVM, non-nullable values of this type are represented as values of the primitive type `short`.
  */
+@ActualizeByJvmBuiltinProvider
 public expect class Short private constructor() : Number, Comparable<Short> {
     public companion object {
         /**
@@ -752,6 +754,7 @@ public expect class Short private constructor() : Number, Comparable<Short> {
  * Represents a 32-bit signed integer.
  * On the JVM, non-nullable values of this type are represented as values of the primitive type `int`.
  */
+@ActualizeByJvmBuiltinProvider
 public expect class Int private constructor() : Number, Comparable<Int> {
     public companion object {
         /**
@@ -1166,6 +1169,7 @@ public expect class Int private constructor() : Number, Comparable<Int> {
  * Represents a 64-bit signed integer.
  * On the JVM, non-nullable values of this type are represented as values of the primitive type `long`.
  */
+@ActualizeByJvmBuiltinProvider
 public expect class Long private constructor() : Number, Comparable<Long> {
     public companion object {
         /**
@@ -1583,6 +1587,7 @@ public expect class Long private constructor() : Number, Comparable<Long> {
  * Represents a single-precision 32-bit IEEE 754 floating point number.
  * On the JVM, non-nullable values of this type are represented as values of the primitive type `float`.
  */
+@ActualizeByJvmBuiltinProvider
 public expect class Float private constructor() : Number, Comparable<Float> {
     public companion object {
         /**
@@ -1916,6 +1921,7 @@ public expect class Float private constructor() : Number, Comparable<Float> {
  * Represents a double-precision 64-bit IEEE 754 floating point number.
  * On the JVM, non-nullable values of this type are represented as values of the primitive type `double`.
  */
+@ActualizeByJvmBuiltinProvider
 public expect class Double private constructor() : Number, Comparable<Double> {
     public companion object {
         /**

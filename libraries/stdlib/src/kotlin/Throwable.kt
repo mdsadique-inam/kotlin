@@ -22,6 +22,7 @@ package kotlin
  * @param message the detail message string.
  * @param cause the cause of this throwable.
  */
+@ActualizeByJvmBuiltinProvider
 public expect open class Throwable {
     public open val message: String?
     public open val cause: Throwable?

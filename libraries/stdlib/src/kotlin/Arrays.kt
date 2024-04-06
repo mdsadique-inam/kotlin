@@ -13,6 +13,7 @@ package kotlin
  * @constructor Creates a new array of the specified [size], with all elements initialized to zero.
  * @throws RuntimeException if the specified [size] is negative.
  */
+@ActualizeByJvmBuiltinProvider
 public expect class ByteArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
@@ -54,6 +55,7 @@ public expect class ByteArray(size: Int) {
  * @constructor Creates a new array of the specified [size], with all elements initialized to null char (`\u0000').
  * @throws RuntimeException if the specified [size] is negative.
  */
+@ActualizeByJvmBuiltinProvider
 public expect class CharArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
@@ -95,6 +97,7 @@ public expect class CharArray(size: Int) {
  * @constructor Creates a new array of the specified [size], with all elements initialized to zero.
  * @throws RuntimeException if the specified [size] is negative.
  */
+@ActualizeByJvmBuiltinProvider
 public expect class ShortArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
@@ -136,6 +139,7 @@ public expect class ShortArray(size: Int) {
  * @constructor Creates a new array of the specified [size], with all elements initialized to zero.
  * @throws RuntimeException if the specified [size] is negative.
  */
+@ActualizeByJvmBuiltinProvider
 public expect class IntArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
@@ -177,6 +181,7 @@ public expect class IntArray(size: Int) {
  * @constructor Creates a new array of the specified [size], with all elements initialized to zero.
  * @throws RuntimeException if the specified [size] is negative.
  */
+@ActualizeByJvmBuiltinProvider
 public expect class LongArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
@@ -218,6 +223,7 @@ public expect class LongArray(size: Int) {
  * @constructor Creates a new array of the specified [size], with all elements initialized to zero.
  * @throws RuntimeException if the specified [size] is negative.
  */
+@ActualizeByJvmBuiltinProvider
 public expect class FloatArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
@@ -259,6 +265,7 @@ public expect class FloatArray(size: Int) {
  * @constructor Creates a new array of the specified [size], with all elements initialized to zero.
  * @throws RuntimeException if the specified [size] is negative.
  */
+@ActualizeByJvmBuiltinProvider
 public expect class DoubleArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
@@ -300,6 +307,7 @@ public expect class DoubleArray(size: Int) {
  * @constructor Creates a new array of the specified [size], with all elements initialized to `false`.
  * @throws RuntimeException if the specified [size] is negative.
  */
+@ActualizeByJvmBuiltinProvider
 public expect class BooleanArray(size: Int) {
     /**
      * Creates a new array of the specified [size], where each element is calculated by calling the specified
