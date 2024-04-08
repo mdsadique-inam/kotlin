@@ -6,12 +6,12 @@
 package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.lower.ExpectDeclarationRemover
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.util.isExpect
 
-@LoweringPhase(
+@PhaseDescription(
     name = "ExpectDeclarationsRemoving",
     description = "Remove expect declaration from module fragment"
 )

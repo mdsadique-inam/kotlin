@@ -6,7 +6,7 @@
 package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.ir.createJvmIrBuilder
 import org.jetbrains.kotlin.backend.jvm.ir.getIntConstArgumentOrNull
@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.ir.util.getPackageFragment
 import org.jetbrains.kotlin.ir.util.isTopLevelInPackage
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformer
 
-@LoweringPhase(
+@PhaseDescription(
     name = "ApiVersionIsAtLeastEvaluationLowering",
     description = "Evaluate inlined invocations of `apiVersionIsAtLeast`",
     prerequisite = [JvmIrInliner::class]

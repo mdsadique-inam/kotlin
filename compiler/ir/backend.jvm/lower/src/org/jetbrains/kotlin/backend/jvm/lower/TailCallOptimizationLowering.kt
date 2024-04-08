@@ -6,7 +6,7 @@
 package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.IrFile
@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.name.Name
 
 // Find all tail-calls inside suspend function. We should add IrReturn before them, so the codegen will generate
 // code which is understandable by old BE's tail-call optimizer.
-@LoweringPhase(
+@PhaseDescription(
     name = "TailCallOptimization",
     description = "Add or move returns to suspension points on tail-call positions"
 )

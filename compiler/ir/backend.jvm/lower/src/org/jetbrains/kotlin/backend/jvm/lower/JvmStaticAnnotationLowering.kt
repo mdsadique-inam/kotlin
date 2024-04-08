@@ -6,7 +6,7 @@
 package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.CachedFieldsForObjectInstances
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.JvmLoweredDeclarationOrigin
@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 import org.jetbrains.kotlin.resolve.annotations.JVM_STATIC_ANNOTATION_FQ_NAME
 
-@LoweringPhase(
+@PhaseDescription(
     name = "JvmStaticInObject",
     description = "Make JvmStatic functions in non-companion objects static and replace all call sites in the module"
 )
@@ -37,7 +37,7 @@ internal class JvmStaticInObjectLowering(val context: JvmBackendContext) : FileL
         )
 }
 
-@LoweringPhase(
+@PhaseDescription(
     name = "JvmStaticInCompanion",
     description = "Synthesize static proxy functions for JvmStatic functions in companion objects"
 )

@@ -6,13 +6,13 @@
 package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.ClassLoweringPass
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.util.fields
 import org.jetbrains.kotlin.name.Name
 
-@LoweringPhase(
+@PhaseDescription(
     name = "RenameFields",
     description = "Rename private fields (including fields copied from companion object) to avoid JVM declaration clash"
 )

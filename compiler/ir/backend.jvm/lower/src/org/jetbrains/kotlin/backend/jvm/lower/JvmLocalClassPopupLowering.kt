@@ -7,12 +7,12 @@ package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.ScopeWithIr
 import org.jetbrains.kotlin.backend.common.lower.LocalClassPopupLowering
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.ir.findInlineLambdas
 import org.jetbrains.kotlin.ir.declarations.*
 
-@LoweringPhase(
+@PhaseDescription(
     name = "JvmLocalClassExtraction",
     description = "Move local classes from field initializers and anonymous init blocks into the containing class"
 )

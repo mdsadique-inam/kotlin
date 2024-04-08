@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.ir.*
 import org.jetbrains.kotlin.backend.jvm.lower.SyntheticAccessorLowering.Companion.isAccessible
@@ -49,7 +49,7 @@ import org.jetbrains.kotlin.load.java.JvmAbi
 // *super calls, private or not, are not allowed from outside the class
 // hierarchy of the involved classes, so is emulated in fragment compilation by
 // the use of `invokespecial` - see `invokeSpecialForCall` below.
-@LoweringPhase(
+@PhaseDescription(
     name = "ReflectiveCalls",
     description = "Avoid the need for accessors by replacing direct access to inaccessible members with accesses via reflection",
     prerequisite = [JvmDefaultParameterCleaner::class]

@@ -8,7 +8,7 @@ package org.jetbrains.kotlin.backend.jvm.lower
 import org.jetbrains.kotlin.backend.common.lower.EnumWhenLowering
 import org.jetbrains.kotlin.backend.common.lower.createIrBuilder
 import org.jetbrains.kotlin.backend.common.lower.irCatch
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.JvmLoweredDeclarationOrigin
 import org.jetbrains.kotlin.backend.jvm.ir.findEnumValuesFunction
@@ -55,7 +55,7 @@ import org.jetbrains.kotlin.util.OperatorNameConventions
 // The latter would not need to be recompiled if new entries were added before `X`
 // at the negligible cost of an additional initializer per run + one array read per call.
 //
-@LoweringPhase(
+@PhaseDescription(
     name = "EnumWhenLowering",
     description = "Replace `when` subjects of enum types with their ordinals"
 )

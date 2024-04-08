@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.ClassLoweringPass
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.ir.createJvmIrBuilder
 import org.jetbrains.kotlin.backend.jvm.ir.replaceThisByStaticReference
@@ -26,7 +26,7 @@ import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.resolve.deprecation.DeprecationResolver
 
-@LoweringPhase(
+@PhaseDescription(
     name = "MoveOrCopyCompanionObjectFields",
     description = "Move and/or copy companion object fields to static fields of companion's owner"
 )
@@ -119,7 +119,7 @@ internal class MoveOrCopyCompanionObjectFieldsLowering(val context: JvmBackendCo
     }
 }
 
-@LoweringPhase(
+@PhaseDescription(
     name = "RemapObjectFieldAccesses",
     description = "Make IrGetField/IrSetField to objects' fields point to the static versions",
     prerequisite = [JvmPropertiesLowering::class],

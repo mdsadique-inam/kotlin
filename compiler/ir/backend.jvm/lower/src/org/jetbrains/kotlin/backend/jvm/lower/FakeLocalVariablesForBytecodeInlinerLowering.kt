@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
 import org.jetbrains.kotlin.backend.common.lower.createIrBuilder
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.ir.IrInlineReferenceLocator
 import org.jetbrains.kotlin.backend.jvm.ir.isInlineOnly
@@ -46,7 +46,7 @@ interface FakeInliningLocalVariables<Container : IrElement> {
     }
 }
 
-@LoweringPhase(
+@PhaseDescription(
     name = "FakeLocalVariablesForBytecodeInlinerLowering",
     description = "Add fake locals to identify the range of inlined functions and lambdas"
 )

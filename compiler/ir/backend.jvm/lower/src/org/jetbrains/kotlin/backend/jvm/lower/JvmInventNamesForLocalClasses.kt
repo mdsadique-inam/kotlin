@@ -6,7 +6,7 @@
 package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.lower.InventNamesForLocalClasses
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.codegen.JvmCodegenUtil
 import org.jetbrains.kotlin.ir.declarations.IrAttributeContainer
@@ -17,7 +17,7 @@ import org.jetbrains.kotlin.ir.util.render
 import org.jetbrains.kotlin.resolve.jvm.JvmClassName
 import org.jetbrains.org.objectweb.asm.Type
 
-@LoweringPhase(
+@PhaseDescription(
     name = "InventNamesForLocalClasses",
     description = "Invent names for local classes and anonymous objects",
     // MainMethodGeneration introduces lambdas, needing names for their local classes.
@@ -53,7 +53,7 @@ open class JvmInventNamesForLocalClassesImpl(
 }
 
 // TODO try to use only one "InventNames"
-@LoweringPhase(
+@PhaseDescription(
     name = "InventNamesForInlinedLocalClasses",
     description = "Invent names for INLINED local classes and anonymous objects",
     prerequisite = [JvmInventNamesForLocalClasses::class, RemoveDuplicatedInlinedLocalClassesLowering::class]

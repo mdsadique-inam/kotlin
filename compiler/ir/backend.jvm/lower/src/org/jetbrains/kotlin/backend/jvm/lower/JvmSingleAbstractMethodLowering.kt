@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.ScopeWithIr
 import org.jetbrains.kotlin.backend.common.lower.SingleAbstractMethodLowering
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.ir.erasedUpperBound
 import org.jetbrains.kotlin.backend.jvm.ir.isInPublicInlineScope
@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.ir.types.getClass
 import org.jetbrains.kotlin.load.java.JavaDescriptorVisibilities
 import org.jetbrains.kotlin.utils.filterIsInstanceAnd
 
-@LoweringPhase(
+@PhaseDescription(
     name = "SingleAbstractMethod",
     description = "Replace SAM conversions with instances of interface-implementing classes",
     // FunctionReferenceLowering produces optimized SAM wrappers.

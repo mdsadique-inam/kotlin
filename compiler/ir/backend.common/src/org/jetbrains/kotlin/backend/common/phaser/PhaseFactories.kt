@@ -13,7 +13,7 @@ import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import java.lang.reflect.ParameterizedType
 import kotlin.reflect.KClass
 
-annotation class LoweringPhase(
+annotation class PhaseDescription(
     val name: String,
     val description: String,
     val prerequisite: Array<KClass<out FileLoweringPass>> = [],
@@ -87,8 +87,8 @@ private fun <Context : CommonBackendContext> createModulePhase(
 private fun loadAnnotationAndCheckPrerequisites(
     loweringClass: Class<*>,
     previouslyCreatedPhases: Set<Class<*>>,
-): LoweringPhase {
-    val annotation = loweringClass.getDeclaredAnnotation(LoweringPhase::class.java)
+): PhaseDescription {
+    val annotation = loweringClass.getDeclaredAnnotation(PhaseDescription::class.java)
         ?: error("Lowering phase is missing the @LoweringPhase annotation: ${loweringClass.name}")
 
     for (prerequisite in annotation.prerequisite) {

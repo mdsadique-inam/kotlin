@@ -6,7 +6,7 @@
 package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.ir.erasedUpperBound
 import org.jetbrains.kotlin.ir.IrElement
@@ -25,7 +25,7 @@ import org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid
 // This lowering changes field accesses so that codegen will correctly generate access to a public field in a Java superclass of a Kotlin
 // class, even if that field is "shadowed" by a property in the Kotlin class, with a _private_ field with the same name.
 // See KT-49507 and KT-48954 as good examples for cases we try to handle here.
-@LoweringPhase(
+@PhaseDescription(
     name = "AddSuperQualifierToJavaFieldAccess",
     description = "Make `\$delegate` methods for optimized delegated properties static",
     // Property references need to be lowered to classes with field access inside. We can't perform this phase on unlowered property

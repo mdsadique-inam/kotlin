@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
 import org.jetbrains.kotlin.backend.common.lower.VariableRemapper
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
@@ -29,7 +29,7 @@ import org.jetbrains.kotlin.load.java.JvmAbi
 //
 // So PropertyReferenceDelegationLowering generates `$delegate` methods for optimized property references as instance methods,
 // and this phase, which runs _after_ LocalDeclarationsLowering, transforms them to static methods.
-@LoweringPhase(
+@PhaseDescription(
     name = "MakePropertyDelegateMethodsStatic",
     description = "Make `\$delegate` methods for optimized delegated properties static",
     prerequisite = [PropertyReferenceDelegationLowering::class, JvmLocalDeclarationsLowering::class]

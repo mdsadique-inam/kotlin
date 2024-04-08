@@ -6,7 +6,7 @@
 package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.ModuleLoweringPass
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.common.phaser.validationCallback
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.ir.IrElement
@@ -28,7 +28,7 @@ internal abstract class JvmIrValidationPhase(protected val context: JvmBackendCo
     protected abstract fun validate(irModule: IrModuleFragment)
 }
 
-@LoweringPhase(
+@PhaseDescription(
     name = "ValidateIrBeforeLowering",
     description = "Validate IR before lowering"
 )
@@ -44,7 +44,7 @@ private fun checkAllFileLevelDeclarationsAreClasses(module: IrModuleFragment) {
     })
 }
 
-@LoweringPhase(
+@PhaseDescription(
     name = "ValidateIrAfterLowering",
     description = "Validate IR after lowering"
 )

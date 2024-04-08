@@ -8,7 +8,7 @@ package org.jetbrains.kotlin.backend.jvm.lower
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.lower.LocalDeclarationsLowering
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.ir.createJvmIrBuilder
 import org.jetbrains.kotlin.ir.IrStatement
@@ -32,7 +32,7 @@ import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 // the fragment, and if not, introduces additional captures to the fragment
 // wrapper. The captures are then supplied to the fragment wrapper as
 // parameters supplied at evaluation time.
-@LoweringPhase(
+@PhaseDescription(
     name = "FragmentLocalFunctionPatching",
     description = "Rewrite calls to local functions to the appropriate, lifted function created by local declarations lowering.",
     prerequisite = [JvmLocalDeclarationsLowering::class]

@@ -14,13 +14,13 @@ import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrModuleFragment
 import org.jetbrains.kotlin.ir.util.render
 
-@LoweringPhase(
+@PhaseDescription(
     name = "CodegenRegular",
     description = "Code generation of regular classes"
 )
 private class CodegenRegular(context: JvmBackendContext) : FileCodegen(context, generateMultifileFacade = false)
 
-@LoweringPhase(
+@PhaseDescription(
     name = "CodegenMultifileFacades",
     description = "Code generation of multifile facades"
 )
@@ -42,7 +42,7 @@ private abstract class FileCodegen(
     }
 }
 
-@LoweringPhase(
+@PhaseDescription(
     name = "GenerateAdditionalClasses",
     description = "Generate additional classes that were requested during codegen",
 )

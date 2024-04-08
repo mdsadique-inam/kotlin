@@ -6,7 +6,7 @@
 package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.lower.*
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.JvmLoweredDeclarationOrigin
 import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
@@ -22,7 +22,7 @@ import org.jetbrains.kotlin.load.java.JavaDescriptorVisibilities
 import org.jetbrains.kotlin.name.NameUtils
 import org.jetbrains.kotlin.utils.filterIsInstanceAnd
 
-@LoweringPhase(
+@PhaseDescription(
     name = "JvmLocalDeclarations",
     description = "Move local declarations to classes",
     prerequisite = [FunctionReferenceLowering::class, SharedVariablesLowering::class]

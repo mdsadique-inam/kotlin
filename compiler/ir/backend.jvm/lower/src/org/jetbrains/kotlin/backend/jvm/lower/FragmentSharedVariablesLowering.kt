@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
@@ -47,7 +47,7 @@ import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 //
 // See `FragmentDeclarationGenerator.kt:declareParameter` for the front half
 // of this logic.
-@LoweringPhase(
+@PhaseDescription(
     name = "FragmentSharedVariablesLowering",
     description = "Promotes captured variables that are modified by the fragment to shared variables"
 )

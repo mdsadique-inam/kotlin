@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.backend.common.ClassLoweringPass
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.lower.createIrBuilder
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.JvmLoweredDeclarationOrigin
 import org.jetbrains.kotlin.backend.jvm.ir.*
@@ -32,7 +32,7 @@ import org.jetbrains.kotlin.ir.visitors.IrElementTransformerVoid
 import org.jetbrains.kotlin.ir.visitors.IrElementVisitorVoid
 import org.jetbrains.kotlin.ir.visitors.transformChildrenVoid
 
-@LoweringPhase(
+@PhaseDescription(
     name = "InheritedDefaultMethodsOnClasses",
     description = "Add bridge-implementations in classes that inherit default implementations from interfaces"
 )
@@ -117,7 +117,7 @@ internal class InheritedDefaultMethodsOnClassesLowering(val context: JvmBackendC
     }
 }
 
-@LoweringPhase(
+@PhaseDescription(
     name = "ReplaceDefaultImplsOverriddenSymbols",
     description = "Replace overridden symbols for methods inherited from interfaces to classes"
 )
@@ -142,7 +142,7 @@ internal class ReplaceDefaultImplsOverriddenSymbols(private val context: JvmBack
     }
 }
 
-@LoweringPhase(
+@PhaseDescription(
     name = "InterfaceSuperCalls",
     description = "Redirect super interface calls to DefaultImpls"
 )
@@ -192,7 +192,7 @@ internal fun IrExpression.reinterpretAsDispatchReceiverOfType(irType: IrType): I
             this
         )
 
-@LoweringPhase(
+@PhaseDescription(
     name = "InterfaceDefaultCalls",
     description = "Redirect interface calls with default arguments to DefaultImpls (except method compiled to JVM defaults)"
 )
@@ -241,7 +241,7 @@ private fun IrSimpleFunction.isCloneableClone(): Boolean =
             (parent as? IrClass)?.fqNameWhenAvailable?.asString() == "kotlin.Cloneable" &&
             valueParameters.isEmpty()
 
-@LoweringPhase(
+@PhaseDescription(
     name = "InterfaceObjectCalls",
     description = "Resolve calls to Object methods on interface types to virtual methods"
 )

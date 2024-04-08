@@ -10,7 +10,7 @@ import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.ir.moveBodyTo
 import org.jetbrains.kotlin.backend.common.lower.LocalDeclarationsLowering
 import org.jetbrains.kotlin.backend.common.lower.createIrBuilder
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.JvmLoweredDeclarationOrigin
 import org.jetbrains.kotlin.backend.jvm.ir.hasChild
@@ -101,7 +101,7 @@ internal abstract class SuspendLoweringUtils(protected val context: JvmBackendCo
         context.ir.symbols.continuationClass.typeWith(returnType).makeNullable()
 }
 
-@LoweringPhase(
+@PhaseDescription(
     name = "SuspendLambda",
     description = "Transform suspend lambdas into continuation classes"
 )

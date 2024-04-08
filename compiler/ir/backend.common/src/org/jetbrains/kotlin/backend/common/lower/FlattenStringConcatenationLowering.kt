@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.backend.common.lower
 
 import org.jetbrains.kotlin.backend.common.CommonBackendContext
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.builtins.StandardNames
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.declarations.IrFile
@@ -62,7 +62,7 @@ import kotlin.math.min
  *       CONST Double type=kotlin.Double value=3.0
  *       CONST Null type=kotlin.Nothing? value=null
  */
-@LoweringPhase(
+@PhaseDescription(
     name = "FlattenStringConcatenationLowering",
     description = "Flatten nested string concatenation expressions into a single IrStringConcatenation"
 )

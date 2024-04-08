@@ -9,7 +9,7 @@ import org.jetbrains.kotlin.backend.common.FileLoweringPass
 import org.jetbrains.kotlin.backend.common.IrElementTransformerVoidWithContext
 import org.jetbrains.kotlin.backend.common.lower.FlattenStringConcatenationLowering
 import org.jetbrains.kotlin.backend.common.lower.loops.ForLoopsLowering
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.InlineClassAbi
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.ir.JvmIrBuilder
@@ -119,7 +119,7 @@ private const val MAX_STRING_CONCAT_DEPTH = 23
  * is that this pass also handles JVM specific optimizations, such as calling stringPlus
  * for two arguments, and properly handles inline classes.
  */
-@LoweringPhase(
+@PhaseDescription(
     name = "StringConcatenation",
     description = "Replace IrStringConcatenation with string builders",
     // FlattenStringConcatenationLowering consolidates string concatenation expressions.

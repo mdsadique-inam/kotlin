@@ -5,12 +5,12 @@
 
 package org.jetbrains.kotlin.backend.jvm.lower
 
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.inline.FunctionInlining
 
-@LoweringPhase(
+@PhaseDescription(
     name = "FunctionInliningPhase",
     description = "Perform function inlining",
     prerequisite = [JvmExpectDeclarationRemover::class]

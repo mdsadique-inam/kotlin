@@ -7,7 +7,7 @@ package org.jetbrains.kotlin.backend.jvm.lower
 
 import org.jetbrains.kotlin.backend.common.ClassLoweringPass
 import org.jetbrains.kotlin.backend.common.lower.createIrBuilder
-import org.jetbrains.kotlin.backend.common.phaser.LoweringPhase
+import org.jetbrains.kotlin.backend.common.phaser.PhaseDescription
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.hasMangledParameters
 import org.jetbrains.kotlin.descriptors.ClassKind
@@ -27,7 +27,7 @@ import org.jetbrains.kotlin.ir.util.passTypeArgumentsFrom
 // "On the JVM, if all of the parameters of the primary constructor have default values, the compiler will generate an additional
 //  parameterless constructor which will use the default values. This makes it easier to use Kotlin with libraries such as Jackson
 //  or JPA that create class instances through parameterless constructors."
-@LoweringPhase(
+@PhaseDescription(
     name = "JvmDefaultConstructor",
     description = "Generate default constructors for Java",
     prerequisite = [JvmOverloadsAnnotationLowering::class]
