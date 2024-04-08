@@ -14,6 +14,8 @@ import org.jetbrains.kotlin.fir.declarations.utils.isActual
 import org.jetbrains.kotlin.fir.declarations.utils.isExpect
 import org.jetbrains.kotlin.fir.declarations.utils.isJava
 import org.jetbrains.kotlin.fir.expressions.*
+import org.jetbrains.kotlin.fir.expressions.impl.FirResolvedArgumentList
+import org.jetbrains.kotlin.fir.expressions.impl.toAnnotationArgumentMapping
 import org.jetbrains.kotlin.fir.resolve.*
 import org.jetbrains.kotlin.fir.resolve.providers.toSymbol
 import org.jetbrains.kotlin.fir.resolve.substitution.ConeSubstitutor
@@ -23,6 +25,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.*
 import org.jetbrains.kotlin.fir.symbols.resolvedAnnotationsWithArguments
 import org.jetbrains.kotlin.fir.types.*
 import org.jetbrains.kotlin.fir.types.impl.ConeClassLikeTypeImpl
+import org.jetbrains.kotlin.fir.utils.exceptions.withFirEntry
 import org.jetbrains.kotlin.mpp.*
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
@@ -36,6 +39,7 @@ import org.jetbrains.kotlin.types.AbstractTypeChecker
 import org.jetbrains.kotlin.types.TypeCheckerState
 import org.jetbrains.kotlin.types.Variance
 import org.jetbrains.kotlin.types.model.*
+import org.jetbrains.kotlin.utils.exceptions.errorWithAttachment
 import org.jetbrains.kotlin.utils.zipIfSizesAreEqual
 
 class FirExpectActualMatchingContextImpl private constructor(
@@ -441,10 +445,16 @@ class FirExpectActualMatchingContextImpl private constructor(
         fun AnnotationCallInfo.getFirAnnotation(): FirAnnotation {
             return (this as AnnotationCallInfoImpl).annotation
         }
-        return areFirAnnotationsEqual(expectAnnotation.getFirAnnotation(), actualAnnotation.getFirAnnotation())
+        return areFirAnnotationsEqual(
+            expectAnnotation.getFirAnnotation(), actualAnnotation.getFirAnnotation(), collectionArgumentsCompatibilityCheckStrategy
+        )
     }
 
-    private fun areFirAnnotationsEqual(annotation1: FirAnnotation, annotation2: FirAnnotation): Boolean {
+    private fun areFirAnnotationsEqual(
+        annotation1: FirAnnotation,
+        annotation2: FirAnnotation,
+        collectionArgumentsCompatibilityCheckStrategy: ExpectActualCollectionArgumentsCompatibilityCheckStrategy
+    ): Boolean {
         fun FirAnnotation.hasResolvedArguments(): Boolean {
             return resolved || (this is FirAnnotationCall && arguments.isEmpty())
         }
@@ -458,26 +468,96 @@ class FirExpectActualMatchingContextImpl private constructor(
         ) {
             return false
         }
-        val args1 = annotation1.argumentMapping.mapping
-        val args2 = annotation2.argumentMapping.mapping
+        val args1 = FirExpressionEvaluator.evaluateAnnotationArguments(annotation1, actualSession) ?: return false
+        val args2 = FirExpressionEvaluator.evaluateAnnotationArguments(annotation2, actualSession) ?: return false
         if (args1.size != args2.size) {
             return false
         }
         return args1.all { (key, value1) ->
             val value2 = args2[key]
-            value2 != null && areAnnotationArgumentsEqual(value1, value2)
+            value1 is FirEvaluatorResult.Evaluated && value2 is FirEvaluatorResult.Evaluated &&
+                    areAnnotationArgumentsEqual(value1.result, value2.result, collectionArgumentsCompatibilityCheckStrategy)
         }
     }
 
-    private fun areAnnotationArgumentsEqual(expression1: FirExpression, expression2: FirExpression): Boolean {
-        // In K2 const expression calculated in backend.
-        // Because of that, we have "honest" checker at backend IR stage
-        // and "only simplest case" checker in frontend, so that we have at least some reporting in the IDE.
+    private fun areAnnotationArgumentsEqual(
+        expression1: FirElement?,
+        expression2: FirElement?,
+        collectionArgumentsCompatibilityCheckStrategy: ExpectActualCollectionArgumentsCompatibilityCheckStrategy
+    ): Boolean {
         return when {
-            expression1 is FirLiteralExpression<*> && expression2 is FirLiteralExpression<*> -> {
-                expression1.value == expression2.value
+            expression1 == null || expression2 == null -> (expression1 == null) == (expression2 == null)
+
+            expression1::class != expression2::class -> false
+
+            expression1 is FirLiteralExpression<*> && expression2 is FirLiteralExpression<*> -> expression1.value == expression2.value
+
+            expression1 is FirQualifiedAccessExpression && expression2 is FirQualifiedAccessExpression -> {
+                val symbol1 = expression1.toResolvedCallableSymbol()
+                val symbol2 = expression2.toResolvedCallableSymbol()
+                when {
+                    symbol1 is FirEnumEntrySymbol && symbol2 is FirEnumEntrySymbol -> {
+                        areCompatibleExpectActualTypes(expression1.resolvedType, expression2.resolvedType) && symbol1.name == symbol2.name
+                    }
+                    symbol1 is FirConstructorSymbol && symbol2 is FirConstructorSymbol -> {
+                        val constructorCall1 = expression1 as FirFunctionCall
+                        val constructorCall2 = expression2 as FirFunctionCall
+
+                        val mappingToFirExpression1 = (constructorCall1.argumentList as FirResolvedArgumentList).toAnnotationArgumentMapping().mapping
+                        val mappingToFirExpression2 = (constructorCall2.argumentList as FirResolvedArgumentList).toAnnotationArgumentMapping().mapping
+
+                        areCompatibleExpectActualTypes(expression1.resolvedType, expression2.resolvedType) &&
+                                mappingToFirExpression1.keys.all { name ->
+                                    areAnnotationArgumentsEqual(
+                                        mappingToFirExpression1[name],
+                                        mappingToFirExpression2[name],
+                                        collectionArgumentsCompatibilityCheckStrategy,
+                                    )
+                                }
+                    }
+                    else -> false
+                }
             }
-            else -> true
+
+            expression1 is FirAnnotation && expression2 is FirAnnotation -> {
+                val mappingToFirExpression1 = expression1.argumentMapping.mapping
+                val mappingToFirExpression2 = expression2.argumentMapping.mapping
+
+                areCompatibleExpectActualTypes(expression1.resolvedType, expression2.resolvedType) &&
+                        mappingToFirExpression1.keys.all { name ->
+                            areAnnotationArgumentsEqual(
+                                mappingToFirExpression1[name],
+                                mappingToFirExpression2[name],
+                                collectionArgumentsCompatibilityCheckStrategy,
+                            )
+                        }
+            }
+
+            expression1 is FirGetClassCall && expression2 is FirGetClassCall -> {
+                areCompatibleExpectActualTypes(expression1.resolvedType, expression2.resolvedType)
+            }
+
+            expression1 is FirEnumEntryDeserializedAccessExpression && expression2 is FirEnumEntryDeserializedAccessExpression -> {
+                areCompatibleExpectActualTypes(expression1.resolvedType, expression2.resolvedType) &&
+                        expression1.enumEntryName == expression2.enumEntryName
+            }
+
+            expression1 is FirArrayLiteral && expression2 is FirArrayLiteral -> {
+                collectionArgumentsCompatibilityCheckStrategy.areCompatible(expression1.arguments, expression2.arguments) { f, s ->
+                    areAnnotationArgumentsEqual(f, s, collectionArgumentsCompatibilityCheckStrategy)
+                }
+            }
+
+            expression1 is FirVarargArgumentsExpression && expression2 is FirVarargArgumentsExpression -> {
+                collectionArgumentsCompatibilityCheckStrategy.areCompatible(expression1.arguments, expression2.arguments) { f, s ->
+                    areAnnotationArgumentsEqual(f, s, collectionArgumentsCompatibilityCheckStrategy)
+                }
+            }
+
+            else -> errorWithAttachment("Not handled expression types") {
+                withFirEntry("expression1", expression1)
+                withFirEntry("expression2", expression2)
+            }
         }
     }
 
