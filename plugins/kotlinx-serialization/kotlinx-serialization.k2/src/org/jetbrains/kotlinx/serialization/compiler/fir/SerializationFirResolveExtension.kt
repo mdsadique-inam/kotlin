@@ -88,7 +88,7 @@ class SerializationFirResolveExtension(session: FirSession) : FirDeclarationGene
                 result += SerialEntityNames.SERIALIZER_PROVIDER_NAME
 
                 val containingClassSymbol = classSymbol.getContainingClassSymbol(session) as? FirClassSymbol
-                if (containingClassSymbol != null && with(session) { containingClassSymbol.keepGeneratedSerializer }) {
+                if (containingClassSymbol != null && containingClassSymbol.keepGeneratedSerializer(session)) {
                     result += SerialEntityNames.GENERATED_SERIALIZER_PROVIDER_NAME
                 }
                 val origin = classSymbol.origin as? FirDeclarationOrigin.Plugin
@@ -123,7 +123,8 @@ class SerializationFirResolveExtension(session: FirSession) : FirDeclarationGene
 
                 if (classSymbol.isCompanion) {
                     result += SerialEntityNames.SERIALIZER_PROVIDER_NAME
-                    if (with(session) { classSymbol.keepGeneratedSerializer }) {
+                    val containingClassSymbol = classSymbol.getContainingClassSymbol(session) as? FirClassSymbol
+                    if (containingClassSymbol != null && containingClassSymbol.keepGeneratedSerializer(session)) {
                         result += SerialEntityNames.GENERATED_SERIALIZER_PROVIDER_NAME
                     }
                 }
@@ -142,7 +143,7 @@ class SerializationFirResolveExtension(session: FirSession) : FirDeclarationGene
 
             classSymbol.isSerializableObject(session) -> {
                 result += SerialEntityNames.SERIALIZER_PROVIDER_NAME
-                if (with(session) { classSymbol.keepGeneratedSerializer }) {
+                if (classSymbol.keepGeneratedSerializer(session)) {
                     result += SerialEntityNames.GENERATED_SERIALIZER_PROVIDER_NAME
                 }
             }

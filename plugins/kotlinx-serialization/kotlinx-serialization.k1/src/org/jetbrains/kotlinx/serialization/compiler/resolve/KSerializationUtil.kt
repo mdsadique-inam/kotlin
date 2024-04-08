@@ -141,6 +141,14 @@ val ClassDescriptor.isInternalSerializable: Boolean //todo normal checking
         return hasSerializableOrMetaAnnotationWithoutArgs
     }
 
+/**
+ * Internal serializer is a plugin generated serializer for final/open/abstract/sealed classes or factory serializer for enums.
+ * A plugin generated serializer can be generated as main type serializer or kept serializer.
+ */
+internal val ClassDescriptor.shouldHaveInternalSerializer: Boolean
+    get() = isInternalSerializable || keepGeneratedSerializer
+
+
 val ClassDescriptor.shouldHaveGeneratedMethods: Boolean
     get() = isInternalSerializable
             // in the version with the `keepGeneratedSerializer` annotation the enum factory is already present therefore

@@ -65,7 +65,7 @@ class SerializableProperties(private val serializableClass: ClassDescriptor, val
             .partition { primaryConstructorProperties.contains(it.descriptor) }
             .run {
                 val supers = serializableClass.getSuperClassNotAny()
-                if (supers == null || !supers.shouldHaveGeneratedMethods)
+                if (supers == null || !supers.shouldHaveInternalSerializer)
                     first + second
                 else
                     SerializableProperties(supers, bindingContext).serializableProperties + first + second

@@ -15,30 +15,43 @@ import kotlin.annotation.*
 annotation class KeepGeneratedSerializer
 
 // FILE: main.kt
+@file:Suppress("OPTIONAL_DECLARATION_USAGE_IN_NON_COMMON_SOURCE") // TODO: support common sources in the test infrastructure
+
+import kotlin.jvm.*
+import kotlin.test.*
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 import kotlinx.serialization.encoding.*
 import kotlinx.serialization.descriptors.*
 
 // == value class
-// == final class ==
 @Serializable(with = ValueSerializer::class)
 @KeepGeneratedSerializer
+@JvmInline
 value class Value(val i: Int)
 
-object ValueSerializer: ToDoSerializer<Value>("ValueSerializer") {
-    override fun serialize(encoder: Encoder, value: Data) {
-        encoder.encodeInt(value.i + 1)
+object ValueSerializer: KSerializer<Value> {
+    override val descriptor = PrimitiveSerialDescriptor("ValueSerializer", PrimitiveKind.INT)
+    override fun deserialize(decoder: Decoder): Value {
+        val value = decoder.decodeInt()
+        return Value(value - 42)
+    }
+    override fun serialize(encoder: Encoder, value: Value) {
+        encoder.encodeInt(value.i + 42)
     }
 }
-
 
 // == final class ==
 @Serializable(with = DataSerializer::class)
 @KeepGeneratedSerializer
-class Data(val i: Int)
+data class Data(val i: Int)
 
-object DataSerializer: ToDoSerializer<Data>("DataSerializer") {
+object DataSerializer: KSerializer<Data> {
+    override val descriptor = PrimitiveSerialDescriptor("DataSerializer", PrimitiveKind.INT)
+    override fun deserialize(decoder: Decoder): Data {
+        val value = decoder.decodeInt()
+        return Data(value)
+    }
     override fun serialize(encoder: Encoder, value: Data) {
         encoder.encodeInt(value.i)
     }
@@ -47,24 +60,48 @@ object DataSerializer: ToDoSerializer<Data>("DataSerializer") {
 // == inheritance ==
 @Serializable(with = ParentSerializer::class)
 @KeepGeneratedSerializer
-open class Parent(val p: Int)
+open class Parent(val p: Int) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Parent) return false
 
-object ParentSerializer: ToDoSerializer<Parent>("ParentSerializer") {
+        if (p != other.p) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return p
+    }
+}
+
+object ParentSerializer: KSerializer<Parent> {
+    override val descriptor = PrimitiveSerialDescriptor("ParentSerializer", PrimitiveKind.INT)
+    override fun deserialize(decoder: Decoder): Parent {
+        val value = decoder.decodeInt()
+        return Parent(value - 1)
+    }
     override fun serialize(encoder: Encoder, value: Parent) {
-        encoder.encodeInt(value.p)
+        encoder.encodeInt(value.p + 1)
     }
 }
 
 @Serializable
-class Child(val c: Int): Parent(0)
+data class Child(val c: Int): Parent(0)
 
 @Serializable(with = ChildSerializer::class)
 @KeepGeneratedSerializer
-class ChildWithCustom(val c: Int): Parent(0)
+data class ChildWithCustom(val c: Int): Parent(0)
 
-object ChildSerializer: ToDoSerializer<ChildWithCustom>("ChildSerializer") {
+object ChildSerializer: KSerializer<ChildWithCustom> {
+    override val descriptor = PrimitiveSerialDescriptor("ChildSerializer", PrimitiveKind.INT)
+    override fun deserialize(decoder: Decoder): ChildWithCustom {
+        val value = decoder.decodeInt()
+        return ChildWithCustom(value - 2)
+    }
+
     override fun serialize(encoder: Encoder, value: ChildWithCustom) {
-        encoder.encodeInt(value.c)
+        encoder.encodeInt(value.c + 2)
     }
 }
 
@@ -78,10 +115,17 @@ enum class MyEnum {
 }
 
 @Serializable
-class EnumHolder(val e: MyEnum)
+data class EnumHolder(val e: MyEnum)
 
-object MyEnumSerializer: ToDoSerializer<MyEnum>("MyEnumSerializer") {
+object MyEnumSerializer: KSerializer<MyEnum> {
     val defaultSerializer = MyEnum.generatedSerializer()
+
+    override val descriptor = PrimitiveSerialDescriptor("MyEnumSerializer", PrimitiveKind.INT)
+
+    override fun deserialize(decoder: Decoder): MyEnum {
+        decoder.decodeString()
+        return MyEnum.A
+    }
 
     override fun serialize(encoder: Encoder, value: MyEnum) {
         // always encode FALLBACK entry by generated serializer
@@ -92,115 +136,91 @@ object MyEnumSerializer: ToDoSerializer<MyEnum>("MyEnumSerializer") {
 // == parametrized ==
 @Serializable(with = ParametrizedSerializer::class)
 @KeepGeneratedSerializer
-class ParametrizedData<T>(val t: T)
+data class ParametrizedData<T>(val t: T)
 
-class ParametrizedSerializer(val serializer: KSerializer<Any>): ToDoSerializer<ParametrizedData<Any>>("ParametrizedSerializer") {
+class ParametrizedSerializer(val serializer: KSerializer<Any>): KSerializer<ParametrizedData<Any>> {
+    override val descriptor = PrimitiveSerialDescriptor("ParametrizedSerializer", PrimitiveKind.INT)
+
+    override fun deserialize(decoder: Decoder): ParametrizedData<Any> {
+        val value = serializer.deserialize(decoder)
+        return ParametrizedData(value)
+    }
+
     override fun serialize(encoder: Encoder, value: ParametrizedData<Any>) {
         serializer.serialize(encoder, value.t)
     }
 }
 
+// == companion external serializer ==
+@Serializable(WithCompanion.Companion::class)
+@KeepGeneratedSerializer
+data class WithCompanion(val value: Int) {
+    @Serializer(WithCompanion::class)
+    companion object {
+        override val descriptor = PrimitiveSerialDescriptor("WithCompanionDesc", PrimitiveKind.INT)
+        override fun deserialize(decoder: Decoder): WithCompanion {
+            val value = decoder.decodeInt()
+            return WithCompanion(value)
+        }
 
-fun box(): String {
+        override fun serialize(encoder: Encoder, value: WithCompanion) {
+            encoder.encodeInt(value.value)
+        }
+    }
+}
+
+fun box(): String = boxWrapper {
     val value = Value(42)
     val data = Data(42)
     val child = Child(1)
-    val childCustom = ChildWithCustom(2)
-    val myEnum = MyEnum.A
     val param = ParametrizedData<Data>(data)
 
-    val valueJsonImplicit = Json.encodeToString(value)
-    val valueJson = Json.encodeToString(Value.serializer(), value)
-    val valueJsonGenerated = Json.encodeToString(Value.generatedSerializer(), value)
-    if (valueJsonImplicit != "43") {
-        return "value JSON Implicit = " + valueJsonImplicit
-    }
-    if (valueJson != "43") {
-        return "value JSON = " + valueJson
-    }
-    if (jsonGenerated != "42") {
-        return "value JSON Generated = " + jsonGenerated
-    }
+    test(Value(1), "43", "1", Value.serializer(), Value.generatedSerializer())
+    test(Data(2), "2", "{\"i\":2}", Data.serializer(), Data.generatedSerializer())
+    test(Parent(3), "4", "{\"p\":3}", Parent.serializer(), Parent.generatedSerializer())
+    test(Child(4), "{\"p\":0,\"c\":4}", "", Child.serializer(), null)
+    test(ChildWithCustom(5), "7", "{\"p\":0,\"c\":5}", ChildWithCustom.serializer(), ChildWithCustom.generatedSerializer())
+    test(ParametrizedData<Data>(Data(6)), "6", "{\"t\":6}", ParametrizedData.serializer(Data.serializer()), ParametrizedData.generatedSerializer(Data.serializer()))
+    test(WithCompanion(7), "7", "{\"value\":7}", WithCompanion.serializer(), WithCompanion.generatedSerializer())
 
-    val jsonImplicit = Json.encodeToString(data)
-    val json = Json.encodeToString(Data.serializer(), data)
-    val jsonGenerated = Json.encodeToString(Data.generatedSerializer(), data)
-    if (jsonImplicit != "42") {
-        return "JSON Implicit = " + jsonImplicit
-    }
-    if (json != "42") {
-        return "JSON = " + json
-    }
-    if (jsonGenerated != "{\"i\":42}") {
-        return "JSON Generated = " + jsonImplicit
-    }
-
-    val childJsonImplicit = Json.encodeToString(child)
-    val childJson = Json.encodeToString(Child.serializer(), child)
-    if (childJsonImplicit != "{\"p\":0,\"c\":1}") {
-        return "Child JSON Implicit = " + childJsonImplicit
-    }
-    if (childJson != "{\"p\":0,\"c\":1}") {
-        return "Child JSON = " + childJson
-    }
-
-    val childCustomJsonImplicit = Json.encodeToString(childCustom)
-    val childCustomJson = Json.encodeToString(ChildWithCustom.serializer(), childCustom)
-    val childCustomJsonGenerated = Json.encodeToString(ChildWithCustom.generatedSerializer(), childCustom)
-    if (childCustomJsonImplicit != "2") {
-        return "Child with custom serializer JSON Implicit = " + childCustomJsonImplicit
-    }
-    if (childCustomJson != "2") {
-        return "Child with custom serializer JSON = " + childCustomJson
-    }
-    if (childCustomJsonGenerated != "{\"p\":0,\"c\":2}") {
-        return "Child with custom serializer JSON Generated = " + childCustomJsonGenerated
-    }
-
-    val enumJsonImplicit = Json.encodeToString(myEnum)
-    val enumJson = Json.encodeToString(MyEnum.serializer(), myEnum)
-    val enumJsonGenerated = Json.encodeToString(MyEnum.generatedSerializer(), myEnum)
-
-    if (enumJsonImplicit != "\"FALLBACK\"") {
-        return "Enum JSON Implicit = " + enumJsonImplicit
-    }
-    if (enumJson != "\"FALLBACK\"") {
-        return "Enum JSON = " + enumJson
-    }
-    if (enumJsonGenerated != "\"A\"") {
-        return "Enum JSON Generated = " + enumJsonGenerated
-    }
-
-    if (serializer<MyEnum>() !is MyEnumSerializer) {
-        return "serializer<MyEnum> illegal = " + serializer<MyEnum>()
-    }
-    if (MyEnum.serializer() !is MyEnumSerializer) {
-        return "MyEnum.serializer() illegal = " + MyEnum.serializer()
-    }
-    if (MyEnum.generatedSerializer().toString() != "kotlinx.serialization.internal.EnumSerializer<MyEnum>") {
-        return "MyEnum.generatedSerializer() illegal = " + MyEnum.generatedSerializer()
-    }
-
-    if (MyEnum.generatedSerializer() !== MyEnum.generatedSerializer()) return "MyEnum.generatedSerializer() instance differs"
-
-    val paramJsonImplicit = Json.encodeToString(param)
-    val paramJson = Json.encodeToString(ParametrizedData.serializer(Data.serializer()), param)
-    val paramJsonGenerated = Json.encodeToString(ParametrizedData.generatedSerializer(Data.serializer()), param)
-    if (paramJsonImplicit != "42") {
-        return "Parametrized JSON Implicit = " + paramJsonImplicit
-    }
-    if (paramJson != "42") {
-        return "Parametrized JSON = " + paramJson
-    }
-    if (paramJsonGenerated != "{\"t\":42}") {
-        return "Parametrized JSON Generated = " + paramJsonGenerated
-    }
-
-    return "OK"
+    test(MyEnum.A, "\"FALLBACK\"", "\"A\"", MyEnum.serializer(), MyEnum.generatedSerializer())
+    assertTrue(serializer<MyEnum>() is MyEnumSerializer, "serializer<MyEnum> illegal = " + serializer<MyEnum>())
+    assertTrue(MyEnum.serializer() is MyEnumSerializer, "MyEnum.serializer() illegal = " + MyEnum.serializer())
+    assertEquals("kotlinx.serialization.internal.EnumSerializer<MyEnum>", MyEnum.generatedSerializer().toString(), "MyEnum.generatedSerializer() illegal")
+    assertSame(MyEnum.generatedSerializer(), MyEnum.generatedSerializer(), "MyEnum.generatedSerializer() instance differs")
 }
 
-abstract class ToDoSerializer<T>(name: String): KSerializer<T> {
-    override val descriptor = PrimitiveSerialDescriptor(name, PrimitiveKind.STRING)
-    open override fun deserialize(decoder: Decoder): T { TODO() }
-    open override fun serialize(encoder: Encoder, value: T) { TODO() }
+inline fun <reified T : Any> test(
+    value: T,
+    customJson: String,
+    keepJson: String,
+    serializer: KSerializer<T>,
+    generatedSerializer: KSerializer<T>?
+) {
+    val implicitJson = Json.encodeToString(value)
+    assertEquals(customJson, implicitJson, "Json.encodeToString(value: ${T::class.simpleName})")
+    val implicitDecoded = Json.decodeFromString<T>(implicitJson)
+    assertEquals(value, implicitDecoded, "Json.decodeFromString(json): ${T::class.simpleName}")
+
+    val exlicitJson = Json.encodeToString(serializer, value)
+    assertEquals(customJson, exlicitJson, "Json.encodeToString(${T::class.simpleName}.serializer(), value)")
+    val explicitDecoded = Json.decodeFromString(serializer, exlicitJson)
+    assertEquals(value, explicitDecoded, "Json.decodeFromString(${T::class.simpleName}.serializer(), json)")
+
+    if (generatedSerializer == null) return
+    val keep = Json.encodeToString(generatedSerializer, value)
+    assertEquals(keepJson, keep, "Json.encodeToString(${T::class.simpleName}.generatedSerializer(), value)")
+    val keepDecoded = Json.decodeFromString(generatedSerializer, keep)
+    assertEquals(value, keepDecoded, "Json.decodeFromString(${T::class.simpleName}.generatedSerializer(), json)")
 }
+
+fun boxWrapper(block: () -> Unit): String {
+    var result = "OK"
+    try {
+        block()
+    } catch (e: Exception) {
+        result = e.message ?: e.toString()
+    }
+    return result
+}
+

@@ -296,7 +296,11 @@ open class SerializationPluginDeclarationChecker : DeclarationChecker {
         if (!descriptor.hasSerializableOrMetaAnnotationWithoutArgs) {
             // defined custom serializer
             checkClassWithCustomSerializer(descriptor, declaration, trace)
-            return false
+
+            // if KeepGeneratedSerializer is specified then continue checking
+            if (!descriptor.keepGeneratedSerializer) {
+                return false
+            }
         }
 
         if (descriptor.serializableAnnotationIsUseless) {
@@ -307,7 +311,7 @@ open class SerializationPluginDeclarationChecker : DeclarationChecker {
         // check that we can instantiate supertype
         if (descriptor.kind != ClassKind.ENUM_CLASS) { // enums are inherited from java.lang.Enum and can't be inherited from other classes
             val superClass = descriptor.getSuperClassOrAny()
-            if (!superClass.shouldHaveGeneratedMethods && superClass.constructors.singleOrNull { it.valueParameters.size == 0 } == null) {
+            if (!superClass.shouldHaveInternalSerializer && superClass.constructors.singleOrNull { it.valueParameters.size == 0 } == null) {
                 trace.reportOnSerializableOrMetaAnnotation(descriptor, SerializationErrors.NON_SERIALIZABLE_PARENT_MUST_HAVE_NOARG_CTOR)
                 return false
             }
@@ -423,7 +427,7 @@ open class SerializationPluginDeclarationChecker : DeclarationChecker {
 
     private fun buildSerializableProperties(descriptor: ClassDescriptor, trace: BindingTrace): SerializableProperties? {
         if (!descriptor.hasSerializableOrMetaAnnotation) return null
-        if (!descriptor.shouldHaveGeneratedMethods) return null
+        if (!descriptor.shouldHaveInternalSerializer) return null
         if (descriptor.hasCompanionObjectAsSerializer) return null // customized by user
 
         val props = SerializableProperties(descriptor, trace.bindingContext)

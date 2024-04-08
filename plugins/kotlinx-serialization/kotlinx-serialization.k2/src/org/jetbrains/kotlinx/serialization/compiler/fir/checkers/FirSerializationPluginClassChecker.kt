@@ -155,26 +155,23 @@ object FirSerializationPluginClassChecker : FirClassChecker(MppCheckerKind.Commo
 
     }
 
-    context(CheckerContext)
-    private fun checkKeepGeneratedSerializer(classSymbol: FirClassSymbol<*>, reporter: DiagnosticReporter) {
-        with(session) {
-            if (!classSymbol.keepGeneratedSerializer) return
+    private fun CheckerContext.checkKeepGeneratedSerializer(classSymbol: FirClassSymbol<*>, reporter: DiagnosticReporter) {
+        if (!classSymbol.keepGeneratedSerializer(session)) return
 
-            val element by lazy {
-                classSymbol.getAnnotationByClassId(SerializationAnnotations.keepGeneratedSerializerAnnotationClassId, session)?.source
-                    ?: classSymbol.source
-            }
+        val element by lazy {
+            classSymbol.getAnnotationByClassId(SerializationAnnotations.keepGeneratedSerializerAnnotationClassId, session)?.source
+                ?: classSymbol.source
+        }
 
-            if (classSymbol.hasSerializableOrMetaAnnotation) {
-                if (classSymbol.hasSerializableOrMetaAnnotationWithoutArgs) {
-                    reporter.reportOn(element, FirSerializationErrors.KEEP_SERIALIZER_ANNOTATION_USELESS)
-                }
-                if (classSymbol.isAbstract || classSymbol.isSealed || classSymbol.isInterface) {
-                    reporter.reportOn(element, FirSerializationErrors.KEEP_SERIALIZER_ANNOTATION_ON_POLYMORPHIC)
-                }
-            } else {
-                reporter.reportOn(element, FirSerializationErrors.KEEP_SERIALIZER_ANNOTATION_USELESS)
+        if (classSymbol.hasSerializableOrMetaAnnotation(session)) {
+            if (classSymbol.hasSerializableOrMetaAnnotationWithoutArgs(session)) {
+                reporter.reportOn(element, FirSerializationErrors.KEEP_SERIALIZER_ANNOTATION_USELESS, this)
             }
+            if (classSymbol.isAbstract || classSymbol.isSealed || classSymbol.isInterface) {
+                reporter.reportOn(element, FirSerializationErrors.KEEP_SERIALIZER_ANNOTATION_ON_POLYMORPHIC, this)
+            }
+        } else {
+            reporter.reportOn(element, FirSerializationErrors.KEEP_SERIALIZER_ANNOTATION_USELESS, this)
         }
     }
 
@@ -331,7 +328,11 @@ object FirSerializationPluginClassChecker : FirClassChecker(MppCheckerKind.Commo
         if (!classSymbol.hasSerializableOrMetaAnnotationWithoutArgs(session)) {
             // defined custom serializer
             checkClassWithCustomSerializer(classSymbol, reporter)
-            return false
+
+            // if KeepGeneratedSerializer is specified then continue checking
+            if (!classSymbol.keepGeneratedSerializer(session)) {
+                return false
+            }
         }
 
         if (classSymbol.serializableAnnotationIsUseless(session)) {
@@ -344,7 +345,7 @@ object FirSerializationPluginClassChecker : FirClassChecker(MppCheckerKind.Commo
         // check that we can instantiate supertype
         if (!classSymbol.isEnumClass) { // enums are inherited from java.lang.Enum and can't be inherited from other classes
             val superClassSymbol = classSymbol.superClassOrAny(session)
-            if (!superClassSymbol.shouldHaveGeneratedMethods(session)) {
+            if (!superClassSymbol.shouldHaveInternalSerializer(session)) {
                 val noArgConstructorSymbol =
                     superClassSymbol.declarationSymbols.firstOrNull { it is FirConstructorSymbol && it.valueParameterSymbols.isEmpty() }
                 if (noArgConstructorSymbol == null) {
@@ -459,7 +460,7 @@ object FirSerializationPluginClassChecker : FirClassChecker(MppCheckerKind.Commo
         reporter: DiagnosticReporter,
     ): FirSerializableProperties? {
         if (!classSymbol.hasSerializableOrMetaAnnotation(session)) return null
-        if (!classSymbol.shouldHaveGeneratedMethods(session)) return null
+        if (!classSymbol.shouldHaveInternalSerializer(session)) return null
         if (classSymbol.isInternallySerializableObject(session)) return null
 
         val properties = session.serializablePropertiesProvider.getSerializablePropertiesForClass(classSymbol)

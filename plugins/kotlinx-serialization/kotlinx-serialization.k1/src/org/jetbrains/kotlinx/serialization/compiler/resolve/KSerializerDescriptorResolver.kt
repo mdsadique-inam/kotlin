@@ -306,7 +306,7 @@ object KSerializerDescriptorResolver {
         bindingContext: BindingContext,
         metadataPlugin: SerializationDescriptorSerializerPlugin?
     ): ClassConstructorDescriptor {
-        if (!classDescriptor.shouldHaveGeneratedMethods) throw IllegalArgumentException()
+        if (!classDescriptor.shouldHaveInternalSerializer) throw IllegalArgumentException()
 
         val functionDescriptor = ClassConstructorDescriptorImpl.createSynthesized(
             classDescriptor,

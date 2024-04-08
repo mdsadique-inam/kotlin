@@ -130,7 +130,7 @@ class SerializableIrGenerator(
             }
             when {
                 superClass.symbol == compilerContext.irBuiltIns.anyClass -> generateAnySuperConstructorCall(toBuilder = this@addFunctionBody)
-                superClass.shouldHaveGeneratedMethods -> {
+                superClass.shouldHaveGeneratedMethods() -> {
                     startPropOffset = generateSuperSerializableCall(superClass, ctor.valueParameters, seenVarsOffset)
                 }
                 else -> generateSuperNonSerializableCall(superClass)
@@ -275,7 +275,7 @@ class SerializableIrGenerator(
         allValueParameters: List<IrValueParameter>,
         propertiesStart: Int
     ): Int {
-        check(superClass.shouldHaveGeneratedMethods)
+        check(superClass.shouldHaveGeneratedMethods())
         val superCtorRef = superClass.findSerializableSyntheticConstructor()
             ?: error("Class serializable internally should have special constructor with marker")
         val superProperties = serializablePropertiesForIrBackend(superClass).serializableProperties
@@ -394,7 +394,7 @@ class SerializableIrGenerator(
             irClass: IrClass,
             context: SerializationPluginContext,
         ) {
-            if (irClass.shouldHaveGeneratedMethods) {
+            if (irClass.shouldHaveGeneratedMethods()) {
                 SerializableIrGenerator(irClass, context).generate()
                 irClass.patchDeclarationParents(irClass.parent)
             } else {

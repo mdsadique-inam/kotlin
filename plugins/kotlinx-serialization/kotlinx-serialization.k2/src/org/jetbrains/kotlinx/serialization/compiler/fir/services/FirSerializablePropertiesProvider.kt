@@ -53,7 +53,7 @@ class FirSerializablePropertiesProvider(session: FirSession) : FirExtensionSessi
             it to parameterSymbol.hasDefaultValue
         }.toMap().withDefault { false }
 
-        val shouldHaveGeneratedMethods = with(session) { classSymbol.shouldHaveGeneratedMethods }
+        val shouldHaveGeneratedMethods = classSymbol.shouldHaveGeneratedMethods(session)
 
         fun isPropertySerializable(propertySymbol: FirPropertySymbol): Boolean {
             return when {
@@ -79,7 +79,7 @@ class FirSerializablePropertiesProvider(session: FirSession) : FirExtensionSessi
             .let { (fromConstructor, standalone) ->
                 val superClassSymbol = classSymbol.superClassNotAny(session)
                 buildList {
-                    if (superClassSymbol != null && with(session) { superClassSymbol.shouldHaveGeneratedMethods }) {
+                    if (superClassSymbol != null && superClassSymbol.shouldHaveInternalSerializer(session)) {
                         addAll(getSerializablePropertiesForClass(superClassSymbol).serializableProperties)
                     }
                     addAll(fromConstructor)

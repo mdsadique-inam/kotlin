@@ -176,23 +176,26 @@ internal fun FirClassSymbol<*>.isInternalSerializable(session: FirSession): Bool
     return hasSerializableOrMetaAnnotationWithoutArgs(session)
 }
 
-context(FirSession)
-internal val FirClassSymbol<*>.shouldHaveGeneratedMethods: Boolean
-    get() {
-        return isInternalSerializable
-                // in the version with the `keepGeneratedSerializer` annotation the enum factory is already present therefore
-                // there is no need to generate additional methods
-                || (keepGeneratedSerializer && !classKind.isEnumClass)
-    }
+/**
+ * Internal serializer is a plugin generated serializer for final/open/abstract/sealed classes or factory serializer for enums.
+ * A plugin generated serializer can be generated as main type serializer or kept serializer.
+ */
+internal fun FirClassSymbol<*>.shouldHaveInternalSerializer(session: FirSession): Boolean {
+    return isInternalSerializable(session) || keepGeneratedSerializer(session)
+}
+internal fun FirClassSymbol<*>.shouldHaveGeneratedMethods(session: FirSession): Boolean {
+    return isInternalSerializable(session)
+            // in the version with the `keepGeneratedSerializer` annotation the enum factory is already present therefore
+            // there is no need to generate additional methods
+            || (keepGeneratedSerializer(session) && !classKind.isEnumClass)
+}
 
-context(FirSession)
-internal val FirClassSymbol<*>.keepGeneratedSerializer: Boolean
-    get() {
-        return annotations.getAnnotationByClassId(
-            keepGeneratedSerializerAnnotationClassId,
-            this@FirSession
-        ) != null
-    }
+internal fun FirClassSymbol<*>.keepGeneratedSerializer(session: FirSession): Boolean {
+    return annotations.getAnnotationByClassId(
+        keepGeneratedSerializerAnnotationClassId,
+        session
+    ) != null
+}
 
 fun FirClassSymbol<*>.hasSerializableOrMetaAnnotationWithoutArgs(session: FirSession): Boolean {
     return hasSerializableAnnotationWithoutArgs(session) ||
@@ -224,7 +227,7 @@ fun FirClassSymbol<*>.shouldHaveGeneratedSerializer(session: FirSession): Boolea
     (isInternalSerializable(session) && isFinalOrOpen())
             || isEnumWithLegacyGeneratedSerializer(session)
             // enum factory must be used for enums
-            || (keepGeneratedSerializer && !classKind.isEnumClass)
+            || (keepGeneratedSerializer(session) && !classKind.isEnumClass)
 
 // ---------------------- type utils ----------------------
 

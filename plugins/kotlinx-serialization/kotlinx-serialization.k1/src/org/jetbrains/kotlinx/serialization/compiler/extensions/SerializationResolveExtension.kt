@@ -19,12 +19,13 @@ import org.jetbrains.kotlin.resolve.isInlineClass
 import org.jetbrains.kotlin.resolve.lazy.LazyClassContext
 import org.jetbrains.kotlin.resolve.lazy.declarations.ClassMemberDeclarationProvider
 import org.jetbrains.kotlin.types.KotlinType
+import org.jetbrains.kotlin.util.classNameAndMessage
 import org.jetbrains.kotlinx.serialization.compiler.backend.common.SerializationDescriptorUtils
 import org.jetbrains.kotlinx.serialization.compiler.resolve.*
 
 open class SerializationResolveExtension @JvmOverloads constructor(val metadataPlugin: SerializationDescriptorSerializerPlugin? = null) : SyntheticResolveExtension {
     override fun getSyntheticNestedClassNames(thisDescriptor: ClassDescriptor): List<Name> = when {
-        (thisDescriptor.shouldHaveGeneratedSerializer) && !thisDescriptor.hasCompanionObjectAsSerializer ->
+        (thisDescriptor.shouldHaveGeneratedSerializer) && (!thisDescriptor.hasCompanionObjectAsSerializer || thisDescriptor.keepGeneratedSerializer) ->
             listOf(SerialEntityNames.SERIALIZER_CLASS_NAME)
         else -> listOf()
     }
@@ -42,7 +43,7 @@ open class SerializationResolveExtension @JvmOverloads constructor(val metadataP
             }
         }
 
-        thisDescriptor.shouldHaveGeneratedMethods && !thisDescriptor.isInlineClass() && thisDescriptor.platform?.isJvm() == true && !hasCustomizedSerializeMethod(thisDescriptor) -> {
+        thisDescriptor.shouldHaveInternalSerializer && !thisDescriptor.isInlineClass() && thisDescriptor.platform?.isJvm() == true && !hasCustomizedSerializeMethod(thisDescriptor) -> {
             // add write$Self, but only if .serialize was not customized in companion.
             // It works not only on JVM, but I see no reason to enable it on other platforms —
             // private fields there have no access control, and additional function
@@ -102,7 +103,7 @@ open class SerializationResolveExtension @JvmOverloads constructor(val metadataP
     ) {
         if (thisDescriptor.shouldHaveGeneratedMethods) {
             // do not add synthetic deserialization constructor if .deserialize method is customized
-            if (thisDescriptor.hasCompanionObjectAsSerializer && SerializationDescriptorUtils.getSyntheticLoadMember(thisDescriptor.companionObjectDescriptor!!) == null) return
+            if (thisDescriptor.hasCompanionObjectAsSerializer && SerializationDescriptorUtils.getSyntheticLoadMember(thisDescriptor.companionObjectDescriptor!!) == null && !thisDescriptor.keepGeneratedSerializer) return
             if (thisDescriptor.isInlineClass()) return
             result.add(KSerializerDescriptorResolver.createLoadConstructorDescriptor(thisDescriptor, bindingContext, metadataPlugin))
         }
