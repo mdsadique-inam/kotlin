@@ -20,25 +20,13 @@ annotation class LoweringPhase(
 )
 
 fun <Context : CommonBackendContext> createFilePhases(
-    vararg phases: Function<FileLoweringPass>
+    vararg phases: (Context) -> FileLoweringPass
 ): List<SimpleNamedCompilerPhase<Context, IrFile, IrFile>> {
     val createdPhases = hashSetOf<Class<out FileLoweringPass>>()
     return phases.map { phase ->
-        when (phase) {
-            is Function0<FileLoweringPass> -> {
-                val loweringClass = phase.extractReturnTypeArgument()
-                createdPhases.add(loweringClass)
-                createFilePhase(loweringClass, createdPhases) { _ -> phase() }
-            }
-            is Function1<*, FileLoweringPass> -> {
-                @Suppress("UNCHECKED_CAST")
-                phase as (CommonBackendContext) -> FileLoweringPass
-                val loweringClass = phase.extractReturnTypeArgument()
-                createdPhases.add(loweringClass)
-                createFilePhase(loweringClass, createdPhases, phase)
-            }
-            else -> error("Lowering phase constructor should accept either 0 or 1 parameters: $phase")
-        }
+        val loweringClass = phase.extractReturnTypeArgument()
+        createdPhases.add(loweringClass)
+        createFilePhase(loweringClass, createdPhases, phase)
     }
 }
 
@@ -55,6 +43,8 @@ fun <Context : CommonBackendContext> createModulePhases(
 
 private inline fun <ReturnType, reified FunctionType : Function<ReturnType>>
         FunctionType.extractReturnTypeArgument(): Class<out ReturnType> {
+    // Using Java reflection to extract the generic type argument from the function type.
+    // Note that we're not using kotlin-reflect because its initialization has some overhead.
     val functionType = javaClass.genericInterfaces.singleOrNull {
         it is ParameterizedType && it.rawType == FunctionType::class.java
     } ?: error("Supertype ${FunctionType::class.java} is not found: " + javaClass.genericInterfaces.toList())
