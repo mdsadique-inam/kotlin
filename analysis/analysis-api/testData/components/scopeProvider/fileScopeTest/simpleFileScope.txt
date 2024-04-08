@@ -6,9 +6,6 @@ KtFileSymbol:
   getContainingModule: KtSourceModule "Sources of main"
   deprecationStatus: null
 
-CALLABLE NAMES:
-[test, testVal]
-
 CALLABLE SYMBOLS:
 KtFunctionSymbol:
   annotationsList: []
@@ -126,9 +123,6 @@ KtKotlinPropertySymbol:
   javaGetterName: getTestVal
   javaSetterName: null
   setterDeprecationStatus: null
-
-CLASSIFIER NAMES:
-[C, I]
 
 CLASSIFIER SYMBOLS:
 KtNamedClassOrObjectSymbol:
