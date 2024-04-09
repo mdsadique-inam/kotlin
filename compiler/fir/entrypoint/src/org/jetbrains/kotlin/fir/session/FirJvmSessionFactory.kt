@@ -115,7 +115,13 @@ object FirJvmSessionFactory : FirAbstractSessionFactory() {
                 registerExtraComponents(it)
             },
             registerExtraCheckers = { it.registerJvmCheckers() },
-            createKotlinScopeProvider = { FirKotlinScopeProvider(::wrapScopeWithJvmMapped) },
+            createKotlinScopeProvider = {
+                if (!moduleData.isCommon) {
+                    FirKotlinScopeProvider(::wrapScopeWithJvmMapped)
+                } else {
+                    FirKotlinScopeProvider()
+                }
+            },
             createProviders = { session, _, symbolProvider, generatedSymbolsProvider, dependencies ->
                 val javaSymbolProvider =
                     JavaSymbolProvider(session, projectEnvironment.getFirJavaFacade(session, moduleData, javaSourcesScope))
