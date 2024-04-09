@@ -148,7 +148,9 @@ val jvmLoweringPhases = SameTypeNamedCompilerPhase(
         ::CreateSeparateCallForInlinedLambdasLowering,
         ::MarkNecessaryInlinedClassesAsRegeneratedLowering,
         ::InlinedClassReferencesBoxingLowering,
-    ) then performByIrFile("PerformByIrFile", lower = jvmFilePhases) then buildModuleLoweringsPhase(
+    ).then(
+        performByIrFile("PerformByIrFile", lower = jvmFilePhases)
+    ) then buildModuleLoweringsPhase(
         ::GenerateMultifileFacades,
         ::ResolveInlineCalls,
         ::JvmIrValidationAfterLoweringPhase
