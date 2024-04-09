@@ -1,3 +1,4 @@
+// KIND: STANDALONE
 // FREE_COMPILER_ARGS: -Xbinary=sourceInfoType=coresymbolication
 // FREE_COMPILER_ARGS: -Xg-generate-debug-trampoline=enable
 // DISABLE_NATIVE: isAppleTarget=false
@@ -35,8 +36,8 @@ internal fun checkFrame(value:String) {
     val goldValues = arrayOf<Pair<String, Int>?>(
             *arrayOfNulls(expectedExceptionContrFrames),
             *arrayOfNulls(expectedInlinesCount),
-            "stack_trace_inline.kt" to 16 + extraLinesInFile,
-            "stack_trace_inline.kt" to 23 + extraLinesInFile)
+            "stack_trace_inline.kt" to 17 + extraLinesInFile,
+            "stack_trace_inline.kt" to 24 + extraLinesInFile)
     val (pos, file, line) = regex.find(value)!!.destructured
     goldValues[pos.toInt()]?.let {
         assertEquals(it.first, file)

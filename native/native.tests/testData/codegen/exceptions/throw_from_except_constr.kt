@@ -1,3 +1,4 @@
+// KIND: STANDALONE
 // FREE_COMPILER_ARGS: -Xbinary=sourceInfoType=libbacktrace
 // DISABLE_NATIVE: targetFamily=MINGW
 // DISABLE_NATIVE: optimizationMode=NO

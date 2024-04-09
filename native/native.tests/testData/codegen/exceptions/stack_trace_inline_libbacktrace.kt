@@ -1,3 +1,4 @@
+// KIND: STANDALONE
 // FREE_COMPILER_ARGS: -Xbinary=sourceInfoType=libbacktrace
 // DISABLE_NATIVE: targetFamily=MINGW
 // DISABLE_NATIVE: optimizationMode=NO
@@ -34,8 +35,8 @@ internal fun checkFrame(value:String) {
     val goldValues = arrayOf<Pair<String, Int>?>(
             *arrayOfNulls(expectedExceptionContrFrames),
             *arrayOfNulls(expectedInlinesCount),
-            "stack_trace_inline.kt" to 15 + extraLinesInFile,
-            "stack_trace_inline.kt" to 22 + extraLinesInFile)
+            "stack_trace_inline.kt" to 16 + extraLinesInFile,
+            "stack_trace_inline.kt" to 23 + extraLinesInFile)
     val (pos, file, line) = regex.find(value)!!.destructured
     goldValues[pos.toInt()]?.let {
         assertEquals(it.first, file)

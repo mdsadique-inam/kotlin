@@ -1,3 +1,4 @@
+// KIND: STANDALONE
 // DISABLE_NATIVE: optimizationMode=NO
 // DISABLE_NATIVE: optimizationMode=OPT
 

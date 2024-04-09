@@ -1,3 +1,4 @@
+// KIND: STANDALONE
 // FREE_COMPILER_ARGS: -Xbinary=sourceInfoType=coresymbolication
 // DISABLE_NATIVE: isAppleTarget=false
 // DISABLE_NATIVE: optimizationMode=NO
@@ -43,13 +44,13 @@ internal val regex = Regex("^(\\d+)\\ +.*/(.*):(\\d+):.*$")
 internal fun checkFrame(value:String) {
     val goldValues = arrayOf<Pair<String, Int>?>(
             *arrayOfNulls(expectedExceptionContrFrames),
-            "kt37572.kt" to 39 + extraLinesInFile,
-            "kt37572.kt" to 30 + extraLinesInFile,
+            "kt37572.kt" to 40 + extraLinesInFile,
+            "kt37572.kt" to 31 + extraLinesInFile,
             *(if (expectedInlinesCount != 0) arrayOf(
-                    "kt37572.kt" to 35 + extraLinesInFile,
-                    "kt37572.kt" to 29 + extraLinesInFile,
+                    "kt37572.kt" to 36 + extraLinesInFile,
+                    "kt37572.kt" to 30 + extraLinesInFile,
             ) else emptyArray()),
-            "kt37572.kt" to 18 + extraLinesInFile)
+            "kt37572.kt" to 19 + extraLinesInFile)
 
     val (pos, file, line) = regex.find(value)!!.destructured
     goldValues[pos.toInt()]?.let {
