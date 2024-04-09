@@ -195,7 +195,7 @@ internal abstract class KotlinNativeBundleBuildService : BuildService<BuildServi
             ?: error(resolutionErrorMessage)
 
         if (!gradleCachesKotlinNativeDir.exists()) {
-            throw IllegalArgumentException(resolutionErrorMessage)
+            error("Kotlin Native prebuild dependency was used. Please provide corresponding version in 'kotlin.native.version' property")
         }
         return gradleCachesKotlinNativeDir
     }
