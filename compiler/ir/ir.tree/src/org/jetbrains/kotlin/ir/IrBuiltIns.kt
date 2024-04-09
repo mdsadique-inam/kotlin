@@ -200,9 +200,9 @@ abstract class IrBuiltIns {
     abstract val operatorsPackageFragment: IrExternalPackageFragment
     abstract val kotlinInternalPackageFragment: IrExternalPackageFragment
 
-    protected fun createIntrinsicConstEvaluationClass(): IrClass {
+    protected fun createInternalAnnotationClass(name: Name): IrClass {
         return irFactory.buildClass {
-            name = StandardClassIds.Annotations.IntrinsicConstEvaluation.shortClassName
+            this.name = name
             kind = ClassKind.ANNOTATION_CLASS
             modality = Modality.FINAL
         }.apply {

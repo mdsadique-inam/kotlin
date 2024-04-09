@@ -5,7 +5,6 @@
 
 package org.jetbrains.kotlin.fir.backend
 
-import org.jetbrains.kotlin.fir.resolve.providers.symbolProvider
 import org.jetbrains.kotlin.fir.scopes.getDeclaredConstructors
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.ir.declarations.IrConstructor
@@ -59,27 +58,10 @@ class Fir2IrBuiltIns(
     internal fun rawTypeAnnotationConstructorCall(): IrConstructorCall? =
         rawTypeAnnotationSymbol?.toConstructorCall()
 
-    // ---------------------- regular annotations ----------------------
-
-    private val extensionFunctionTypeAnnotationFirSymbol by lazy {
-        regularAnnotationFirSymbolById(StandardClassIds.Annotations.ExtensionFunctionType)
-    }
-
-    private val extensionFunctionTypeAnnotationSymbol by lazy {
-        extensionFunctionTypeAnnotationFirSymbol?.toSymbol(c, ConversionTypeOrigin.DEFAULT) as? IrClassSymbol
-    }
-
-    internal fun extensionFunctionTypeAnnotationConstructorCall(): IrConstructorCall? =
-        extensionFunctionTypeAnnotationSymbol?.toConstructorCall(extensionFunctionTypeAnnotationFirSymbol!!)
-
     // ---------------------- utils ----------------------
 
     private fun specialAnnotationIrSymbolById(classId: ClassId): IrClassSymbol? {
         return provider?.getClassSymbolById(classId)
-    }
-
-    private fun regularAnnotationFirSymbolById(id: ClassId): FirRegularClassSymbol? {
-        return session.symbolProvider.getClassLikeSymbolByClassId(id) as? FirRegularClassSymbol
     }
 
     private fun IrClassSymbol.toConstructorCall(firSymbol: FirRegularClassSymbol? = null): IrConstructorCallImpl? {

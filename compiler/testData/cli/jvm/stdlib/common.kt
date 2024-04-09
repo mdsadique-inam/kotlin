@@ -57,3 +57,5 @@ annotation class AnnotationWithInt(val value: Int)
 
 @AnnotationWithInt(Int.MAX_VALUE)
 class TestClassInCommon
+
+fun testInCommon(): @ExtensionFunctionType (String.() -> Int) = null!!

@@ -292,7 +292,7 @@ class IrBuiltInsOverDescriptors(
     override val anyClass = builtIns.any.toIrSymbol()
     override val anyNType = anyType.makeNullable()
 
-    private val intrinsicConstClass = createIntrinsicConstEvaluationClass()
+    private val intrinsicConstClass = createInternalAnnotationClass(StandardClassIds.Annotations.IntrinsicConstEvaluation.shortClassName)
     private val intrinsicConstType = intrinsicConstClass.defaultType
     private val intrinsicConstConstructor = intrinsicConstClass.primaryConstructor as IrConstructor
 
