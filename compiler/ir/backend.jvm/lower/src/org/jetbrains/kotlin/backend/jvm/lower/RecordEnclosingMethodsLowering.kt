@@ -8,6 +8,7 @@ package org.jetbrains.kotlin.backend.jvm.lower
 import org.jetbrains.kotlin.backend.common.FileLoweringPass
 import org.jetbrains.kotlin.backend.common.phaser.makeIrFilePhase
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
+import org.jetbrains.kotlin.backend.jvm.EnclosingMethodOverride
 import org.jetbrains.kotlin.backend.jvm.ir.isInlineFunctionCall
 import org.jetbrains.kotlin.backend.jvm.ir.unwrapInlineLambda
 import org.jetbrains.kotlin.ir.IrElement
@@ -16,6 +17,8 @@ import org.jetbrains.kotlin.ir.declarations.IrFile
 import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.expressions.IrFunctionAccessExpression
 import org.jetbrains.kotlin.ir.expressions.IrFunctionReference
+import org.jetbrains.kotlin.ir.get
+import org.jetbrains.kotlin.ir.set
 import org.jetbrains.kotlin.ir.util.isLambda
 import org.jetbrains.kotlin.ir.util.parentAsClass
 import org.jetbrains.kotlin.ir.util.primaryConstructor
@@ -53,12 +56,18 @@ private class RecordEnclosingMethodsLowering(val context: JvmBackendContext) : F
                 return super.visitFunctionAccess(expression, data)
             }
 
-            private fun recordEnclosingMethodOverride(from: IrFunction, to: IrFunction) =
-                context.enclosingMethodOverride.merge(from, to) { old, new ->
+            private fun recordEnclosingMethodOverride(from: IrFunction, to: IrFunction) {
+                val old = from[EnclosingMethodOverride]
+                if (old != null) {
                     // A single lambda can be referenced multiple times if it is in a field initializer
                     // or an anonymous initializer block and there are multiple non-delegating constructors.
-                    assert(old.parentAsClass == new.parentAsClass && old is IrConstructor && new is IrConstructor)
-                    old.parentAsClass.primaryConstructor ?: old
+                    assert(old.parentAsClass == to.parentAsClass && old is IrConstructor && to is IrConstructor)
+                    old.parentAsClass.primaryConstructor?.let {
+                        from[EnclosingMethodOverride] = it
+                    }
+                } else {
+                    from[EnclosingMethodOverride] = to
                 }
+            }
         }, null)
 }

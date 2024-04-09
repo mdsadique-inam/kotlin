@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.backend.jvm
 
 import org.jetbrains.kotlin.ir.declarations.IrAttributeContainer
+import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.get
 import org.jetbrains.kotlin.ir.irDynamicProperty
 import org.jetbrains.kotlin.ir.set
@@ -19,3 +20,6 @@ fun IrAttributeContainer.getLocalClassType(): Type? =
 fun IrAttributeContainer.putLocalClassType(value: Type) {
     attributeOwnerId[LocalClassType] = value
 }
+
+
+val EnclosingMethodOverride by irDynamicProperty<IrFunction, IrFunction>()

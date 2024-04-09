@@ -125,7 +125,6 @@ class JvmBackendContext(
     ).isNotEmpty()
 
     val isEnclosedInConstructor = ConcurrentHashMap.newKeySet<IrAttributeContainer>()
-    val enclosingMethodOverride by irDynamicProperty<IrFunction, IrFunction>()
 
     private val classCodegens = ConcurrentHashMap<IrClass, Any>()
 
