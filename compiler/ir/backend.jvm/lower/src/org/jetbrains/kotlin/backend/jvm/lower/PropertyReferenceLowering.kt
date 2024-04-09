@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.ir.expressions.impl.IrConstImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrFunctionReferenceImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrGetObjectValueImpl
 import org.jetbrains.kotlin.ir.expressions.impl.IrInstanceInitializerCallImpl
+import org.jetbrains.kotlin.ir.set
 import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.types.IrSimpleType
 import org.jetbrains.kotlin.ir.types.IrTypeProjection
@@ -260,7 +261,7 @@ internal class PropertyReferenceLowering(val context: JvmBackendContext) : IrEle
             })
         }
         if (data.localProperties.isNotEmpty()) {
-            context.localDelegatedProperties[declaration.attributeOwnerId] = data.localProperties
+            declaration.attributeOwnerId[localDelegatedProperties] = data.localProperties
         }
         return declaration
     }

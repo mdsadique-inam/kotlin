@@ -7,6 +7,7 @@ package org.jetbrains.kotlin.backend.jvm.metadata
 
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
 import org.jetbrains.kotlin.backend.jvm.JvmLoweredDeclarationOrigin
+import org.jetbrains.kotlin.backend.jvm.localDelegatedProperties
 import org.jetbrains.kotlin.backend.jvm.mapping.mapClass
 import org.jetbrains.kotlin.codegen.binding.CodegenBinding
 import org.jetbrains.kotlin.codegen.createFreeFakeLambdaDescriptor
@@ -16,6 +17,7 @@ import org.jetbrains.kotlin.ir.declarations.DescriptorMetadataSource
 import org.jetbrains.kotlin.ir.declarations.IrClass
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin
 import org.jetbrains.kotlin.ir.declarations.MetadataSource
+import org.jetbrains.kotlin.ir.get
 import org.jetbrains.kotlin.ir.util.getPackageFragment
 import org.jetbrains.kotlin.ir.util.isInterface
 import org.jetbrains.kotlin.metadata.jvm.serialization.JvmStringTable
@@ -53,7 +55,7 @@ class DescriptorMetadataSerializer(
     }
 
     override fun serialize(metadata: MetadataSource): Pair<MessageLite, JvmStringTable>? {
-        val localDelegatedProperties = context.localDelegatedProperties[irClass.attributeOwnerId]
+        val localDelegatedProperties = irClass.attributeOwnerId[localDelegatedProperties]
         if (localDelegatedProperties != null && localDelegatedProperties.isNotEmpty()) {
             context.state.bindingTrace.record(
                 CodegenBinding.DELEGATED_PROPERTIES_WITH_METADATA,

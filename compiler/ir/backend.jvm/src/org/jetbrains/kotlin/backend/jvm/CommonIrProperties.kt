@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.ir.declarations.IrFunction
 import org.jetbrains.kotlin.ir.get
 import org.jetbrains.kotlin.ir.irDynamicProperty
 import org.jetbrains.kotlin.ir.set
+import org.jetbrains.kotlin.ir.symbols.IrLocalDelegatedPropertySymbol
 import org.jetbrains.org.objectweb.asm.Type
 
 val LocalClassType by irDynamicProperty<IrAttributeContainer, Type>()
@@ -21,5 +22,6 @@ fun IrAttributeContainer.putLocalClassType(value: Type) {
     attributeOwnerId[LocalClassType] = value
 }
 
-
 val EnclosingMethodOverride by irDynamicProperty<IrFunction, IrFunction>()
+
+val localDelegatedProperties by irDynamicProperty<IrAttributeContainer, List<IrLocalDelegatedPropertySymbol>>()
