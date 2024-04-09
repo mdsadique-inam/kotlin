@@ -122,4 +122,8 @@ fun box() = abiTest {
 
     expectSuccess("success") { nonLocalReturnFromArrayConstructorLambda("success", "failure") }
     expectSuccess(100) { nonLocalReturnFromIntArrayConstructorLambda(100, -100) }
+
+    expectFailure(linkage("Function 'test' can not be called: No function found for symbol '/KT59153.test|test(kotlin.Function0<kotlin.String>){}[0]'")) {
+        objectKT59153Delegate.test { "Hello!" }
+    }
 }
