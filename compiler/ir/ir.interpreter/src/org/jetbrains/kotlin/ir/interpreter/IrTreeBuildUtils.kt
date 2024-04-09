@@ -25,6 +25,7 @@ import org.jetbrains.kotlin.ir.symbols.impl.IrVariableSymbolImpl
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.utils.exceptions.errorWithAttachment
 
 internal val TEMP_CLASS_FOR_INTERPRETER = IrDeclarationOriginImpl("TEMP_CLASS_FOR_INTERPRETER")
 internal val TEMP_FUNCTION_FOR_INTERPRETER = IrDeclarationOriginImpl("TEMP_FUNCTION_FOR_INTERPRETER")
@@ -193,5 +194,44 @@ internal fun IrConst<*>.toConstantValue(): ConstantValue<*> {
                 else -> error("Cannot convert IrConst ${this.render()} to ConstantValue")
             }
         }
+    }
+}
+
+internal fun IrExpression.toConstantValue(): ConstantValue<*> {
+    return this.toConstantValueOrNull() ?: errorWithAttachment("Cannot convert IrExpression to ConstantValue") {
+        withEntry("IrExpression", this@toConstantValue.render())
+    }
+}
+
+internal fun IrExpression.toConstantValueOrNull(): ConstantValue<*>? {
+    fun createKClassValue(argumentType: IrType): KClassValue? {
+        if (argumentType is IrErrorType) return null
+        if (argumentType !is IrSimpleType) return null
+        var type = argumentType
+        var arrayDimensions = 0
+        while (type.isArray()) {
+            if (type.isPrimitiveArray()) break
+            val argument = (type as? IrSimpleType)?.arguments?.singleOrNull()
+            type = argument?.typeOrNull ?: break
+            arrayDimensions++
+        }
+        val classId = type.getClass()?.classId ?: return null
+        return KClassValue(classId, arrayDimensions)
+    }
+
+    return when (this) {
+        is IrConst<*> -> this.toConstantValue()
+        is IrConstructorCall -> {
+            if (!this.type.isAnnotation()) return null
+            val classId = this.symbol.owner.constructedClass.classId ?: return null
+            AnnotationValue.create(classId, this.getArgumentsWithIr().associate { it.first.name to it.second.toConstantValue() })
+        }
+        is IrGetEnumValue -> {
+            val enumEntry = this.symbol.owner
+            val classId = enumEntry.correspondingClass?.classId ?: return null
+            EnumValue(classId, enumEntry.name)
+        }
+        is IrClassReference -> createKClassValue(this.classType)
+        else -> null
     }
 }
