@@ -8,6 +8,8 @@ package org.jetbrains.kotlin.backend.jvm.lower
 import org.jetbrains.kotlin.backend.common.lower.InventNamesForLocalClasses
 import org.jetbrains.kotlin.backend.common.phaser.makeIrFilePhase
 import org.jetbrains.kotlin.backend.jvm.JvmBackendContext
+import org.jetbrains.kotlin.backend.jvm.LocalClassType
+import org.jetbrains.kotlin.backend.jvm.putLocalClassType
 import org.jetbrains.kotlin.codegen.JvmCodegenUtil
 import org.jetbrains.kotlin.ir.declarations.IrAttributeContainer
 import org.jetbrains.kotlin.ir.declarations.IrClass
@@ -57,7 +59,7 @@ open class JvmInventNamesForLocalClassesImpl(
     }
 
     override fun putLocalClassName(declaration: IrAttributeContainer, localClassName: String) {
-        context.putLocalClassType(declaration, Type.getObjectType(localClassName))
+        declaration.putLocalClassType(Type.getObjectType(localClassName))
     }
 }
 
@@ -71,6 +73,6 @@ class JvmInventNamesForInlinedAnonymousObjects(context: JvmBackendContext) : Jvm
 
     override fun putLocalClassName(declaration: IrAttributeContainer, localClassName: String) {
         if (declaration.originalBeforeInline == null) return
-        context.putLocalClassType(declaration, Type.getObjectType(localClassName))
+        declaration.putLocalClassType(Type.getObjectType(localClassName))
     }
 }

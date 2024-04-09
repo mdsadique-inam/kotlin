@@ -120,18 +120,9 @@ class JvmBackendContext(
     // Store evaluated SMAP for anonymous classes. Used only with IR inliner.
     val typeToCachedSMAP = mutableMapOf<Type, SMAP>()
 
-    private val localClassType by irDynamicProperty<IrAttributeContainer, Type>()
-
     val isCompilingAgainstJdk8OrLater = state.jvmBackendClassResolver.resolveToClassDescriptors(
         Type.getObjectType("java/lang/invoke/LambdaMetafactory")
     ).isNotEmpty()
-
-    fun getLocalClassType(container: IrAttributeContainer): Type? =
-        localClassType[container.attributeOwnerId]
-
-    fun putLocalClassType(container: IrAttributeContainer, value: Type) {
-        localClassType[container.attributeOwnerId] = value
-    }
 
     val isEnclosedInConstructor = ConcurrentHashMap.newKeySet<IrAttributeContainer>()
     val enclosingMethodOverride = ConcurrentHashMap<IrFunction, IrFunction>()
