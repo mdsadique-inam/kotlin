@@ -485,6 +485,16 @@ class FirExpectActualMatchingContextImpl private constructor(
         expression2: FirElement?,
         collectionArgumentsCompatibilityCheckStrategy: ExpectActualCollectionArgumentsCompatibilityCheckStrategy
     ): Boolean {
+        fun FirAnnotationArgumentMapping.isEqualTo(argumentMapping: FirAnnotationArgumentMapping): Boolean {
+            return this.mapping.keys.all { name ->
+                areAnnotationArgumentsEqual(
+                    this.mapping[name],
+                    argumentMapping.mapping[name],
+                    collectionArgumentsCompatibilityCheckStrategy,
+                )
+            }
+        }
+
         return when {
             expression1 == null || expression2 == null -> (expression1 == null) == (expression2 == null)
 
@@ -503,34 +513,19 @@ class FirExpectActualMatchingContextImpl private constructor(
                         val constructorCall1 = expression1 as FirFunctionCall
                         val constructorCall2 = expression2 as FirFunctionCall
 
-                        val mappingToFirExpression1 = (constructorCall1.argumentList as FirResolvedArgumentList).toAnnotationArgumentMapping().mapping
-                        val mappingToFirExpression2 = (constructorCall2.argumentList as FirResolvedArgumentList).toAnnotationArgumentMapping().mapping
+                        val annotationMapping1 = (constructorCall1.argumentList as FirResolvedArgumentList).toAnnotationArgumentMapping()
+                        val annotationMapping2 = (constructorCall2.argumentList as FirResolvedArgumentList).toAnnotationArgumentMapping()
 
                         areCompatibleExpectActualTypes(expression1.resolvedType, expression2.resolvedType) &&
-                                mappingToFirExpression1.keys.all { name ->
-                                    areAnnotationArgumentsEqual(
-                                        mappingToFirExpression1[name],
-                                        mappingToFirExpression2[name],
-                                        collectionArgumentsCompatibilityCheckStrategy,
-                                    )
-                                }
+                                annotationMapping1.isEqualTo(annotationMapping2)
                     }
                     else -> false
                 }
             }
 
             expression1 is FirAnnotation && expression2 is FirAnnotation -> {
-                val mappingToFirExpression1 = expression1.argumentMapping.mapping
-                val mappingToFirExpression2 = expression2.argumentMapping.mapping
-
                 areCompatibleExpectActualTypes(expression1.resolvedType, expression2.resolvedType) &&
-                        mappingToFirExpression1.keys.all { name ->
-                            areAnnotationArgumentsEqual(
-                                mappingToFirExpression1[name],
-                                mappingToFirExpression2[name],
-                                collectionArgumentsCompatibilityCheckStrategy,
-                            )
-                        }
+                        expression1.argumentMapping.isEqualTo(expression2.argumentMapping)
             }
 
             expression1 is FirGetClassCall && expression2 is FirGetClassCall -> {
