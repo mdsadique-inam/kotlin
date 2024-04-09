@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
+import org.jetbrains.kotlin.fir.declarations.impl.FirPrimaryConstructor
 import org.jetbrains.kotlin.fir.declarations.utils.isOperator
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.isSubstitutionOrIntersectionOverride
@@ -24,6 +25,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.utils.exceptions.withFirEntry
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.resolve.ForbiddenNamedArgumentsTarget
 import org.jetbrains.kotlin.util.OperatorNameConventions
 import org.jetbrains.kotlin.utils.exceptions.errorWithAttachment
@@ -295,8 +297,12 @@ private class FirCallArgumentsProcessor(
                         result[parameter] = ResolvedCallArgument.DefaultArgument
                     parameter.isVararg ->
                         result[parameter] = ResolvedCallArgument.VarargArgument(emptyList())
-                    else ->
-                        addDiagnostic(NoValueForParameter(parameter, function))
+                    else -> {
+                        // Don't check missing parameters for enum constructors because they are initialized during an IR enum lowering
+                        if (function !is FirPrimaryConstructor || function.symbol.callableId.classId != StandardClassIds.Enum) {
+                            addDiagnostic(NoValueForParameter(parameter, function))
+                        }
+                    }
                 }
             }
         }
