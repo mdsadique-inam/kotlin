@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.descriptors.DescriptorVisibilities
 import org.jetbrains.kotlin.descriptors.DescriptorVisibility
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.ir.IrBuiltIns
+import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.IrStatement
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.declarations.impl.IrFactoryImpl
@@ -197,16 +198,17 @@ internal fun IrConst<*>.toConstantValue(): ConstantValue<*> {
     }
 }
 
-internal fun IrExpression.toConstantValue(): ConstantValue<*> {
+internal fun IrElement.toConstantValue(): ConstantValue<*> {
     return this.toConstantValueOrNull() ?: errorWithAttachment("Cannot convert IrExpression to ConstantValue") {
         withEntry("IrExpression", this@toConstantValue.render())
     }
 }
 
-internal fun IrExpression.toConstantValueOrNull(): ConstantValue<*>? {
+internal fun IrElement.toConstantValueOrNull(): ConstantValue<*>? {
     fun createKClassValue(argumentType: IrType): KClassValue? {
         if (argumentType is IrErrorType) return null
         if (argumentType !is IrSimpleType) return null
+
         var type = argumentType
         var arrayDimensions = 0
         while (type.isArray()) {
@@ -215,6 +217,8 @@ internal fun IrExpression.toConstantValueOrNull(): ConstantValue<*>? {
             type = argument?.typeOrNull ?: break
             arrayDimensions++
         }
+
+        if (type.getClass()?.isLocal == true) return KClassValue()
         val classId = type.getClass()?.classId ?: return null
         return KClassValue(classId, arrayDimensions)
     }
@@ -227,11 +231,11 @@ internal fun IrExpression.toConstantValueOrNull(): ConstantValue<*>? {
             AnnotationValue.create(classId, this.getArgumentsWithIr().associate { it.first.name to it.second.toConstantValue() })
         }
         is IrGetEnumValue -> {
-            val enumEntry = this.symbol.owner
-            val classId = enumEntry.correspondingClass?.classId ?: return null
-            EnumValue(classId, enumEntry.name)
+            val classId = this.type.getClass()?.classId ?: return null
+            EnumValue(classId, this.symbol.owner.name)
         }
         is IrClassReference -> createKClassValue(this.classType)
+        is IrVararg -> ArrayValue(this.elements.map { it.toConstantValue() })
         else -> null
     }
 }
