@@ -132,7 +132,7 @@ class JvmBackendContext(
     fun <ClassCodegen : Any> getOrCreateClassCodegen(klass: IrClass, create: (IrClass) -> ClassCodegen): ClassCodegen =
         classCodegens.computeIfAbsent(klass, create) as ClassCodegen
 
-    val localDelegatedProperties = ConcurrentHashMap<IrAttributeContainer, List<IrLocalDelegatedPropertySymbol>>()
+    val localDelegatedProperties by irDynamicProperty<IrAttributeContainer, List<IrLocalDelegatedPropertySymbol>>()
 
     val multifileFacadesToAdd = mutableMapOf<JvmClassName, MutableList<IrClass>>()
     val multifileFacadeForPart = mutableMapOf<IrClass, JvmClassName>()
