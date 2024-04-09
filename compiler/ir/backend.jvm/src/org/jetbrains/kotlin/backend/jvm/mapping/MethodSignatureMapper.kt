@@ -27,6 +27,9 @@ import org.jetbrains.kotlin.ir.descriptors.IrBasedSimpleFunctionDescriptor
 import org.jetbrains.kotlin.ir.descriptors.toIrBasedDescriptor
 import org.jetbrains.kotlin.ir.expressions.IrCall
 import org.jetbrains.kotlin.ir.expressions.IrConst
+import org.jetbrains.kotlin.ir.get
+import org.jetbrains.kotlin.ir.irDynamicProperty
+import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.load.java.*
@@ -313,12 +316,14 @@ class MethodSignatureMapper(private val context: JvmBackendContext, private val 
         private val context: JvmBackendContext
     ) : IrBasedSimpleFunctionDescriptor(owner) {
         override fun getOverriddenDescriptors(): List<FunctionDescriptor> =
-            context.getOverridesWithoutStubs(owner).map {
+            (owner[OverridesWithoutStubs] ?: owner.overriddenSymbols).map {
                 IrBasedSimpleFunctionDescriptorWithOriginalOverrides(it.owner, context)
             }
     }
 
     companion object {
+        val OverridesWithoutStubs by irDynamicProperty<IrSimpleFunction, List<IrSimpleFunctionSymbol>>()
+
         // Boxing is only necessary for 'remove(E): Boolean' of a MutableCollection<Int> implementation.
         // Otherwise this method might clash with 'remove(I): E' defined in the java.util.List JDK interface (mapped to kotlin 'removeAt').
         fun shouldBoxSingleValueParameterForSpecialCaseOfRemove(irFunction: IrFunction): Boolean {

@@ -136,15 +136,6 @@ class JvmBackendContext(
 
     val collectionStubComputer = CollectionStubComputer(this)
 
-    private val overridesWithoutStubs by irDynamicProperty<IrSimpleFunction, List<IrSimpleFunctionSymbol>>()
-
-    fun recordOverridesWithoutStubs(function: IrSimpleFunction) {
-        overridesWithoutStubs[function] = function.overriddenSymbols.toList()
-    }
-
-    fun getOverridesWithoutStubs(function: IrSimpleFunction): List<IrSimpleFunctionSymbol> =
-        overridesWithoutStubs.getOrElse(function) { function.overriddenSymbols }
-
     val bridgeLoweringCache = BridgeLoweringCache(this)
     val functionsWithSpecialBridges: MutableSet<IrFunction> = ConcurrentHashMap.newKeySet()
 
