@@ -17,7 +17,6 @@ import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertySetter
 import org.jetbrains.kotlin.fir.declarations.impl.FirResolvedDeclarationStatusImpl
 import org.jetbrains.kotlin.fir.declarations.utils.sourceElement
 import org.jetbrains.kotlin.fir.expressions.FirAnnotation
-import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.expressions.builder.buildExpressionStub
 import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.resolve.transformers.setLazyPublishedVisibility
@@ -34,11 +33,11 @@ import org.jetbrains.kotlin.metadata.deserialization.*
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
-import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.protobuf.MessageLite
 import org.jetbrains.kotlin.serialization.deserialization.ProtoEnumFlags
 import org.jetbrains.kotlin.serialization.deserialization.descriptors.DeserializedContainerSource
 import org.jetbrains.kotlin.serialization.deserialization.getName
+import org.jetbrains.kotlin.utils.addToStdlib.runIf
 
 class FirDeserializationContext(
     val nameResolver: NameResolver,
@@ -636,7 +635,6 @@ class FirMemberDeserializer(private val c: FirDeserializationContext) {
                 proto,
                 AbstractAnnotationDeserializer.CallableKind.OTHERS,
                 classProto,
-                addDefaultValue = classBuilder.symbol.classId == StandardClassIds.Enum
             )
             annotations +=
                 c.annotationDeserializer.loadConstructorAnnotations(c.containerSource, proto, local.nameResolver, local.typeTable)
@@ -651,20 +649,12 @@ class FirMemberDeserializer(private val c: FirDeserializationContext) {
         }
     }
 
-    private fun defaultValue(flags: Int): FirExpression? {
-        if (Flags.DECLARES_DEFAULT_VALUE.get(flags)) {
-            return buildExpressionStub()
-        }
-        return null
-    }
-
     private fun valueParameters(
         valueParameters: List<ProtoBuf.ValueParameter>,
         functionSymbol: FirFunctionSymbol<*>,
         callableProto: MessageLite,
         callableKind: AbstractAnnotationDeserializer.CallableKind,
         classProto: ProtoBuf.Class?,
-        addDefaultValue: Boolean = false
     ): List<FirValueParameter> {
         return valueParameters.mapIndexed { index, proto ->
             val flags = if (proto.hasFlags()) proto.flags else 0
@@ -677,10 +667,7 @@ class FirMemberDeserializer(private val c: FirDeserializationContext) {
                 this.name = name
                 symbol = FirValueParameterSymbol(name)
                 resolvePhase = FirResolvePhase.ANALYZED_DEPENDENCIES
-                defaultValue = defaultValue(flags)
-                if (addDefaultValue) {
-                    defaultValue = buildExpressionStub()
-                }
+                defaultValue = runIf(Flags.DECLARES_DEFAULT_VALUE.get(flags)) { buildExpressionStub() }
                 isCrossinline = Flags.IS_CROSSINLINE.get(flags)
                 isNoinline = Flags.IS_NOINLINE.get(flags)
                 isVararg = proto.varargElementType(c.typeTable) != null
