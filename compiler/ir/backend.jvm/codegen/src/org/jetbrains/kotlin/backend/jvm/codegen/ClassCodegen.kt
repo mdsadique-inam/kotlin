@@ -36,6 +36,8 @@ import org.jetbrains.kotlin.ir.expressions.IrBlockBody
 import org.jetbrains.kotlin.ir.expressions.IrConst
 import org.jetbrains.kotlin.ir.expressions.IrExpression
 import org.jetbrains.kotlin.ir.expressions.impl.IrSetFieldImpl
+import org.jetbrains.kotlin.ir.getOrPutDynamicProperty
+import org.jetbrains.kotlin.ir.irDynamicProperty
 import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.classOrNull
 import org.jetbrains.kotlin.ir.types.getArrayElementType
@@ -527,6 +529,8 @@ class ClassCodegen private constructor(
     }
 
     companion object {
+        private val ClassCodegens by irDynamicProperty<IrClass, ClassCodegen>()
+
         fun getOrCreate(
             irClass: IrClass,
             context: JvmBackendContext,
@@ -541,7 +545,7 @@ class ClassCodegen private constructor(
                 it.origin == JvmLoweredDeclarationOrigin.CLASS_STATIC_INITIALIZER
             },
         ): ClassCodegen =
-            context.getOrCreateClassCodegen(irClass) { ClassCodegen(irClass, context, parentFunction) }.also {
+            irClass.getOrPutDynamicProperty(ClassCodegens) { ClassCodegen(irClass, context, parentFunction) }.also {
                 assert(parentFunction == null || it.parentFunction == parentFunction) {
                     "inconsistent parent function for ${irClass.render()}:\n" +
                             "New: ${parentFunction!!.render()}\n" +

@@ -126,12 +126,6 @@ class JvmBackendContext(
 
     val isEnclosedInConstructor = ConcurrentHashMap.newKeySet<IrAttributeContainer>()
 
-    private val classCodegens by irDynamicProperty<IrClass, Any>()
-
-    @Suppress("UNCHECKED_CAST")
-    fun <ClassCodegen : Any> getOrCreateClassCodegen(klass: IrClass, create: (IrClass) -> ClassCodegen): ClassCodegen =
-        classCodegens.computeIfAbsent(klass, create) as ClassCodegen
-
     val multifileFacadesToAdd = mutableMapOf<JvmClassName, MutableList<IrClass>>()
     val multifileFacadeForPart = mutableMapOf<IrClass, JvmClassName>()
     val multifileFacadeClassForPart = mutableMapOf<IrClass, IrClass>()
