@@ -136,7 +136,7 @@ class JvmBackendContext(
 
     val collectionStubComputer = CollectionStubComputer(this)
 
-    private val overridesWithoutStubs = HashMap<IrSimpleFunction, List<IrSimpleFunctionSymbol>>()
+    private val overridesWithoutStubs by irDynamicProperty<IrSimpleFunction, List<IrSimpleFunctionSymbol>>()
 
     fun recordOverridesWithoutStubs(function: IrSimpleFunction) {
         overridesWithoutStubs[function] = function.overriddenSymbols.toList()
