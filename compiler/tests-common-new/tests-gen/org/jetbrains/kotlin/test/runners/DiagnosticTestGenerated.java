@@ -24773,6 +24773,12 @@ public class DiagnosticTestGenerated extends AbstractDiagnosticTest {
       }
 
       @Test
+      @TestMetadata("AnonymousFunctionParametersOfInaccessibleTypes.kt")
+      public void testAnonymousFunctionParametersOfInaccessibleTypes() {
+        runTest("compiler/testData/diagnostics/tests/multimodule/AnonymousFunctionParametersOfInaccessibleTypes.kt");
+      }
+
+      @Test
       @TestMetadata("BoxedInaccessibleGenericTypeUsedByDependencies.kt")
       public void testBoxedInaccessibleGenericTypeUsedByDependencies() {
         runTest("compiler/testData/diagnostics/tests/multimodule/BoxedInaccessibleGenericTypeUsedByDependencies.kt");
@@ -24830,6 +24836,12 @@ public class DiagnosticTestGenerated extends AbstractDiagnosticTest {
       @TestMetadata("kt14249.kt")
       public void testKt14249() {
         runTest("compiler/testData/diagnostics/tests/multimodule/kt14249.kt");
+      }
+
+      @Test
+      @TestMetadata("LambdaReceiversOfInaccessibleTypes.kt")
+      public void testLambdaReceiversOfInaccessibleTypes() {
+        runTest("compiler/testData/diagnostics/tests/multimodule/LambdaReceiversOfInaccessibleTypes.kt");
       }
 
       @Test
