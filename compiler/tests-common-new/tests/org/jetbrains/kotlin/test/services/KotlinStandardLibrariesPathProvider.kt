@@ -10,6 +10,7 @@ import org.jetbrains.kotlin.cli.jvm.configureStandardLibs
 import org.jetbrains.kotlin.codegen.forTestCompile.ForTestCompileRuntime
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.test.util.KtTestUtil
+import org.jetbrains.kotlin.utils.PathUtil
 import java.io.File
 import java.lang.ref.SoftReference
 import java.net.URL
@@ -141,6 +142,25 @@ object StandardLibrariesPathProviderForKotlinProject : KotlinStandardLibrariesPa
     override fun fullJsStdlib(): File = extractFromPropertyFirst("kotlin.js.stdlib.klib.path") { "kotlin-stdlib-js.klib".dist() }
     override fun defaultJsStdlib(): File = extractFromPropertyFirst("kotlin.js.reduced.stdlib.path") { "kotlin-stdlib-js.klib".dist() }
     override fun kotlinTestJsKLib(): File = extractFromPropertyFirst("kotlin.js.kotlin.test.klib.path") { "kotlin-test-js.klib".dist() }
+    fun scriptingPluginFilesForTests(): Collection<File> =
+        extractFromPropertyFirstFiles("kotlin.scriptingPlugin.classpath") {
+            val libPath = PathUtil.kotlinPathsForCompiler.libPath
+            val pluginClasspath = with(PathUtil) {
+                listOf(
+                    KOTLIN_SCRIPTING_COMPILER_PLUGIN_JAR,
+                    KOTLIN_SCRIPTING_COMPILER_IMPL_JAR,
+                    KOTLIN_SCRIPTING_COMMON_JAR,
+                    KOTLIN_SCRIPTING_JVM_JAR
+                ).map {
+                    val file = File(libPath, it)
+                    if (!file.exists()) {
+                        throw Error("Missing ${file.path}")
+                    }
+                    file
+                }
+            }
+            pluginClasspath
+        }
 
     private inline fun extractFromPropertyFirst(prop: String, onMissingProperty: () -> String): File {
         val path = System.getProperty(prop, null) ?: onMissingProperty()
