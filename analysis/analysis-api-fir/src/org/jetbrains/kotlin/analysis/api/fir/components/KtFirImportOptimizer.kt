@@ -82,6 +82,10 @@ internal class KtFirImportOptimizer(
         val usedImports = mutableMapOf<FqName, MutableSet<Name>>()
         val unresolvedNames = mutableSetOf<Name>()
 
+        fun saveReferencedItem(importableName: FqName, referencedByName: Name) {
+            usedImports.getOrPut(importableName) { hashSetOf() } += referencedByName
+        }
+
         firFile.accept(object : FirVisitorVoid() {
             override fun visitElement(element: FirElement) {
                 element.acceptChildren(this)
@@ -257,10 +261,6 @@ internal class KtFirImportOptimizer(
 
                 return CallableId(dispatcherClass, referencedSymbolName).asSingleFqName()
             }
-
-            private fun saveReferencedItem(importableName: FqName, referencedByName: Name) {
-                usedImports.getOrPut(importableName) { hashSetOf() } += referencedByName
-            }
         })
 
         file.accept(object : KtTreeVisitorVoid() {
@@ -278,7 +278,7 @@ internal class KtFirImportOptimizer(
                 }
                 importableNames.forEach { importableName ->
                     if (importableName != docName.getQualifiedNameAsFqName()) {
-                        usedImports.getOrPut(importableName) { hashSetOf() } += importableName.shortName()
+                        saveReferencedItem(importableName, importableName.shortName())
                     }
                 }
             }
