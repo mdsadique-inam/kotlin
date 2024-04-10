@@ -152,6 +152,7 @@ fun Project.projectTest(
     }
     return getOrCreateTask<Test>(taskName) {
         dependsOn(":createIdeaHomeForTests")
+        inputs.dir(File(rootDir, "build/ideaHomeForTests"))
 
         doFirst {
             if (jUnitMode == JUnitMode.JUnit5) return@doFirst
