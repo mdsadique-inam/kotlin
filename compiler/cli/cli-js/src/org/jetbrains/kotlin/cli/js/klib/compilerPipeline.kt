@@ -75,7 +75,7 @@ inline fun <F> compileModuleToAnalyzedFir(
         }
     } else JsPlatformAnalyzerServices
 
-    val binaryModuleData = BinaryModuleData.initialize(escapedMainModuleName, platform, platformAnalyzerServices)
+    val binaryModuleData = BinaryModuleData.initialize(escapedMainModuleName, platform)
     val dependencyList = DependencyListForCliModule.build(binaryModuleData) {
         dependencies(libraries.map { Paths.get(it).toAbsolutePath() })
         friendDependencies(friendLibraries.map { Paths.get(it).toAbsolutePath() })

@@ -96,7 +96,6 @@ class LLFirStandaloneLibrarySymbolProviderFactory(private val project: Project) 
         val forwardDeclarationsModuleData = BinaryModuleData.createDependencyModuleData(
             FORWARD_DECLARATIONS_MODULE_NAME,
             moduleDataProvider.platform,
-            moduleDataProvider.analyzerServices,
         ).apply {
             bindSession(session)
         }

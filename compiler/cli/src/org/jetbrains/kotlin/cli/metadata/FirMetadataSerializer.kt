@@ -7,7 +7,6 @@ package org.jetbrains.kotlin.cli.metadata
 
 import com.intellij.openapi.vfs.StandardFileSystems
 import com.intellij.openapi.vfs.VirtualFileManager
-import org.jetbrains.kotlin.analyzer.common.CommonPlatformAnalyzerServices
 import org.jetbrains.kotlin.cli.common.*
 import org.jetbrains.kotlin.cli.common.fir.FirDiagnosticsCompilerResultsReporter
 import org.jetbrains.kotlin.cli.common.messages.toLogger
@@ -66,7 +65,6 @@ internal class FirMetadataSerializer(
         val binaryModuleData = BinaryModuleData.initialize(
             rootModuleName,
             CommonPlatforms.defaultCommonPlatform,
-            CommonPlatformAnalyzerServices
         )
         val libraryList = DependencyListForCliModule.build(binaryModuleData) {
             val refinedPaths = configuration.get(K2MetadataConfigurationKeys.REFINES_PATHS)?.map { File(it) }.orEmpty()
