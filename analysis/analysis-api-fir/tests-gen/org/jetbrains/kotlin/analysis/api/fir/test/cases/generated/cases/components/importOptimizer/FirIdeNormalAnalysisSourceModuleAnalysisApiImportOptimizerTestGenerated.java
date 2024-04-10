@@ -215,6 +215,12 @@ public class FirIdeNormalAnalysisSourceModuleAnalysisApiImportOptimizerTestGener
   }
 
   @Test
+  @TestMetadata("usedInKDoc.kt")
+  public void testUsedInKDoc() {
+    runTest("analysis/analysis-api/testData/components/importOptimizer/analyseImports/usedInKDoc.kt");
+  }
+
+  @Test
   @TestMetadata("usedInvokeOperatorAliasedImport.kt")
   public void testUsedInvokeOperatorAliasedImport() {
     runTest("analysis/analysis-api/testData/components/importOptimizer/analyseImports/usedInvokeOperatorAliasedImport.kt");

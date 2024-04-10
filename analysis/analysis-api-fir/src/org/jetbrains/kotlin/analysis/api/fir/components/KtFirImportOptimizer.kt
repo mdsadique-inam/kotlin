@@ -5,14 +5,19 @@
 
 package org.jetbrains.kotlin.analysis.api.fir.components
 
+import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtRealSourceElementKind
+import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.analysis.api.components.KtImportOptimizer
 import org.jetbrains.kotlin.analysis.api.components.KtImportOptimizerResult
 import org.jetbrains.kotlin.analysis.api.fir.getCandidateSymbols
 import org.jetbrains.kotlin.analysis.api.fir.isImplicitDispatchReceiver
 import org.jetbrains.kotlin.analysis.api.fir.utils.computeImportableName
 import org.jetbrains.kotlin.analysis.api.lifetime.KtLifetimeToken
+import org.jetbrains.kotlin.analysis.api.symbols.KtCallableSymbol
+import org.jetbrains.kotlin.analysis.api.symbols.KtClassLikeSymbol
+import org.jetbrains.kotlin.analysis.api.types.KtNonErrorClassType
 import org.jetbrains.kotlin.analysis.low.level.api.fir.api.LLFirResolveSession
 import org.jetbrains.kotlin.analysis.low.level.api.fir.api.getOrBuildFirFile
 import org.jetbrains.kotlin.fir.FirElement
@@ -36,6 +41,9 @@ import org.jetbrains.kotlin.fir.types.FirErrorTypeRef
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.classId
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
+import org.jetbrains.kotlin.idea.references.mainReference
+import org.jetbrains.kotlin.kdoc.psi.impl.KDocLink
+import org.jetbrains.kotlin.kdoc.psi.impl.KDocName
 import org.jetbrains.kotlin.name.*
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getCallNameExpression
@@ -43,6 +51,7 @@ import org.jetbrains.kotlin.psi.psiUtil.getPossiblyQualifiedCallExpression
 import org.jetbrains.kotlin.psi.psiUtil.unwrapNullability
 import org.jetbrains.kotlin.resolve.calls.util.getCalleeExpressionIfAny
 import org.jetbrains.kotlin.util.OperatorNameConventions
+import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
 import org.jetbrains.kotlin.utils.exceptions.errorWithAttachment
 import org.jetbrains.kotlin.utils.exceptions.withPsiEntry
 
@@ -57,8 +66,7 @@ internal class KtFirImportOptimizer(
         val existingImports = file.importDirectives
         if (existingImports.isEmpty()) return KtImportOptimizerResult()
 
-        val firFile = file.getOrBuildFirFile(firResolveSession).apply { lazyResolveToPhaseRecursively(FirResolvePhase.BODY_RESOLVE) }
-        val (usedDeclarations, unresolvedNames) = collectReferencedEntities(firFile)
+        val (usedDeclarations, unresolvedNames) = collectReferencedEntities(file)
 
         return KtImportOptimizerResult(usedDeclarations, unresolvedNames)
     }
@@ -68,7 +76,8 @@ internal class KtFirImportOptimizer(
         val unresolvedNames: Set<Name>,
     )
 
-    private fun collectReferencedEntities(firFile: FirFile): ReferencedEntitiesResult {
+    private fun collectReferencedEntities(file: KtFile): ReferencedEntitiesResult {
+        val firFile = file.getOrBuildFirFile(firResolveSession).apply { lazyResolveToPhaseRecursively(FirResolvePhase.BODY_RESOLVE) }
         val usedImports = mutableMapOf<FqName, MutableSet<Name>>()
         val unresolvedNames = mutableSetOf<Name>()
 
@@ -250,6 +259,42 @@ internal class KtFirImportOptimizer(
 
             private fun saveReferencedItem(importableName: FqName, referencedByName: Name) {
                 usedImports.getOrPut(importableName) { hashSetOf() } += referencedByName
+            }
+        })
+
+        file.accept(object : KtVisitorVoid() {
+            override fun visitElement(element: PsiElement) {
+                super.visitElement(element)
+                element.acceptChildren(this)
+                if (element is KDocLink) {
+                    visitKDocLink(element)
+                }
+            }
+
+            private fun visitKDocLink(docLink: KDocLink) {
+                val docName = docLink.children.firstIsInstanceOrNull<KDocName>() ?: return
+                val importableNames = analyze(docName) {
+                    val symbols = docName.mainReference.resolveToSymbols()
+                    for (symbol in symbols) {
+                        when (symbol) {
+                            is KtCallableSymbol -> {
+                                val callableId = symbol.callableIdIfNonLocal ?: continue
+                                val fqName = callableId.asSingleFqName()
+                                val receiverFqName = (symbol.receiverParameter?.type as? KtNonErrorClassType)?.classId?.asSingleFqName()
+                                return@analyze listOfNotNull(fqName, receiverFqName)
+                            }
+                            is KtClassLikeSymbol -> {
+                                return@analyze listOfNotNull(symbol.classIdIfNonLocal?.asSingleFqName())
+                            }
+                        }
+                    }
+                    null
+                } ?: return
+                importableNames.forEach { importableName ->
+                    if (importableName != docName.getQualifiedNameAsFqName()) {
+                        usedImports.getOrPut(importableName) { hashSetOf() } += importableName.shortName()
+                    }
+                }
             }
         })
 
