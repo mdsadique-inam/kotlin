@@ -17,12 +17,12 @@ import org.jetbrains.kotlin.analysis.api.fir.utils.computeImportableName
 import org.jetbrains.kotlin.analysis.api.lifetime.KtLifetimeToken
 import org.jetbrains.kotlin.analysis.api.symbols.KtCallableSymbol
 import org.jetbrains.kotlin.analysis.api.symbols.KtClassLikeSymbol
+import org.jetbrains.kotlin.analysis.api.symbols.KtSymbol
 import org.jetbrains.kotlin.analysis.api.types.KtNonErrorClassType
 import org.jetbrains.kotlin.analysis.low.level.api.fir.api.LLFirResolveSession
 import org.jetbrains.kotlin.analysis.low.level.api.fir.api.getOrBuildFirFile
 import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.declarations.FirResolvePhase
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.psi
@@ -47,11 +47,12 @@ import org.jetbrains.kotlin.kdoc.psi.impl.KDocName
 import org.jetbrains.kotlin.name.*
 import org.jetbrains.kotlin.psi.*
 import org.jetbrains.kotlin.psi.psiUtil.getCallNameExpression
+import org.jetbrains.kotlin.psi.psiUtil.getChildOfType
 import org.jetbrains.kotlin.psi.psiUtil.getPossiblyQualifiedCallExpression
 import org.jetbrains.kotlin.psi.psiUtil.unwrapNullability
 import org.jetbrains.kotlin.resolve.calls.util.getCalleeExpressionIfAny
 import org.jetbrains.kotlin.util.OperatorNameConventions
-import org.jetbrains.kotlin.utils.addToStdlib.firstIsInstanceOrNull
+import org.jetbrains.kotlin.utils.addIfNotNull
 import org.jetbrains.kotlin.utils.exceptions.errorWithAttachment
 import org.jetbrains.kotlin.utils.exceptions.withPsiEntry
 
@@ -262,40 +263,41 @@ internal class KtFirImportOptimizer(
             }
         })
 
-        file.accept(object : KtVisitorVoid() {
+        file.accept(object : KtTreeVisitorVoid() {
             override fun visitElement(element: PsiElement) {
                 super.visitElement(element)
-                element.acceptChildren(this)
                 if (element is KDocLink) {
                     visitKDocLink(element)
                 }
             }
 
             private fun visitKDocLink(docLink: KDocLink) {
-                val docName = docLink.children.firstIsInstanceOrNull<KDocName>() ?: return
+                val docName = docLink.getChildOfType<KDocName>() ?: return
                 val importableNames = analyze(docName) {
-                    val symbols = docName.mainReference.resolveToSymbols()
-                    for (symbol in symbols) {
-                        when (symbol) {
-                            is KtCallableSymbol -> {
-                                val callableId = symbol.callableIdIfNonLocal ?: continue
-                                val fqName = callableId.asSingleFqName()
-                                val receiverFqName = (symbol.receiverParameter?.type as? KtNonErrorClassType)?.classId?.asSingleFqName()
-                                return@analyze listOfNotNull(fqName, receiverFqName)
-                            }
-                            is KtClassLikeSymbol -> {
-                                return@analyze listOfNotNull(symbol.classIdIfNonLocal?.asSingleFqName())
-                            }
-                        }
-                    }
-                    null
-                } ?: return
+                    docName.mainReference.resolveToSymbols().flatMap(::toImportableFqNames)
+                }
                 importableNames.forEach { importableName ->
                     if (importableName != docName.getQualifiedNameAsFqName()) {
                         usedImports.getOrPut(importableName) { hashSetOf() } += importableName.shortName()
                     }
                 }
             }
+
+            private fun toImportableFqNames(symbol: KtSymbol): List<FqName> =
+                buildList {
+                    when (symbol) {
+                        is KtCallableSymbol -> {
+                            val callableId = symbol.callableIdIfNonLocal ?: return emptyList()
+                            val fqName = callableId.asSingleFqName()
+                            val receiverFqName = (symbol.receiverParameter?.type as? KtNonErrorClassType)?.classId?.asSingleFqName()
+                            add(fqName)
+                            addIfNotNull(receiverFqName)
+                        }
+                        is KtClassLikeSymbol -> {
+                            addIfNotNull(symbol.classIdIfNonLocal?.asSingleFqName())
+                        }
+                    }
+                }
         })
 
         return ReferencedEntitiesResult(usedImports, unresolvedNames)
