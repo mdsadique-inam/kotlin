@@ -270,7 +270,7 @@
 }
 
 -keep class com.intellij.util.messages.impl.MessageBusEx {
-    void setLazyListeners(java.util.Map);
+    void setLazyListeners(java.util.concurrent.ConcurrentMap);
 }
 
 
