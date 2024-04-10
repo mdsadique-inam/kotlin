@@ -1,3 +1,4 @@
+// FIR_IDENTICAL
 class Data<A>(val initial: A)
 
 class Widget<B : Data<C>, C>(val data: B)

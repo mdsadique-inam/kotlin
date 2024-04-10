@@ -88,7 +88,7 @@ class ResultTypeResolver(
         val superType = c.findSuperType(variableWithConstraints)
 
         val similarCapturedTypesInK2 = with(c) {
-            isK2 && similarCapturedTypes(subType, superType)
+            isK2 && similarOrInheritedCapturedTypes(subType, superType)
         }
 
         /**
@@ -168,14 +168,21 @@ class ResultTypeResolver(
      * Type constructors of lower/upper bound of both types should be the same captured types, to get true result.
      * This is needed to avoid captured types approximation in such situation.
      */
-    private fun Context.similarCapturedTypes(subType: KotlinTypeMarker?, superType: KotlinTypeMarker?): Boolean {
+    private fun Context.similarOrInheritedCapturedTypes(subType: KotlinTypeMarker?, superType: KotlinTypeMarker?): Boolean {
         if (subType == null) return false
         if (superType == null) return false
-        val typeConstructor = subType.lowerBoundIfFlexible().typeConstructor()
-        return typeConstructor.isCapturedTypeConstructor() &&
-                typeConstructor == subType.upperBoundIfFlexible().typeConstructor() &&
-                typeConstructor == superType.lowerBoundIfFlexible().typeConstructor() &&
-                typeConstructor == superType.upperBoundIfFlexible().typeConstructor()
+        val subTypeLowerConstructor = subType.lowerBoundIfFlexible().typeConstructor()
+        if (!subTypeLowerConstructor.isCapturedTypeConstructor()) return false
+
+        // If two captured types or captured-containing types are already in subtyping relation,
+        // we shouldn't do approximation, otherwise this subtyping relation becomes broken
+        if (superType in subTypeLowerConstructor.supertypes() && superType.contains { it.typeConstructor().isCapturedTypeConstructor() }) {
+            return true
+        }
+
+        return subTypeLowerConstructor == subType.upperBoundIfFlexible().typeConstructor() &&
+                subTypeLowerConstructor == superType.lowerBoundIfFlexible().typeConstructor() &&
+                subTypeLowerConstructor == superType.upperBoundIfFlexible().typeConstructor()
     }
 
     /*
