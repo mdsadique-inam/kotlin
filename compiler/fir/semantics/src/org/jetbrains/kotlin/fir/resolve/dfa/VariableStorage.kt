@@ -6,7 +6,6 @@
 package org.jetbrains.kotlin.fir.resolve.dfa
 
 import org.jetbrains.kotlin.fir.FirElement
-import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.expressions.*
 import org.jetbrains.kotlin.fir.references.symbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
@@ -26,11 +25,8 @@ class VariableStorage {
         realVariables.values.filter { (it.symbol as? FirPropertySymbol)?.isLocal == true }
 
     /**
-     * Retrieve a [DataFlowVariable] representing the given [FirElement]. If [fir] is a property access (read, assignment, or
-     * declaration), return a [RealVariable], otherwise a [SyntheticVariable].
-     *
-     * @param fir An expression, a variable assignment, or a variable declaration. Although it is technically allowed to create
-     * variables for other kinds of statements, it is meaningless.
+     * Retrieve a [DataFlowVariable] representing the given [FirElement]. If [fir] is a property reference,
+     * return a [RealVariable], otherwise a [SyntheticVariable].
      *
      * @param createReal Whether to create a new [RealVariable] for [fir] if one has never been created before. This is a
      * performance optimization: always setting this to true is semantically correct, so it should be set to false whenever
@@ -44,15 +40,15 @@ class VariableStorage {
      * if it is a qualified access expression.
      */
     fun get(
-        fir: FirElement,
+        fir: FirExpression,
         createReal: Boolean,
         unwrapAlias: (RealVariable) -> RealVariable?,
         unwrapAliasInReceivers: (RealVariable) -> RealVariable? = unwrapAlias,
     ): DataFlowVariable? {
-        val unwrapped = fir.unwrapElement()
+        val unwrapped = fir.unwrapElement() ?: return null
         val isReceiver = unwrapped is FirThisReceiverExpression
         val symbol = when (unwrapped) {
-            is FirDeclaration -> unwrapped.symbol
+            is FirWhenSubjectExpression -> unwrapped.whenRef.value.subjectVariable?.symbol
             is FirResolvedQualifier -> unwrapped.symbol
             is FirResolvable -> unwrapped.calleeReference.symbol
             else -> null
@@ -109,15 +105,14 @@ class VariableStorage {
     }
 }
 
-private tailrec fun FirElement.unwrapElement(): FirElement {
+private tailrec fun FirExpression.unwrapElement(): FirExpression? {
     return when (this) {
-        is FirWhenSubjectExpression -> whenRef.value.let { it.subjectVariable ?: it.subject ?: return this }.unwrapElement()
+        is FirWhenSubjectExpression -> (whenRef.value.takeIf { it.subjectVariable == null }?.subject ?: return this).unwrapElement()
         is FirSmartCastExpression -> originalExpression.unwrapElement()
-        is FirSafeCallExpression -> selector.unwrapElement()
+        is FirSafeCallExpression -> (selector as? FirExpression ?: return null).unwrapElement()
         is FirCheckedSafeCallSubject -> originalReceiverRef.value.unwrapElement()
         is FirCheckNotNullCall -> argument.unwrapElement()
         is FirDesugaredAssignmentValueReferenceExpression -> expressionRef.value.unwrapElement()
-        is FirVariableAssignment -> lValue.unwrapElement()
         else -> this
     }
 }

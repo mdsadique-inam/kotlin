@@ -6,13 +6,13 @@
 package org.jetbrains.kotlin.fir.resolve.dfa
 
 import org.jetbrains.kotlin.descriptors.Visibilities
-import org.jetbrains.kotlin.fir.FirElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.declarations.impl.FirDefaultPropertyAccessor
 import org.jetbrains.kotlin.fir.declarations.utils.isExpect
 import org.jetbrains.kotlin.fir.declarations.utils.isFinal
 import org.jetbrains.kotlin.fir.declarations.utils.visibility
+import org.jetbrains.kotlin.fir.expressions.FirExpression
 import org.jetbrains.kotlin.fir.resolve.defaultType
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.*
@@ -21,7 +21,7 @@ import org.jetbrains.kotlin.types.SmartcastStability
 
 sealed class DataFlowVariable
 
-data class SyntheticVariable(val fir: FirElement) : DataFlowVariable()
+data class SyntheticVariable(val fir: FirExpression) : DataFlowVariable()
 
 data class RealVariable(
     val symbol: FirBasedSymbol<*>,
