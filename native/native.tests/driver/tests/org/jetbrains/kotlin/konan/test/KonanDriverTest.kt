@@ -22,8 +22,11 @@ import org.jetbrains.kotlin.konan.test.blackbox.support.settings.KotlinNativeHom
 import org.jetbrains.kotlin.konan.test.blackbox.support.settings.executor
 import org.jetbrains.kotlin.konan.test.blackbox.targets
 import org.jetbrains.kotlin.native.executors.RunProcessResult
+import org.jetbrains.kotlin.native.executors.enableSystemMemoryUsageTracking
+import org.jetbrains.kotlin.native.executors.logSystemMemoryUsage
 import org.jetbrains.kotlin.native.executors.runProcess
 import org.junit.jupiter.api.Assumptions
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -46,6 +49,7 @@ class KonanDriverTest : AbstractNativeSimpleTest() {
 
     @Test
     fun testLLVMVariantDev() {
+        logSystemMemoryUsage("START testLLVMVariantDev")
         // On macOS for apple targets, clang++ from Xcode is used, which is not switchable as `dev/user`,
         // so the test cannot detect LLVM variant for apple targets on macOS host.
         Assumptions.assumeFalse(targets.hostTarget.family.isAppleFamily && targets.testTarget.family.isAppleFamily)
@@ -64,6 +68,7 @@ class KonanDriverTest : AbstractNativeSimpleTest() {
                 "`-essentials` must be in stdout of user LLVM.\nSTDOUT: ${it.stdout}\nSTDERR: ${it.stderr}\n---"
             )
         }
+        logSystemMemoryUsage("FINISH testLLVMVariantDev")
     }
 
     private fun compileSimpleFile(flags: List<String>): RunProcessResult {
@@ -86,6 +91,7 @@ class KonanDriverTest : AbstractNativeSimpleTest() {
 
     @Test
     fun testDriverProducesRunnableBinaries() {
+        logSystemMemoryUsage("START testDriverProducesRunnableBinaries")
         Assumptions.assumeFalse(HostManager.hostIsMingw &&
             testRunSettings.get<CacheMode>() == CacheMode.WithoutCache &&
             testRunSettings.get<OptimizationMode>() == OptimizationMode.DEBUG
@@ -110,10 +116,12 @@ class KonanDriverTest : AbstractNativeSimpleTest() {
             }
         }
         assertEquals("Hello, world!", runResult.stdout)
+        logSystemMemoryUsage("FINISH testDriverProducesRunnableBinaries")
     }
 
     @Test
     fun testDriverVersion() {
+        logSystemMemoryUsage("START testDriverVersion")
         Assumptions.assumeFalse(HostManager.hostIsMingw &&
                                         testRunSettings.get<CacheMode>() == CacheMode.WithoutCache &&
                                         testRunSettings.get<OptimizationMode>() == OptimizationMode.DEBUG
@@ -136,10 +144,12 @@ class KonanDriverTest : AbstractNativeSimpleTest() {
             timeout = Duration.parse("5m")
         }
         assertFalse(kexe.exists())
+        logSystemMemoryUsage("FINISH testDriverVersion")
     }
 
     @Test
     fun testOverrideKonanProperties() {
+        logSystemMemoryUsage("START testOverrideKonanProperties")
         Assumptions.assumeFalse(HostManager.hostIsMingw &&
                                         testRunSettings.get<CacheMode>() == CacheMode.WithoutCache &&
                                         testRunSettings.get<OptimizationMode>() == OptimizationMode.DEBUG
@@ -175,5 +185,14 @@ class KonanDriverTest : AbstractNativeSimpleTest() {
                     "STDOUT:\n${compilationResult.stdout}\nSTDERR:${compilationResult.stderr}"
         )
         testRunSettings.executor.runProcess(kexe.absolutePath)
+        logSystemMemoryUsage("FINISH testOverrideKonanProperties")
+    }
+
+    companion object {
+        @JvmStatic
+        @BeforeAll
+        fun enableTracking() {
+            enableSystemMemoryUsageTracking = true
+        }
     }
 }

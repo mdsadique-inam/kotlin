@@ -23,6 +23,25 @@ import kotlin.time.ExperimentalTime
 import kotlin.time.TimeSource
 import kotlin.time.measureTimedValue
 
+private val recursiveGuard = ThreadLocal.withInitial { false }
+
+private val logger = Logger.getLogger(HostExecutor::class.java.name)
+var enableSystemMemoryUsageTracking = false
+fun logSystemMemoryUsage(tag: String = "") {
+    if (!HostManager.hostIsMac)
+        return
+    if (!enableSystemMemoryUsageTracking)
+        return
+    check(!recursiveGuard.get())
+    val output = try {
+        recursiveGuard.set(true)
+        runProcess("/bin/sh", "-c", "top | head | grep -E '(MemRegions|PhysMem|VM)'").output
+    } finally {
+        recursiveGuard.set(false)
+    }
+    logger.warning(if (tag.isEmpty()) output else "[${tag}]\n$output")
+}
+
 class ProcessStreams(
     scope: CoroutineScope,
     process: Process,
@@ -157,14 +176,18 @@ class HostExecutor : Executor {
         val commandLine = "${request.executableAbsolutePath}${request.args.joinToString(separator = " ", prefix = " ")}"
         val environmentFormatted =
             request.environment.entries.joinToString(prefix = "{", postfix = "}") { "\"${it.key}\": \"${it.value}\"" }
-        logger.info(
-            """
+        val isRecursion = recursiveGuard.get()
+        if (!isRecursion) {
+            logger.info(
+                """
                 |Starting command: $commandLine
                 |In working directory: ${workingDirectory.absolutePath}
                 |With additional environment: $environmentFormatted
                 |And timeout: ${request.timeout}
                 """.trimMargin()
-        )
+            )
+            logSystemMemoryUsage("DONE ${request.executableAbsolutePath}")
+        }
         return ProcessBuilder(listOf(request.executableAbsolutePath) + request.args).apply {
             directory(workingDirectory)
             environment().putAll(request.environment)
@@ -180,11 +203,17 @@ class HostExecutor : Executor {
             }
             if (isTimeout) {
                 logger.warning("Timeout running $commandLine in $duration")
+                if (!isRecursion) {
+                    logSystemMemoryUsage("TIMEOUT ${request.executableAbsolutePath}")
+                }
                 cancel()
                 ExecuteResponse(null, duration)
             } else {
                 val exitCode = process.exitValue()
-                logger.info("Finished executing $commandLine in $duration exit code $exitCode")
+                if (!isRecursion) {
+                    logger.info("Finished executing $commandLine in $duration exit code $exitCode")
+                    logSystemMemoryUsage("DONE ${request.executableAbsolutePath}")
+                }
                 // KT-65113: Looks like read() from stdout/stderr of a child process may hang on Windows
                 // even when the child process is already terminated.
                 val waitStreamsDuration = if (HostManager.hostIsMingw) 10.seconds else Duration.INFINITE
