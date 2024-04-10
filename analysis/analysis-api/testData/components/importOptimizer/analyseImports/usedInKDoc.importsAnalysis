@@ -3,7 +3,13 @@ USED DECLARATIONS:
 Declaration: dependency.B
 By names: [B]
 
+Declaration: dependency.Foo
+By names: [Foo]
+
 Declaration: dependency.bar
 By names: [bar]
+
+Declaration: dependency.zoo
+By names: [zoo]
 
 UNRESOLVED NAMES:

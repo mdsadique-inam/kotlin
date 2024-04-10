@@ -4,12 +4,15 @@ package test
 import dependency.B
 import dependency.C
 import dependency.bar
+import dependency.Foo
+import dependency.zoo
 
 /**
  * [dependency.A]
  * [dependency.C]
  * [B]
  * [bar]
+ * [zoo]
  */
 fun foo() {
 
@@ -19,4 +22,6 @@ package dependency
 
 class A
 class B
-fun bar()
+fun bar() {}
+class Foo
+fun Foo.zoo() {}
