@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.fir.analysis.checkers.declaration
 
+import org.jetbrains.kotlin.KtRealSourceElementKind
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
@@ -21,7 +22,8 @@ object FirMissingDependencyClassForParameterChecker : FirValueParameterChecker(M
         reporter: DiagnosticReporter,
     ) {
         val containingFunctionSymbol = declaration.containingFunctionSymbol
-        if (containingFunctionSymbol !is FirAnonymousFunctionSymbol || !containingFunctionSymbol.isLambda) return
+        if (containingFunctionSymbol !is FirAnonymousFunctionSymbol) return
+        if (declaration.returnTypeRef.source?.kind is KtRealSourceElementKind) return
 
         val missingTypes = mutableSetOf<ConeKotlinType>()
         considerType(declaration.returnTypeRef.coneType, missingTypes, context)
