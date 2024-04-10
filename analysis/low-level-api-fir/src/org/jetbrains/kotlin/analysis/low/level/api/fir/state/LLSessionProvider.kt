@@ -14,9 +14,11 @@ class LLSessionProvider(
     val useSiteModule: KtModule,
     private val useSiteSessionFactory: (KtModule) -> LLFirSession
 ) {
-    // The `LLFirSession` must be strongly reachable from the resolvable session and ultimately the `KtFirAnalysisSession` so that soft
-    // reference garbage collection doesn't collect the `LLFirSession` without collecting its dependent `KtFirAnalysisSession`. See
-    // `LLFirSession` for more details.
+    /**
+     * The [LLFirSession] must be strongly reachable from the resolvable session and ultimately the `KtFirAnalysisSession` so that soft
+     * reference garbage collection doesn't collect the [LLFirSession] without collecting its dependent `KtFirAnalysisSession`. See
+     * [LLFirSession] for more details.
+     */
     val useSiteSession: LLFirSession by lazy(LazyThreadSafetyMode.PUBLICATION) { useSiteSessionFactory(useSiteModule) }
 
     /**
