@@ -353,7 +353,7 @@ internal object FirReferenceResolveHelper {
 
         val assignmentRValue = fir.rValue
         if (expression is KtOperationReferenceExpression &&
-            assignmentRValue.source?.kind is KtFakeSourceElementKind.DesugaredCompoundAssignment
+            assignmentRValue.source?.kind is KtFakeSourceElementKind.DesugaredAugmentedAssign
         ) {
             require(assignmentRValue is FirResolvable) {
                 "Rvalue of desugared compound assignment should be resolvable, but it was ${assignmentRValue::class}"
