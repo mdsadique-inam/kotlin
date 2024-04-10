@@ -1253,8 +1253,6 @@ open class Kapt3IT : Kapt3BaseIT() {
                 |        jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
                 |        freeCompilerArgs.addAll([
                 |            "-P",
-                |            "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true",
-                |            "-P",
                 |            "plugin:androidx.compose.compiler.plugins.kotlin:metricsDestination=" +
                 |            project.buildDir.absolutePath + "/compose_metrics"
                 |        ])
@@ -1279,9 +1277,6 @@ open class Kapt3IT : Kapt3BaseIT() {
                 }
 
                 val composeSuppressOption = compilerArguments
-                    .filter {
-                        it == "plugin:androidx.compose.compiler.plugins.kotlin:suppressKotlinVersionCompatibilityCheck=true"
-                    }
                     .size
                 assert(composeSuppressOption == 1) {
                     printBuildOutput()
