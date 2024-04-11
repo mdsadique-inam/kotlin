@@ -6,8 +6,8 @@ By names: [B]
 Declaration: dependency.Bar
 By names: [Bar]
 
-Declaration: dependency.Fun
-By names: [Fun]
+Declaration: dependency.Base
+By names: [Base]
 
 Declaration: dependency.b
 By names: [b]

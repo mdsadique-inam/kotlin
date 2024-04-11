@@ -8,8 +8,8 @@ import dependency.Foo
 import dependency.zoo
 import dependency.Bar
 import dependency.b
-import dependency.Ban
-import dependency.Fun
+import dependency.Base
+import dependency.Child
 import dependency.ext
 
 /**
@@ -19,7 +19,7 @@ import dependency.ext
  * [bar]
  * [zoo]
  * [Bar.b]
- * [Ban.ext]
+ * [Child.ext]
  */
 fun foo() {
 
@@ -35,6 +35,6 @@ fun Foo.zoo() {}
 class Bar
 fun Bar.b(){}
 
-open class Fun
-class Ban : Fun()
-fun Fun.ext() {}
+open class Base
+class Child : Base()
+fun Base.ext() {}
