@@ -29,7 +29,6 @@ import org.jetbrains.kotlin.library.metadata.impl.KlibResolvedModuleDescriptorsF
 import org.jetbrains.kotlin.load.kotlin.PackageAndMetadataPartProvider
 import org.jetbrains.kotlin.load.kotlin.PackagePartProvider
 import org.jetbrains.kotlin.load.kotlin.VirtualFileFinderFactory
-import java.lang.IllegalStateException
 import java.nio.file.Path
 import kotlin.io.path.absolutePathString
 import kotlin.io.path.extension
