@@ -87,7 +87,7 @@ private class KtFirResolveExtensionScope(
                 val declarationName = declaration.nameAsName ?: continue
                 if (!nameFilter(declarationName)) continue
                 with(analysisSession) {
-                    yield(declaration.getSymbolOfType())
+                    yield(declaration.getSymbol() as S)
                 }
             }
         }
