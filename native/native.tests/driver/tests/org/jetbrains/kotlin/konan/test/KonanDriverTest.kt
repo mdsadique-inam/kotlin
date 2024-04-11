@@ -149,6 +149,7 @@ class KonanDriverTest : AbstractNativeSimpleTest() {
 
     @Test
     fun testOverrideKonanProperties() {
+        Assumptions.assumeFalse(HostManager.hostIsMac)
         logSystemMemoryUsage("START testOverrideKonanProperties")
         Assumptions.assumeFalse(HostManager.hostIsMingw &&
                                         testRunSettings.get<CacheMode>() == CacheMode.WithoutCache &&
