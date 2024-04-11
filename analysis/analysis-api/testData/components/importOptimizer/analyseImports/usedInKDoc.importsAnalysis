@@ -1,5 +1,8 @@
 USED DECLARATIONS:
 
+Declaration: dependency.AnotherClass
+By names: [AnotherClass]
+
 Declaration: dependency.B
 By names: [B]
 

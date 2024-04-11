@@ -289,10 +289,20 @@ internal class KtFirImportOptimizer(
                         is KtCallableSymbol -> {
                             val callableId = symbol.callableIdIfNonLocal ?: return emptyList()
                             val fqName = callableId.asSingleFqName()
-                            if (fqName != qualifiedNameAsFqName) {
+                            val classFqName = callableId.classId?.asSingleFqName()
+                            // either it is a member declaration
+                            if (classFqName != null) {
+                                if (classFqName != qualifiedNameAsFqName) {
+                                    this += classFqName
+                                }
+                            } else if (fqName != qualifiedNameAsFqName) {
+                                // or some kind of top level declaration with potential receiver
                                 this += fqName
                                 val receiverClassType = symbol.receiverParameter?.type as? KtNonErrorClassType
                                 val receiverFqName = receiverClassType?.classId?.asSingleFqName()
+                                // import has no receiver for receiver kdoc declaration:
+                                // for receiver case kdoc like `[Foo.bar]`
+                                // import looks like `import a.b.bar`
                                 if (receiverFqName != null && qualifiedNameAsFqName.pathSegments().size > 1) {
                                     this += receiverFqName
                                 }
