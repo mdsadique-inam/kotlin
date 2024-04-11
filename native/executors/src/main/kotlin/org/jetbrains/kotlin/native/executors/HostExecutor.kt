@@ -186,7 +186,7 @@ class HostExecutor : Executor {
                 |And timeout: ${request.timeout}
                 """.trimMargin()
             )
-            logSystemMemoryUsage("DONE ${request.executableAbsolutePath}")
+            logSystemMemoryUsage("EXEC ${request.executableAbsolutePath}")
         }
         return ProcessBuilder(listOf(request.executableAbsolutePath) + request.args).apply {
             directory(workingDirectory)
