@@ -50,9 +50,6 @@ class KonanDriverTest : AbstractNativeSimpleTest() {
     @Test
     fun testLLVMVariantDev() {
         logSystemMemoryUsage("START testLLVMVariantDev")
-        // On macOS for apple targets, clang++ from Xcode is used, which is not switchable as `dev/user`,
-        // so the test cannot detect LLVM variant for apple targets on macOS host.
-        Assumptions.assumeFalse(targets.hostTarget.family.isAppleFamily && targets.testTarget.family.isAppleFamily)
         // No need to test with different GC schedulers
         Assumptions.assumeFalse(testRunSettings.get<GCScheduler>() == GCScheduler.AGGRESSIVE)
 
