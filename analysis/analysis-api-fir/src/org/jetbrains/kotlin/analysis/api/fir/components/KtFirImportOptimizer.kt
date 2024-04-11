@@ -52,7 +52,6 @@ import org.jetbrains.kotlin.psi.psiUtil.getPossiblyQualifiedCallExpression
 import org.jetbrains.kotlin.psi.psiUtil.unwrapNullability
 import org.jetbrains.kotlin.resolve.calls.util.getCalleeExpressionIfAny
 import org.jetbrains.kotlin.util.OperatorNameConventions
-import org.jetbrains.kotlin.utils.addIfNotNull
 import org.jetbrains.kotlin.utils.exceptions.errorWithAttachment
 import org.jetbrains.kotlin.utils.exceptions.withPsiEntry
 
@@ -291,18 +290,19 @@ internal class KtFirImportOptimizer(
                             val callableId = symbol.callableIdIfNonLocal ?: return emptyList()
                             val fqName = callableId.asSingleFqName()
                             if (fqName != qualifiedNameAsFqName) {
-                                add(fqName)
+                                this += fqName
                                 val receiverClassType = symbol.receiverParameter?.type as? KtNonErrorClassType
-                                val receiverFqName =
-                                    receiverClassType?.classId?.asSingleFqName()?.takeIf {
-                                        qualifiedNameAsFqName.startsWith(it.shortName())
-                                    }
-                                addIfNotNull(receiverFqName)
+                                val receiverFqName = receiverClassType?.classId?.asSingleFqName()
+                                if (receiverFqName != null && qualifiedNameAsFqName.startsWith(receiverFqName.shortName())) {
+                                    this += receiverFqName
+                                }
                             }
                         }
                         is KtClassLikeSymbol -> {
-                            val fqName = symbol.classIdIfNonLocal?.asSingleFqName()?.takeIf { it != qualifiedNameAsFqName }
-                            addIfNotNull(fqName)
+                            val fqName = symbol.classIdIfNonLocal?.asSingleFqName()
+                            if (fqName != null && fqName != qualifiedNameAsFqName) {
+                                this += fqName
+                            }
                         }
                     }
                 }
