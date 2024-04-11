@@ -30,32 +30,15 @@ expect class Int {
 expect class String
 
 @ActualizeByJvmBuiltinProvider
-public expect abstract class Enum<E : Enum<E>>(name: String, ordinal: Int) : Comparable<E> {
-}
-
-enum class TestEnumInCommon {
-    A, B, C
-}
+public expect fun Any?.toString(): String
 
 @ActualizeByJvmBuiltinProvider
-public expect open class Throwable() {
-    public open val message: String?
-    public open val cause: Throwable?
+public expect operator fun String?.plus(other: Any?): String
 
-    public constructor(message: String?)
-
-    public constructor(cause: Throwable?)
-}
-
+@SinceKotlin("1.1")
 @ActualizeByJvmBuiltinProvider
-public expect class IntArray(size: Int) {
-    @Suppress("WRONG_MODIFIER_TARGET")
-    public inline constructor(size: Int, init: (Int) -> Int)
-}
+public expect inline fun <reified T : Enum<T>> enumValues(): Array<T>
 
-annotation class AnnotationWithInt(val value: Int)
-
-@AnnotationWithInt(Int.MAX_VALUE)
-class TestClassInCommon
-
-fun testInCommon(): @ExtensionFunctionType (String.() -> Int) = null!!
+@SinceKotlin("1.1")
+@ActualizeByJvmBuiltinProvider
+public expect inline fun <reified T : Enum<T>> enumValueOf(name: String): T

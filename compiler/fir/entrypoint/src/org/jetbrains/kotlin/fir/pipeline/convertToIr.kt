@@ -158,7 +158,7 @@ fun FirResult.convertToIrAndActualize(
         fir2IrConfiguration.useFirBasedFakeOverrideGenerator,
         mainIrFragment,
         dependentIrFragments,
-        createActualClassExtractorIfNeeded(fir2IrConfiguration, platformFirOutput, platformComponentsStorage),
+        createActualDeclarationExtractorIfNeeded(fir2IrConfiguration, platformFirOutput, platformComponentsStorage),
     )
 
     if (!fir2IrConfiguration.useFirBasedFakeOverrideGenerator) {
@@ -188,17 +188,19 @@ fun FirResult.convertToIrAndActualize(
     return Fir2IrActualizedResult(mainIrFragment, platformComponentsStorage, pluginContext, actualizationResult)
 }
 
-private fun createActualClassExtractorIfNeeded(
+private fun createActualDeclarationExtractorIfNeeded(
     fir2IrConfiguration: Fir2IrConfiguration,
     platformFirOutput: ModuleCompilerAnalyzedOutput,
     platformComponentsStorage: Fir2IrComponentsStorage,
-): FirJvmBuiltinProviderActualClassExtractor? {
+): FirJvmBuiltinProviderActualDeclarationExtractor? {
     return runIf(
         platformFirOutput.session.moduleData.platform.isJvm() && fir2IrConfiguration.languageVersionSettings.getFlag(AnalysisFlags.stdlibCompilation)
     ) {
         val dependencyProviders = (platformFirOutput.session.dependenciesSymbolProvider as FirCachingCompositeSymbolProvider).providers
         val builtinsSymbolProvider = dependencyProviders.filterIsInstance<FirBuiltinSymbolProvider>().single()
-        FirJvmBuiltinProviderActualClassExtractor(builtinsSymbolProvider, platformComponentsStorage.classifierStorage)
+        FirJvmBuiltinProviderActualDeclarationExtractor(
+            builtinsSymbolProvider, platformComponentsStorage.classifierStorage, platformComponentsStorage.declarationStorage
+        )
     }
 }
 
