@@ -8,7 +8,6 @@ package org.jetbrains.kotlin.analysis.api.fir.components
 import com.intellij.psi.PsiElement
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtRealSourceElementKind
-import org.jetbrains.kotlin.analysis.api.analyze
 import org.jetbrains.kotlin.analysis.api.components.KtImportOptimizer
 import org.jetbrains.kotlin.analysis.api.components.KtImportOptimizerResult
 import org.jetbrains.kotlin.analysis.api.fir.KtFirAnalysisSession
@@ -275,28 +274,34 @@ internal class KtFirImportOptimizer(
 
             private fun visitKDocLink(docLink: KDocLink) {
                 val docName = docLink.getChildOfType<KDocName>() ?: return
+                val qualifiedNameAsFqName = docName.getQualifiedNameAsFqName()
                 val importableNames = with(analysisSession) {
-                    docName.mainReference.resolveToSymbols().flatMap(::toImportableFqNames)
+                    docName.mainReference.resolveToSymbols().flatMap { toImportableFqNames(it, qualifiedNameAsFqName) }
                 }
                 importableNames.forEach { importableName ->
-                    if (importableName != docName.getQualifiedNameAsFqName()) {
-                        saveReferencedItem(importableName, importableName.shortName())
-                    }
+                    saveReferencedItem(importableName, importableName.shortName())
                 }
             }
 
-            private fun toImportableFqNames(symbol: KtSymbol): List<FqName> =
+            private fun toImportableFqNames(symbol: KtSymbol, qualifiedNameAsFqName: FqName): List<FqName> =
                 buildList {
                     when (symbol) {
                         is KtCallableSymbol -> {
                             val callableId = symbol.callableIdIfNonLocal ?: return emptyList()
                             val fqName = callableId.asSingleFqName()
-                            val receiverFqName = (symbol.receiverParameter?.type as? KtNonErrorClassType)?.classId?.asSingleFqName()
-                            add(fqName)
-                            addIfNotNull(receiverFqName)
+                            if (fqName != qualifiedNameAsFqName) {
+                                add(fqName)
+                                val receiverClassType = symbol.receiverParameter?.type as? KtNonErrorClassType
+                                val receiverFqName =
+                                    receiverClassType?.classId?.asSingleFqName()?.takeIf {
+                                        qualifiedNameAsFqName.startsWith(it.shortName())
+                                    }
+                                addIfNotNull(receiverFqName)
+                            }
                         }
                         is KtClassLikeSymbol -> {
-                            addIfNotNull(symbol.classIdIfNonLocal?.asSingleFqName())
+                            val fqName = symbol.classIdIfNonLocal?.asSingleFqName()?.takeIf { it != qualifiedNameAsFqName }
+                            addIfNotNull(fqName)
                         }
                     }
                 }

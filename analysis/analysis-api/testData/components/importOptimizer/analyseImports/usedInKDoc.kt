@@ -6,6 +6,8 @@ import dependency.C
 import dependency.bar
 import dependency.Foo
 import dependency.zoo
+import dependency.Bar
+import dependency.b
 
 /**
  * [dependency.A]
@@ -13,6 +15,7 @@ import dependency.zoo
  * [B]
  * [bar]
  * [zoo]
+ * [Bar.b]
  */
 fun foo() {
 
@@ -25,3 +28,5 @@ class B
 fun bar() {}
 class Foo
 fun Foo.zoo() {}
+class Bar
+fun Bar.b(){}

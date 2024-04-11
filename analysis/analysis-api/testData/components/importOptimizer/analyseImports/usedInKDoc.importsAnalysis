@@ -3,8 +3,11 @@ USED DECLARATIONS:
 Declaration: dependency.B
 By names: [B]
 
-Declaration: dependency.Foo
-By names: [Foo]
+Declaration: dependency.Bar
+By names: [Bar]
+
+Declaration: dependency.b
+By names: [b]
 
 Declaration: dependency.bar
 By names: [bar]
