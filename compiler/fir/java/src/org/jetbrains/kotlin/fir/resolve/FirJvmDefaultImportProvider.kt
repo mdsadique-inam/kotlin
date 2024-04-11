@@ -16,7 +16,7 @@ object FirJvmDefaultImportProvider : DefaultImportProvider() {
         result.add(ImportPath.fromString("kotlin.jvm.*"))
 
         for (builtInsPackage in StandardClassIds.builtInsPackagesWithDefaultNamedImport) {
-            FirBuiltinSymbolProvider.getTopLevelClassifierNamesInPackage(builtInsPackage)?.forEach {
+            FirBuiltinSymbolProvider.getTopLevelClassifierNamesInPackage(builtInsPackage).forEach {
                 result.add(ImportPath(builtInsPackage.child(it), false))
             }
         }
