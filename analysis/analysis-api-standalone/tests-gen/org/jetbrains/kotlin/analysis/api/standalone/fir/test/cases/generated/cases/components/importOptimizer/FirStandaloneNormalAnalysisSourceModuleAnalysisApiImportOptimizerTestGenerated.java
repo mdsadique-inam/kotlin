@@ -221,6 +221,12 @@ public class FirStandaloneNormalAnalysisSourceModuleAnalysisApiImportOptimizerTe
   }
 
   @Test
+  @TestMetadata("usedInKDocMultiplePlaces.kt")
+  public void testUsedInKDocMultiplePlaces() {
+    runTest("analysis/analysis-api/testData/components/importOptimizer/analyseImports/usedInKDocMultiplePlaces.kt");
+  }
+
+  @Test
   @TestMetadata("usedInvokeOperatorAliasedImport.kt")
   public void testUsedInvokeOperatorAliasedImport() {
     runTest("analysis/analysis-api/testData/components/importOptimizer/analyseImports/usedInvokeOperatorAliasedImport.kt");
