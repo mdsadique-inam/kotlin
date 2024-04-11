@@ -85,15 +85,12 @@ open class KaptExtension : KaptExtensionConfig {
     }
 
     @Suppress("UNUSED_PARAMETER")
-    @Deprecated(
-        message = "Scheduled for removal in Kotlin 2.3.",
-        replaceWith = ReplaceWith("getAdditionalArguments()")
-    )
+    @Deprecated(message = "Scheduled for removal in Kotlin 2.3.")
     fun getAdditionalArguments(project: Project, variantData: Any?, androidExtension: Any?): Map<String, String> {
         return getAdditionalArguments()
     }
 
-    fun getAdditionalArguments(): Map<String, String> {
+    internal fun getAdditionalArguments(): Map<String, String> {
         @Suppress("DEPRECATION")
         val result = KaptAnnotationProcessorOptions()
         apOptionsActions.forEach { it(result) }
@@ -101,15 +98,8 @@ open class KaptExtension : KaptExtensionConfig {
     }
 
     @Suppress("UNUSED_PARAMETER")
-    @Deprecated(
-        message = "Scheduled for removal in Kotlin 2.3.",
-        replaceWith = ReplaceWith("getAdditionalArgumentsForJavac()")
-    )
+    @Deprecated(message = "Scheduled for removal in Kotlin 2.3.")
     fun getAdditionalArgumentsForJavac(project: Project, variantData: Any?, androidExtension: Any?): List<String> {
-        return getAdditionalArgumentsForJavac()
-    }
-
-    fun getAdditionalArgumentsForJavac(): List<String> {
         val javacArgs = mutableListOf<String>()
         for ((key, value) in getAdditionalArguments()) {
             javacArgs += "-A" + key + (if (value.isNotEmpty()) "=$value" else "")
