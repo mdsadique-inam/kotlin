@@ -13,6 +13,7 @@ import org.jetbrains.kotlin.analysis.api.components.KtImportOptimizerResult
 import org.jetbrains.kotlin.analysis.api.fir.KtFirAnalysisSession
 import org.jetbrains.kotlin.analysis.api.fir.getCandidateSymbols
 import org.jetbrains.kotlin.analysis.api.fir.isImplicitDispatchReceiver
+import org.jetbrains.kotlin.analysis.api.fir.references.KDocReferenceResolver
 import org.jetbrains.kotlin.analysis.api.fir.utils.computeImportableName
 import org.jetbrains.kotlin.analysis.api.lifetime.KtLifetimeToken
 import org.jetbrains.kotlin.analysis.api.symbols.KtCallableSymbol
@@ -41,7 +42,6 @@ import org.jetbrains.kotlin.fir.types.FirErrorTypeRef
 import org.jetbrains.kotlin.fir.types.FirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.classId
 import org.jetbrains.kotlin.fir.visitors.FirVisitorVoid
-import org.jetbrains.kotlin.idea.references.mainReference
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocLink
 import org.jetbrains.kotlin.kdoc.psi.impl.KDocName
 import org.jetbrains.kotlin.name.*
@@ -276,7 +276,8 @@ internal class KtFirImportOptimizer(
                 val docName = docLink.getChildOfType<KDocName>() ?: return
                 val qualifiedNameAsFqName = docName.getQualifiedNameAsFqName()
                 val importableNames = with(analysisSession) {
-                    docName.mainReference.resolveToSymbols().flatMap { toImportableFqNames(it, qualifiedNameAsFqName) }
+                    val symbols = KDocReferenceResolver.resolveKdocFqName(qualifiedNameAsFqName, qualifiedNameAsFqName, docLink)
+                    symbols.flatMap { toImportableFqNames(it, qualifiedNameAsFqName) }
                 }
                 importableNames.forEach { importableName ->
                     saveReferencedItem(importableName, importableName.shortName())
