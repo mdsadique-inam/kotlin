@@ -6,11 +6,17 @@ By names: [B]
 Declaration: dependency.Bar
 By names: [Bar]
 
+Declaration: dependency.Fun
+By names: [Fun]
+
 Declaration: dependency.b
 By names: [b]
 
 Declaration: dependency.bar
 By names: [bar]
+
+Declaration: dependency.ext
+By names: [ext]
 
 Declaration: dependency.zoo
 By names: [zoo]

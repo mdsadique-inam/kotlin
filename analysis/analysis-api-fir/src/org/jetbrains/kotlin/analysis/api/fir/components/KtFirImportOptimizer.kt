@@ -293,7 +293,7 @@ internal class KtFirImportOptimizer(
                                 this += fqName
                                 val receiverClassType = symbol.receiverParameter?.type as? KtNonErrorClassType
                                 val receiverFqName = receiverClassType?.classId?.asSingleFqName()
-                                if (receiverFqName != null && qualifiedNameAsFqName.startsWith(receiverFqName.shortName())) {
+                                if (receiverFqName != null && qualifiedNameAsFqName.pathSegments().size > 1) {
                                     this += receiverFqName
                                 }
                             }
