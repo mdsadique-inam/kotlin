@@ -299,7 +299,7 @@ fun FirCallableSymbol<*>.toSymbolForCall(
         }
         else -> null
     }
-    return when (val symbol =  this@toSymbolForCall) {
+    return when (val symbol = this@toSymbolForCall) {
         is FirSimpleSyntheticPropertySymbol -> {
             if (isDelegate) {
                 declarationStorage.getIrPropertySymbol(symbol)
