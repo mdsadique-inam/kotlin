@@ -43,7 +43,7 @@ KtFunctionSymbol:
       returnType: KtUsualClassType:
         annotationsList: []
         ownTypeArguments: []
-        type: Base
+        type: SecondAlias
       symbolKind: LOCAL
       typeParameters: []
       getContainingFileSymbol: KtFileSymbol(ExpandedParameterType.kt)

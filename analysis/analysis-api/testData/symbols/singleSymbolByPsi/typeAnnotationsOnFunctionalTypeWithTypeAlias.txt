@@ -34,7 +34,7 @@ KtFunctionSymbol:
         ownTypeArguments: []
         type: kotlin/Unit
     ]
-    type: @R|Anno1|()  @R|Anno2|()  @R|Anno3|()  kotlin/Function0<kotlin/Unit>
+    type: @R|Anno3|()  SecondTypeAlias
   symbolKind: TOP_LEVEL
   typeParameters: []
   valueParameters: []

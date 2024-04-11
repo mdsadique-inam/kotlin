@@ -35,7 +35,7 @@ KtFunctionSymbol:
                 psi: KtAnnotationEntry
             ]
             ownTypeArguments: []
-            type: @R|Anno1|(s = String(s))  @R|Anno2|()  @R|Anno3|()  BaseAnnotation
+            type: @R|Anno3|()  SecondTypeAlias
         ]
         type: kotlin/collections/List<@R|Anno3|()  SecondTypeAlias>
     ]

@@ -29,7 +29,7 @@ KtFunctionSymbol:
         psi: KtAnnotationEntry
     ]
     ownTypeArguments: []
-    type: @R|Anno1|()  @R|Anno2|()  @R|Anno3|()  BaseInterface
+    type: @R|Anno3|()  SecondTypeAlias
   symbolKind: TOP_LEVEL
   typeParameters: []
   valueParameters: []
