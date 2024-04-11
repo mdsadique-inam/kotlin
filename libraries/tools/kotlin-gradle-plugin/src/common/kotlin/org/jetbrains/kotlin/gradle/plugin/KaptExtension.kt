@@ -18,7 +18,6 @@ package org.jetbrains.kotlin.gradle.plugin
 
 import groovy.lang.Closure
 import org.gradle.api.Project
-import org.jetbrains.kotlin.gradle.InternalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.KaptArguments
 import org.jetbrains.kotlin.gradle.dsl.KaptExtensionConfig
 import org.jetbrains.kotlin.gradle.dsl.KaptJavacOption
@@ -79,6 +78,7 @@ open class KaptExtension : KaptExtensionConfig {
     }
 
     override fun getJavacOptions(): Map<String, String> {
+        @Suppress("DEPRECATION")
         val result = KaptJavacOptionsDelegate()
         javacOptionsActions.forEach { it(result) }
         return result.options
@@ -94,6 +94,7 @@ open class KaptExtension : KaptExtensionConfig {
     }
 
     fun getAdditionalArguments(): Map<String, String> {
+        @Suppress("DEPRECATION")
         val result = KaptAnnotationProcessorOptions()
         apOptionsActions.forEach { it(result) }
         return result.options
@@ -117,7 +118,7 @@ open class KaptExtension : KaptExtensionConfig {
     }
 }
 
-@InternalKotlinGradlePluginApi // TODO: make it just `internal final`
+@Deprecated("This is an internal class of KGP. Consider using the `KaptArguments` interface. Scheduled to be hidden in Kotlin 2.3") // TODO: make it just `private final`
 open class KaptAnnotationProcessorOptions() : KaptArguments {
     @Suppress("UNUSED_PARAMETER")
     @Deprecated(
@@ -148,7 +149,7 @@ open class KaptAnnotationProcessorOptions() : KaptArguments {
     fun execute(closure: Closure<*>) = executeClosure(closure)
 }
 
-@InternalKotlinGradlePluginApi // TODO: make it just `internal final`
+@Deprecated("This is an internal class of KGP. Consider using the `KaptJavacOption` interface. Scheduled to be hidden in Kotlin 2.3") // TODO: make it just `private final`
 open class KaptJavacOptionsDelegate : KaptJavacOption {
     internal val options = LinkedHashMap<String, String>()
 
