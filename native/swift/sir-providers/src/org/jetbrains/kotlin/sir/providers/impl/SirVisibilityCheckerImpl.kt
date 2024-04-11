@@ -38,6 +38,9 @@ public class SirVisibilityCheckerImpl(
             is KtVariableSymbol -> {
                 true
             }
+            is KtTypeAliasSymbol -> {
+                true
+            }
             else -> false
         }
         return if (isConsumable) SirVisibility.PUBLIC else SirVisibility.PRIVATE

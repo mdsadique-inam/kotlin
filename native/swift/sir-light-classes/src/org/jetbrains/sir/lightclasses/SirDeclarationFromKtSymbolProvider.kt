@@ -8,9 +8,12 @@ package org.jetbrains.sir.lightclasses
 import org.jetbrains.kotlin.analysis.api.KtAnalysisSession
 import org.jetbrains.kotlin.analysis.api.symbols.*
 import org.jetbrains.kotlin.sir.*
+import org.jetbrains.kotlin.sir.builder.buildTypealias
 import org.jetbrains.kotlin.sir.providers.SirDeclarationProvider
 import org.jetbrains.kotlin.sir.providers.SirSession
+import org.jetbrains.kotlin.sir.providers.source.KotlinSource
 import org.jetbrains.kotlin.sir.providers.utils.withSirAnalyse
+import org.jetbrains.sir.lightclasses.extensions.documentation
 import org.jetbrains.sir.lightclasses.nodes.*
 import org.jetbrains.sir.lightclasses.nodes.SirClassFromKtSymbol
 import org.jetbrains.sir.lightclasses.nodes.SirFunctionFromKtSymbol
@@ -50,6 +53,18 @@ public class SirDeclarationFromKtSymbolProvider(
                     analysisApiSession = ktAnalysisSession,
                     sirSession = sirSession,
                 )
+            }
+            is KtTypeAliasSymbol -> {
+                val declaration = buildTypealias {
+                    origin = KotlinSource(ktSymbol)
+                    visibility = ktSymbol.sirVisibility() ?: SirVisibility.PUBLIC
+                    name = ktSymbol.name.asString()
+                    type = ktSymbol.expandedType.translateType()
+                    documentation = ktSymbol.documentation()
+                }
+                declaration.parent = ktSymbol.getSirParent()
+
+                declaration
             }
             else -> TODO("encountered unknown symbol type - $ktSymbol. Error system should be reworked KT-65980")
         }.also {
