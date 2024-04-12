@@ -39,7 +39,7 @@ public class SirVisibilityCheckerImpl(
                 true
             }
             is KtTypeAliasSymbol -> {
-                true
+                true // FIXME: filter-out unrepresentable types
             }
             else -> false
         }

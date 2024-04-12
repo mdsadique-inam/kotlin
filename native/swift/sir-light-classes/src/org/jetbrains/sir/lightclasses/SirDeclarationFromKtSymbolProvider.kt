@@ -55,16 +55,11 @@ public class SirDeclarationFromKtSymbolProvider(
                 )
             }
             is KtTypeAliasSymbol -> {
-                val declaration = buildTypealias {
-                    origin = KotlinSource(ktSymbol)
-                    visibility = ktSymbol.sirVisibility() ?: SirVisibility.PUBLIC
-                    name = ktSymbol.name.asString()
-                    type = ktSymbol.expandedType.translateType()
-                    documentation = ktSymbol.documentation()
-                }
-                declaration.parent = ktSymbol.getSirParent()
-
-                declaration
+                SirTypealiasFromKtSymbol(
+                    ktSymbol = ktSymbol,
+                    analysisApiSession = ktAnalysisSession,
+                    sirSession = sirSession,
+                )
             }
             else -> TODO("encountered unknown symbol type - $ktSymbol. Error system should be reworked KT-65980")
         }.also {
