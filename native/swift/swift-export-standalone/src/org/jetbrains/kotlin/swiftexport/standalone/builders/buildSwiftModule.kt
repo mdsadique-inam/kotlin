@@ -18,6 +18,7 @@ import org.jetbrains.kotlin.platform.konan.NativePlatforms
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.sir.SirModule
 import org.jetbrains.kotlin.sir.builder.buildModuleCopy
+import org.jetbrains.kotlin.sir.providers.impl.SirSingleModuleProvider
 import org.jetbrains.kotlin.swiftexport.standalone.SwiftExportInput
 import org.jetbrains.kotlin.swiftexport.standalone.session.StandaloneSirSession
 import kotlin.io.path.Path
@@ -31,7 +32,10 @@ internal fun buildSwiftModule(
     val (module, ktFiles) = extractModuleWithFiles(kotlinDistribution, input, shouldSortInputFiles)
 
     return analyze(module) {
-        with(StandaloneSirSession(this, bridgeModuleName)) {
+        val sirSession = StandaloneSirSession(this) { _, _ ->
+            SirSingleModuleProvider(swiftModuleName = input.moduleName, bridgeModuleName = bridgeModuleName)
+        }
+        with(sirSession) {
             val result = module.sirModule()
             ktFiles.flatMap {
                 it.getFileSymbol().getFileScope().extractDeclarations()
