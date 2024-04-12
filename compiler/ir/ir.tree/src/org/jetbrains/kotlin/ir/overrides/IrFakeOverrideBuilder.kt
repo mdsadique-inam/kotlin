@@ -13,10 +13,7 @@ import org.jetbrains.kotlin.ir.symbols.IrPropertySymbol
 import org.jetbrains.kotlin.ir.symbols.IrSimpleFunctionSymbol
 import org.jetbrains.kotlin.ir.symbols.IrSymbol
 import org.jetbrains.kotlin.ir.types.*
-import org.jetbrains.kotlin.ir.util.collectAndFilterRealOverrides
-import org.jetbrains.kotlin.ir.util.fileOrNull
-import org.jetbrains.kotlin.ir.util.isClass
-import org.jetbrains.kotlin.ir.util.render
+import org.jetbrains.kotlin.ir.util.*
 import org.jetbrains.kotlin.resolve.OverridingUtil.OverrideCompatibilityInfo
 import org.jetbrains.kotlin.types.AbstractTypeChecker
 import org.jetbrains.kotlin.utils.filterIsInstanceAnd
@@ -350,6 +347,10 @@ class IrFakeOverrideBuilder(
                     this.setter = this.setter?.updateAccessorModalityAndVisibility(
                         modality, (maxVisibilityMember.setter ?: maxVisibilityMember).visibility
                     )
+                    if (strategy.needGenerateBackingFieldForFakeOverrideProperty(this)) {
+                        val overriddenProperty = mostSpecific.original as IrProperty
+                        this.backingField = TODO()
+                    }
                 }
                 is IrFunctionWithLateBinding -> {
                     this.visibility = maxVisibilityMember.visibility
