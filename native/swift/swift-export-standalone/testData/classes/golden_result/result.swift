@@ -107,16 +107,6 @@ public class OBJECT_NO_PACKAGE {
                 fatalError()
             }
         }
-        public class DATA_OBJECT_INSIDE_CLASS_INSIDE_OBJECT {
-            public static var shared: Swift.Int32 {
-                get {
-                    fatalError()
-                }
-            }
-            private init() {
-                fatalError()
-            }
-        }
         public var i: Swift.Int32 {
             get {
                 fatalError()
@@ -141,32 +131,6 @@ public class OBJECT_NO_PACKAGE {
             fatalError()
         }
     }
-    public var value: Swift.Int32 {
-        get {
-            fatalError()
-        }
-    }
-    public var variable: Swift.Int32 {
-        get {
-            fatalError()
-        }
-        set {
-            fatalError()
-        }
-    }
-    public static var shared: Swift.Int32 {
-        get {
-            fatalError()
-        }
-    }
-    public func foo() -> Swift.Int32 {
-        fatalError()
-    }
-    private init() {
-        fatalError()
-    }
-}
-public class DATA_OBJECT_WITHOUT_PACKAGE {
     public var value: Swift.Int32 {
         get {
             fatalError()
@@ -308,32 +272,6 @@ public extension main.namespace.deeper {
                 fatalError()
             }
         }
-        public var value: Swift.Int32 {
-            get {
-                fatalError()
-            }
-        }
-        public var variable: Swift.Int32 {
-            get {
-                fatalError()
-            }
-            set {
-                fatalError()
-            }
-        }
-        public static var shared: Swift.Int32 {
-            get {
-                fatalError()
-            }
-        }
-        public func foo() -> Swift.Int32 {
-            fatalError()
-        }
-        private init() {
-            fatalError()
-        }
-    }
-    public class DATA_OBJECT_WITH_PACKAGE {
         public var value: Swift.Int32 {
             get {
                 fatalError()
