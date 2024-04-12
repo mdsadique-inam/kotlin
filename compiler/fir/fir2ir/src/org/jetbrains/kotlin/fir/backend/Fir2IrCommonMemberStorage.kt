@@ -37,6 +37,7 @@ class Fir2IrCommonMemberStorage(val firSignatureComposer: FirBasedSignatureCompo
     val constructorCache: ConcurrentHashMap<FirConstructor, IrConstructorSymbol> = ConcurrentHashMap()
 
     val fieldCache: ConcurrentHashMap<FirField, IrFieldSymbol> = ConcurrentHashMap()
+    val propertyForJavaFieldCache: ConcurrentHashMap<FirField, IrPropertySymbol> = ConcurrentHashMap()
 
     val propertyCache: ConcurrentHashMap<FirProperty, IrPropertySymbol> = ConcurrentHashMap()
     val syntheticPropertyCache: ConcurrentHashMap<FirFunction, IrPropertySymbol> = ConcurrentHashMap()

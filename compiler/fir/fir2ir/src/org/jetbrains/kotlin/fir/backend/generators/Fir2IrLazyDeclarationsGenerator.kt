@@ -5,6 +5,7 @@
 
 package org.jetbrains.kotlin.fir.backend.generators
 
+import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.fir.backend.*
 import org.jetbrains.kotlin.fir.containingClassLookupTag
 import org.jetbrains.kotlin.fir.declarations.*
@@ -13,6 +14,7 @@ import org.jetbrains.kotlin.fir.lazy.*
 import org.jetbrains.kotlin.fir.unwrapUseSiteSubstitutionOverrides
 import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.symbols.*
+import org.jetbrains.kotlin.ir.symbols.impl.IrPropertySymbolImpl
 
 class Fir2IrLazyDeclarationsGenerator(private val c: Fir2IrComponents) : Fir2IrComponents by c {
     internal fun createIrLazyFunction(
@@ -82,6 +84,7 @@ class Fir2IrLazyDeclarationsGenerator(private val c: Fir2IrComponents) : Fir2IrC
         )
     }
 
+    // TODO: Should be private
     fun createIrLazyField(
         fir: FirField,
         symbol: IrFieldSymbol,
@@ -91,7 +94,35 @@ class Fir2IrLazyDeclarationsGenerator(private val c: Fir2IrComponents) : Fir2IrC
         return fir.convertWithOffsets { startOffset, endOffset ->
             Fir2IrLazyField(
                 c, startOffset, endOffset, declarationOrigin, fir, (lazyParent as? Fir2IrLazyClass)?.fir, symbol
-            )
+            ).apply {
+                parent = lazyParent
+            }
+        }
+    }
+
+    fun createIrPropertyForPureField(
+        fir: FirField,
+        fieldSymbol: IrFieldSymbol,
+        propertySymbol: IrPropertySymbol,
+        lazyParent: IrDeclarationParent,
+        declarationOrigin: IrDeclarationOrigin
+    ): IrProperty {
+        val field = createIrLazyField(fir, fieldSymbol, lazyParent, declarationOrigin)
+        return irFactory.createProperty(
+            field.startOffset,
+            field.endOffset,
+            field.origin,
+            field.name,
+            field.visibility,
+            Modality.FINAL,
+            propertySymbol,
+            !field.isFinal,
+            field.isStatic && field.isFinal,
+            isLateinit = false,
+            isDelegated = false,
+        ).apply {
+            parent = lazyParent
+            backingField = field
         }
     }
 }

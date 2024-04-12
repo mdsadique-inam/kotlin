@@ -14,6 +14,7 @@ import org.jetbrains.kotlin.builtins.StandardNames.DATA_CLASS_COMPONENT_PREFIX
 import org.jetbrains.kotlin.descriptors.ValueClassRepresentation
 import org.jetbrains.kotlin.diagnostics.startOffsetSkippingComments
 import org.jetbrains.kotlin.fir.*
+import org.jetbrains.kotlin.fir.backend.generators.FirBasedFakeOverrideGenerator
 import org.jetbrains.kotlin.fir.builder.buildPackageDirective
 import org.jetbrains.kotlin.fir.declarations.*
 import org.jetbrains.kotlin.fir.declarations.builder.buildFile
@@ -53,10 +54,7 @@ import org.jetbrains.kotlin.ir.declarations.*
 import org.jetbrains.kotlin.ir.declarations.IrDeclarationOrigin.GeneratedByPlugin
 import org.jetbrains.kotlin.ir.expressions.*
 import org.jetbrains.kotlin.ir.expressions.impl.*
-import org.jetbrains.kotlin.ir.symbols.IrClassSymbol
-import org.jetbrains.kotlin.ir.symbols.IrClassifierSymbol
-import org.jetbrains.kotlin.ir.symbols.IrSymbol
-import org.jetbrains.kotlin.ir.symbols.IrValueSymbol
+import org.jetbrains.kotlin.ir.symbols.*
 import org.jetbrains.kotlin.ir.symbols.impl.IrValueParameterSymbolImpl
 import org.jetbrains.kotlin.ir.types.*
 import org.jetbrains.kotlin.ir.types.impl.IrErrorTypeImpl
@@ -202,6 +200,7 @@ private fun FirBasedSymbol<*>.toSymbolForCall(
     c: Fir2IrComponents,
     dispatchReceiver: FirExpression?,
     preferGetter: Boolean,
+    preferField: Boolean,
     explicitReceiver: FirExpression? = null,
     isDelegate: Boolean = false,
     isReference: Boolean = false
@@ -210,6 +209,7 @@ private fun FirBasedSymbol<*>.toSymbolForCall(
         c,
         dispatchReceiver,
         preferGetter,
+        preferField,
         explicitReceiver,
         isDelegate,
         isReference
@@ -241,6 +241,7 @@ fun FirReference.toSymbolForCall(
     dispatchReceiver: FirExpression?,
     explicitReceiver: FirExpression?,
     preferGetter: Boolean = true,
+    preferField: Boolean = false,
     isDelegate: Boolean = false,
     isReference: Boolean = false,
 ): IrSymbol? {
@@ -252,6 +253,7 @@ fun FirReference.toSymbolForCall(
         c,
         dispatchReceiver,
         preferGetter,
+        preferField,
         explicitReceiver,
         isDelegate,
         isReference
@@ -269,6 +271,7 @@ fun FirCallableSymbol<*>.toSymbolForCall(
     c: Fir2IrComponents,
     dispatchReceiver: FirExpression?,
     preferGetter: Boolean = true,
+    preferField: Boolean = false,
     // Note: in fact LHS for callable references and explicit receiver for normal qualified accesses
     explicitReceiver: FirExpression? = null,
     isDelegate: Boolean = false,
@@ -323,7 +326,17 @@ fun FirCallableSymbol<*>.toSymbolForCall(
         is FirConstructorSymbol -> declarationStorage.getIrConstructorSymbol(symbol.fir.originalConstructorIfTypeAlias?.symbol ?: symbol)
         is FirFunctionSymbol<*> -> declarationStorage.getIrFunctionSymbol(symbol, fakeOverrideOwnerLookupTag)
         is FirPropertySymbol -> declarationStorage.getIrPropertySymbol(symbol, fakeOverrideOwnerLookupTag)
-        is FirFieldSymbol -> declarationStorage.getOrCreateIrField(symbol, fakeOverrideOwnerLookupTag).symbol
+        is FirFieldSymbol -> if (configuration.useFirBasedFakeOverrideGenerator) {
+            @OptIn(FirBasedFakeOverrideGenerator::class)
+            declarationStorage.getOrCreateIrField(symbol, fakeOverrideOwnerLookupTag).symbol
+        } else {
+            if (preferField) {
+                val propertySymbol = declarationStorage.getIrSymbolForField(symbol, fakeOverrideOwnerLookupTag = null) as IrPropertySymbol
+                declarationStorage.findBackingFieldOfProperty(propertySymbol)
+            } else {
+                declarationStorage.getIrSymbolForField(symbol, fakeOverrideOwnerLookupTag)
+            }
+        }
         is FirBackingFieldSymbol -> declarationStorage.getIrBackingFieldSymbol(symbol)
         is FirDelegateFieldSymbol -> declarationStorage.getIrDelegateFieldSymbol(symbol)
         is FirVariableSymbol<*> -> declarationStorage.getIrValueSymbol(symbol)
