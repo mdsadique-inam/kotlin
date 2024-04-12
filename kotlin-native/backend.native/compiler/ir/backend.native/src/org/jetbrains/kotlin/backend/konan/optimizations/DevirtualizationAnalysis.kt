@@ -17,7 +17,6 @@ import org.jetbrains.kotlin.backend.konan.util.IntArrayList
 import org.jetbrains.kotlin.backend.konan.util.LongArrayList
 import org.jetbrains.kotlin.backend.konan.lower.getObjectClassInstanceFunction
 import org.jetbrains.kotlin.descriptors.ClassKind
-import org.jetbrains.kotlin.descriptors.explicitParameters
 import org.jetbrains.kotlin.ir.IrElement
 import org.jetbrains.kotlin.ir.builders.*
 import org.jetbrains.kotlin.ir.declarations.*
@@ -1555,44 +1554,99 @@ internal object DevirtualizationAnalysis {
                                 })
                             }
 
-                            val branches = mutableListOf<IrBranchImpl>()
-                            possibleCallees
-                                    // Try to leave the most complicated case for the last,
-                                    // and, hopefully, place it in the else clause.
-                                    .sortedBy { it.second.size }
-                                    .mapIndexedTo(branches) { index, devirtualizedCallee ->
-                                        val (actualCallee, receiverTypes) = devirtualizedCallee
-                                        val condition =
-                                                if (optimize && index == possibleCallees.size - 1)
-                                                    irTrue() // Don't check last type in optimize mode.
-                                                else {
-                                                    if (receiverTypes.size == 1) {
-                                                        // It is faster to just compare type infos instead of a full type check.
-                                                        val receiverType = receiverTypes[0]
-                                                        val expectedTypeInfo = IrClassReferenceImpl(
-                                                                startOffset, endOffset,
-                                                                symbols.nativePtrType,
-                                                                receiverType.irClass!!.symbol,
-                                                                receiverType.irClass.defaultType
-                                                        )
-                                                        irCall(nativePtrEqualityOperatorSymbol).apply {
-                                                            putValueArgument(0, irGet(typeInfo))
-                                                            putValueArgument(1, expectedTypeInfo)
-                                                        }
-                                                    } else {
-                                                        val receiverType = actualCallee.irFunction!!.parentAsClass
-                                                        irCallWithSubstitutedType(isSubtype, listOf(receiverType.defaultType)).apply {
-                                                            putValueArgument(0, irGet(typeInfo))
-                                                        }
-                                                    }
-                                                }
-                                        IrBranchImpl(
-                                                startOffset = startOffset,
-                                                endOffset = endOffset,
-                                                condition = condition,
-                                                result = irDevirtualizedCall(expression, type, actualCallee, arguments)
-                                        )
+                            /*
+                             * More than one possible callee - need to select the proper one.
+                             * There are two major cases here:
+                             *  - there is only one possible receiver type, and all what is needed is just compare the type infos
+                             *  - otherwise, there are multiple receiver types (meaning the actual callee has not been overridden in
+                             *    the inheritors), and a full type check operation is required.
+                             * These checks cannot be performed in arbitrary order - the check for a derived type must be
+                             * performed before the check for the base type.
+                             * To improve performance, we try to perform these checks in the following order: first, those with only one
+                             * receiver, then classes type checks, and finally interface type checks.
+                             * The actual order in which perform these checks, is found by a simple back tracking algorithm
+                             * (since the number of possible callees is small, it is ok in terms of performance).
+                             */
+
+                            val weights = possibleCallees.map { (actualCallee, receiverTypes) ->
+                                when {
+                                    receiverTypes.size == 1 -> 0 // The fastest.
+                                    actualCallee.irFunction!!.parentAsClass.isInterface -> 2 // The slowest.
+                                    else -> 1 // In between.
+                                }
+                            }
+                            val count = possibleCallees.size
+                            val used = BooleanArray(count) { false }
+                            val bestOrder = IntArray(count)
+                            var bestLexOrder = Int.MAX_VALUE
+                            fun backTrack(k: Int, order: IntArray, lexOrder: Int) {
+                                if (k == count) {
+                                    if (lexOrder < bestLexOrder) {
+                                        bestLexOrder = lexOrder
+                                        for (i in 0..<count)
+                                            bestOrder[i] = order[i]
                                     }
+                                    return
+                                }
+                                for (index in 0..<count) {
+                                    if (used[index]) continue
+                                    var ok = true
+                                    val receiverType = possibleCallees[index].first.irFunction!!.parentAsClass
+                                    for (i in 0..<k) {
+                                        val earlierReceiverType = possibleCallees[order[i]].first.irFunction!!.parentAsClass
+                                        if (receiverType.isSubclassOf(earlierReceiverType)) {
+                                            ok = false
+                                            break
+                                        }
+                                    }
+                                    if (!ok) continue
+                                    order[k] = index
+                                    used[index] = true
+                                    // Leave the most complicated case for the last and, hopefully, place it in the else clause.
+                                    val nextLexOrder =
+                                            if (k < count - 1) lexOrder * 3 + weights[index] else lexOrder
+                                    backTrack(k + 1, order, nextLexOrder)
+                                    used[index] = false
+                                }
+                            }
+
+                            backTrack(0, IntArray(count), 0)
+                            require(bestLexOrder != Int.MAX_VALUE) // Should never happen since there are no cycles in a type hierarchy.
+
+                            val branches = mutableListOf<IrBranchImpl>()
+                            bestOrder.mapIndexedTo(branches) { index, calleeIndex ->
+                                val (actualCallee, receiverTypes) = possibleCallees[calleeIndex]
+                                val condition =
+                                        if (optimize && index == possibleCallees.size - 1)
+                                            irTrue() // Don't check last type in optimize mode.
+                                        else {
+                                            if (receiverTypes.size == 1) {
+                                                // It is faster to just compare type infos instead of a full type check.
+                                                val receiverType = receiverTypes[0]
+                                                val expectedTypeInfo = IrClassReferenceImpl(
+                                                        startOffset, endOffset,
+                                                        symbols.nativePtrType,
+                                                        receiverType.irClass!!.symbol,
+                                                        receiverType.irClass.defaultType
+                                                )
+                                                irCall(nativePtrEqualityOperatorSymbol).apply {
+                                                    putValueArgument(0, irGet(typeInfo))
+                                                    putValueArgument(1, expectedTypeInfo)
+                                                }
+                                            } else {
+                                                val receiverType = actualCallee.irFunction!!.parentAsClass
+                                                irCallWithSubstitutedType(isSubtype, listOf(receiverType.defaultType)).apply {
+                                                    putValueArgument(0, irGet(typeInfo))
+                                                }
+                                            }
+                                        }
+                                IrBranchImpl(
+                                        startOffset = startOffset,
+                                        endOffset = endOffset,
+                                        condition = condition,
+                                        result = irDevirtualizedCall(expression, type, actualCallee, arguments)
+                                )
+                            }
                             if (!optimize) { // Add else branch throwing exception for debug purposes.
                                 branches.add(IrBranchImpl(
                                         startOffset = startOffset,
