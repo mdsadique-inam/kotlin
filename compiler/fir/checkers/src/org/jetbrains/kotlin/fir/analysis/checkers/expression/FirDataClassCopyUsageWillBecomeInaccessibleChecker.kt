@@ -69,12 +69,10 @@ fun FirCallableSymbol<*>.isDataClassCopy(dataClass: FirRegularClassSymbol, sessi
             return true
         }
         val constructor = dataClass.primaryConstructorSymbol(session)
-        if (constructor != null) {
-            if (origin == FirDeclarationOrigin.Library && receiverParameter == null &&
-                valueParameterSymbols.map { it.resolvedReturnType.classId } == constructor.valueParameterSymbols.map { it.resolvedReturnType.classId }
-            ) {
-                return true
-            }
+        if (constructor != null && origin == FirDeclarationOrigin.Library && receiverParameter == null &&
+            valueParameterSymbols.map { it.resolvedReturnType.classId } == constructor.valueParameterSymbols.map { it.resolvedReturnType.classId }
+        ) {
+            return true
         }
     }
     return false
