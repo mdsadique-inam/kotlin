@@ -853,7 +853,7 @@ internal val FirValueParameter.varargElementType: ConeKotlinType?
         return returnTypeRef.coneType.arrayElementType()
     }
 
-internal fun FirClassSymbol<*>.unsubstitutedScope(c: Fir2IrComponents): FirTypeScope {
+fun FirClassSymbol<*>.unsubstitutedScope(c: Fir2IrComponents): FirTypeScope {
     return this.unsubstitutedScope(c.session, c.scopeSession, withForcedTypeCalculator = true, memberRequiredPhase = null)
 }
 

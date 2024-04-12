@@ -19,7 +19,7 @@ import org.jetbrains.kotlin.fir.FirModuleData
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.backend.*
-import org.jetbrains.kotlin.fir.backend.jvm.Fir2IrJvmSpecialAnnotationSymbolProvider
+import org.jetbrains.kotlin.fir.backend.jvm.Fir2IrJvmBuiltIns
 import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.lazy.Fir2IrLazyClass
 import org.jetbrains.kotlin.fir.moduleData
@@ -90,10 +90,6 @@ fun FirResult.convertToIrAndActualize(
 
     val platformFirOutput = outputs.last()
 
-    val specialAnnotationSymbolProvider = runIf(platformFirOutput.session.moduleData.platform.isJvm()) {
-        Fir2IrJvmSpecialAnnotationSymbolProvider(IrFactoryImpl)
-    }
-
     fun ModuleCompilerAnalyzedOutput.createFir2IrComponentsStorage(
         irBuiltIns: IrBuiltInsOverFir? = null,
         fir2IrBuiltIns: Fir2IrBuiltIns? = null,
@@ -110,10 +106,12 @@ fun FirResult.convertToIrAndActualize(
             actualizerTypeContextProvider,
             commonMemberStorage,
             irMangler,
-            specialAnnotationSymbolProvider,
             kotlinBuiltIns,
             irBuiltIns,
             fir2IrBuiltIns,
+            initializeFirBuiltIns = {
+                runIf(platformFirOutput.session.moduleData.platform.isJvm()) { Fir2IrJvmBuiltIns(it, IrFactoryImpl) }
+            },
             irTypeSystemContext,
             firProvidersWithGeneratedFiles.getValue(session.moduleData),
         )
