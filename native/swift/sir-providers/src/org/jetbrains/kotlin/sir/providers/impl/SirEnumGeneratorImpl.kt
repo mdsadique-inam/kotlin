@@ -11,21 +11,24 @@ import org.jetbrains.kotlin.sir.SirModule
 import org.jetbrains.kotlin.sir.SirMutableDeclarationContainer
 import org.jetbrains.kotlin.sir.SirOrigin
 import org.jetbrains.kotlin.sir.builder.buildEnum
+import org.jetbrains.kotlin.sir.builder.buildModule
 import org.jetbrains.kotlin.sir.providers.SirEnumGenerator
 import org.jetbrains.kotlin.sir.util.addChild
 
-// TODO: Handle different modules
-public class SirEnumGeneratorImpl : SirEnumGenerator {
+public class SirEnumGeneratorImpl(
+    moduleForPackagesProducer: () -> SirModule
+) : SirEnumGenerator {
 
+    public val moduleForStoringPackages: SirModule by lazy { moduleForPackagesProducer() }
     private val createdEnums: MutableMap<FqName, SirEnum> = mutableMapOf()
 
-    override fun FqName.sirPackageEnum(module: SirModule): SirEnum {
+    override fun FqName.sirPackageEnum(): SirEnum {
         require(!this.isRoot)
 
         val parent: SirMutableDeclarationContainer = if (parent().isRoot) {
-            module
+            moduleForStoringPackages
         } else {
-            parent().sirPackageEnum(module)
+            parent().sirPackageEnum()
         }
 
         return createEnum(this, parent)

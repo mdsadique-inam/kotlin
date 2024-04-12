@@ -36,7 +36,7 @@ public class SirParentProviderImpl(
             return@withSirAnalyse if (packageFqName.isRoot) {
                 symbol.getContainingModule().sirModule()
             } else {
-                val enumAsPackage = packageFqName.sirPackageEnum(symbol.getContainingModule().sirModule())
+                val enumAsPackage = packageFqName.sirPackageEnum()
                 val containingModule = symbol.getContainingModule().sirModule()
                 val extensionsInModule = createdExtensionsForModule.getOrPut(containingModule) { mutableMapOf() }
                 val extensionForPackage = extensionsInModule.getOrPut(enumAsPackage) {

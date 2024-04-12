@@ -6,6 +6,7 @@
 package org.jetbrains.kotlin.swiftexport.standalone.session
 
 import org.jetbrains.kotlin.analysis.api.KtAnalysisSession
+import org.jetbrains.kotlin.sir.SirModule
 import org.jetbrains.kotlin.sir.providers.*
 import org.jetbrains.kotlin.sir.providers.impl.*
 import org.jetbrains.sir.lightclasses.SirDeclarationFromKtSymbolProvider
@@ -13,10 +14,11 @@ import org.jetbrains.sir.lightclasses.SirDeclarationFromKtSymbolProvider
 internal class StandaloneSirSession(
     ktAnalysisSession: KtAnalysisSession,
     override val bridgeModuleName: String,
+    moduleForPackagesProducer: () -> SirModule,
 ) : SirSession {
 
     override val declarationNamer = SirDeclarationNamerImpl()
-    override val enumGenerator = SirEnumGeneratorImpl()
+    override val enumGenerator = SirEnumGeneratorImpl(moduleForPackagesProducer)
     override val moduleProvider = SirModuleProviderImpl(
         ktAnalysisSession = ktAnalysisSession,
         sirSession = sirSession,

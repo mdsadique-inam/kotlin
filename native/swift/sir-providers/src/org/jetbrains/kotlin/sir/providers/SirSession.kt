@@ -46,7 +46,7 @@ public interface SirSession :
 
     public val bridgeModuleName: String
 
-    override fun FqName.sirPackageEnum(module: SirModule): SirEnum = with(enumGenerator) { this@sirPackageEnum.sirPackageEnum(module) }
+    override fun FqName.sirPackageEnum(): SirEnum = with(enumGenerator) { this@sirPackageEnum.sirPackageEnum() }
 
     override fun KtDeclarationSymbol.sirDeclarationName(): String = with(declarationNamer) { this@sirDeclarationName.sirDeclarationName() }
 
@@ -67,7 +67,7 @@ public interface SirSession :
  * Provides methods to create [SirEnum] which emulates Kotlin packages.
  */
 public interface SirEnumGenerator {
-    public fun FqName.sirPackageEnum(module: SirModule): SirEnum
+    public fun FqName.sirPackageEnum(): SirEnum
 }
 
 /**
