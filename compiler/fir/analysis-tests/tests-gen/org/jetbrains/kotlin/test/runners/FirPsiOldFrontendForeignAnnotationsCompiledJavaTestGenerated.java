@@ -781,12 +781,6 @@ public class FirPsiOldFrontendForeignAnnotationsCompiledJavaTestGenerated extend
         }
 
         @Test
-        @TestMetadata("NullableProjectionOfWildcardWithNonNullBoundsInOutPosition.kt")
-        public void testNullableProjectionOfWildcardWithNonNullBoundsInOutPosition() {
-          runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/strictMode/NullableProjectionOfWildcardWithNonNullBoundsInOutPosition.kt");
-        }
-
-        @Test
         @TestMetadata("NullUnmarked.kt")
         public void testNullUnmarked() {
           runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/strictMode/NullUnmarked.kt");
@@ -880,6 +874,12 @@ public class FirPsiOldFrontendForeignAnnotationsCompiledJavaTestGenerated extend
         @TestMetadata("NullUnmarkedVsTypeNullMarked.kt")
         public void testNullUnmarkedVsTypeNullMarked() {
           runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/strictMode/NullUnmarkedVsTypeNullMarked.kt");
+        }
+
+        @Test
+        @TestMetadata("NullableProjectionOfWildcardWithNonNullBoundsInOutPosition.kt")
+        public void testNullableProjectionOfWildcardWithNonNullBoundsInOutPosition() {
+          runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/strictMode/NullableProjectionOfWildcardWithNonNullBoundsInOutPosition.kt");
         }
 
         @Test
@@ -1019,12 +1019,6 @@ public class FirPsiOldFrontendForeignAnnotationsCompiledJavaTestGenerated extend
         }
 
         @Test
-        @TestMetadata("NullableProjectionOfWildcardWithNonNullBoundsInOutPosition.kt")
-        public void testNullableProjectionOfWildcardWithNonNullBoundsInOutPosition() {
-          runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/warnMode/NullableProjectionOfWildcardWithNonNullBoundsInOutPosition.kt");
-        }
-
-        @Test
         @TestMetadata("NullUnmarked.kt")
         public void testNullUnmarked() {
           runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/warnMode/NullUnmarked.kt");
@@ -1118,6 +1112,12 @@ public class FirPsiOldFrontendForeignAnnotationsCompiledJavaTestGenerated extend
         @TestMetadata("NullUnmarkedVsTypeNullMarked.kt")
         public void testNullUnmarkedVsTypeNullMarked() {
           runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/warnMode/NullUnmarkedVsTypeNullMarked.kt");
+        }
+
+        @Test
+        @TestMetadata("NullableProjectionOfWildcardWithNonNullBoundsInOutPosition.kt")
+        public void testNullableProjectionOfWildcardWithNonNullBoundsInOutPosition() {
+          runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/warnMode/NullableProjectionOfWildcardWithNonNullBoundsInOutPosition.kt");
         }
 
         @Test

@@ -877,6 +877,12 @@ public class ForeignAnnotationsCompiledJavaTestGenerated extends AbstractForeign
         }
 
         @Test
+        @TestMetadata("NullableProjectionOfWildcardWithNonNullBoundsInOutPosition.kt")
+        public void testNullableProjectionOfWildcardWithNonNullBoundsInOutPosition() {
+          runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/strictMode/NullableProjectionOfWildcardWithNonNullBoundsInOutPosition.kt");
+        }
+
+        @Test
         @TestMetadata("NullnessUnspecifiedTypeParameter.kt")
         public void testNullnessUnspecifiedTypeParameter() {
           runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/strictMode/NullnessUnspecifiedTypeParameter.kt");
@@ -910,6 +916,18 @@ public class ForeignAnnotationsCompiledJavaTestGenerated extends AbstractForeign
         @TestMetadata("UnannotatedWildcard.kt")
         public void testUnannotatedWildcard() {
           runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/strictMode/UnannotatedWildcard.kt");
+        }
+
+        @Test
+        @TestMetadata("WildcardWithNullableUpperBoundInOutPosition.kt")
+        public void testWildcardWithNullableUpperBoundInOutPosition() {
+          runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/strictMode/WildcardWithNullableUpperBoundInOutPosition.kt");
+        }
+
+        @Test
+        @TestMetadata("WildcardWithSameTypeButDifferentNullabilitiesAsBounds.kt")
+        public void testWildcardWithSameTypeButDifferentNullabilitiesAsBounds() {
+          runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/strictMode/WildcardWithSameTypeButDifferentNullabilitiesAsBounds.kt");
         }
 
         @Test
@@ -1097,6 +1115,12 @@ public class ForeignAnnotationsCompiledJavaTestGenerated extends AbstractForeign
         }
 
         @Test
+        @TestMetadata("NullableProjectionOfWildcardWithNonNullBoundsInOutPosition.kt")
+        public void testNullableProjectionOfWildcardWithNonNullBoundsInOutPosition() {
+          runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/warnMode/NullableProjectionOfWildcardWithNonNullBoundsInOutPosition.kt");
+        }
+
+        @Test
         @TestMetadata("NullnessUnspecifiedTypeParameter.kt")
         public void testNullnessUnspecifiedTypeParameter() {
           runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/warnMode/NullnessUnspecifiedTypeParameter.kt");
@@ -1139,9 +1163,33 @@ public class ForeignAnnotationsCompiledJavaTestGenerated extends AbstractForeign
         }
 
         @Test
+        @TestMetadata("WildcardWithNullableUpperBoundInOutPosition.kt")
+        public void testWildcardWithNullableUpperBoundInOutPosition() {
+          runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/warnMode/WildcardWithNullableUpperBoundInOutPosition.kt");
+        }
+
+        @Test
+        @TestMetadata("WildcardWithSameTypeButDifferentNullabilitiesAsBounds.kt")
+        public void testWildcardWithSameTypeButDifferentNullabilitiesAsBounds() {
+          runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/warnMode/WildcardWithSameTypeButDifferentNullabilitiesAsBounds.kt");
+        }
+
+        @Test
         @TestMetadata("WildcardsWithDefault.kt")
         public void testWildcardsWithDefault() {
           runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/warnMode/WildcardsWithDefault.kt");
+        }
+
+        @Test
+        @TestMetadata("wrongNullabilityForOverridesCommon.kt")
+        public void testWrongNullabilityForOverridesCommon() {
+          runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/warnMode/wrongNullabilityForOverridesCommon.kt");
+        }
+
+        @Test
+        @TestMetadata("wrongNullabilityForOverridesPlatform.kt")
+        public void testWrongNullabilityForOverridesPlatform() {
+          runTest("compiler/testData/diagnostics/foreignAnnotationsTests/java8Tests/jspecify/warnMode/wrongNullabilityForOverridesPlatform.kt");
         }
       }
     }
