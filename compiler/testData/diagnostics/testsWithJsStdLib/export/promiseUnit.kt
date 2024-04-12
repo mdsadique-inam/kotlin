@@ -13,3 +13,14 @@ fun fooUnitReturn(): Promise<Unit>?<!> = null
 fun fooUnitArgument(<!NON_EXPORTABLE_TYPE!>p: Promise<Unit><!>) {
     p.then {}
 }
+
+@JsExport
+interface I<T> {
+    fun bar(): T
+}
+
+@JsExport
+fun fooIIntArgument(i: I<Int>) = i.bar()
+
+@JsExport
+fun fooIUnitArgument(<!NON_EXPORTABLE_TYPE!>i: I<Unit><!>) = i.bar()
