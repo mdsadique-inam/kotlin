@@ -161,9 +161,7 @@ class IrBuiltInsOverDescriptors(
             }
 
             if (isIntrinsicConst) {
-                operator.annotations += IrConstructorCallImpl.fromSymbolDescriptor(
-                    UNDEFINED_OFFSET, UNDEFINED_OFFSET, intrinsicConstType, intrinsicConstConstructor.symbol
-                )
+                operator.annotations += intrinsicConstAnnotationCall
             }
 
             operator
@@ -292,9 +290,11 @@ class IrBuiltInsOverDescriptors(
     override val anyClass = builtIns.any.toIrSymbol()
     override val anyNType = anyType.makeNullable()
 
-    private val intrinsicConstClass = createIntrinsicConstEvaluationClass()
-    private val intrinsicConstType = intrinsicConstClass.defaultType
-    private val intrinsicConstConstructor = intrinsicConstClass.primaryConstructor as IrConstructor
+    override val intrinsicConstAnnotationCall = createIntrinsicConstEvaluationClass().let {
+        IrConstructorCallImpl.fromSymbolDescriptor(
+            UNDEFINED_OFFSET, UNDEFINED_OFFSET, it.defaultType, (it.primaryConstructor as IrConstructor).symbol
+        )
+    }
 
     val bool = builtIns.booleanType
     override val booleanType = bool.toIrType()

@@ -193,7 +193,7 @@ class IrBuiltInsOverFir(
 
     internal val intrinsicConstSymbol: IrClassSymbol
         get() = intrinsicConst.classSymbol
-    private val intrinsicConstAnnotation: IrConstructorCall
+    override val intrinsicConstAnnotationCall: IrConstructorCall
         get() = intrinsicConst.annotationCall
 
     override val iteratorClass: IrClassSymbol by lazy { loadClass(StandardClassIds.Iterator) }
@@ -692,7 +692,7 @@ class IrBuiltInsOverFir(
             fn.typeParameters = typeParameters
             typeParameters.forEach { it.parent = fn }
             if (isIntrinsicConst) {
-                fn.annotations += intrinsicConstAnnotation
+                fn.annotations += intrinsicConstAnnotationCall
             }
             fn.parent = this@createFunction
             fn.postBuild()
