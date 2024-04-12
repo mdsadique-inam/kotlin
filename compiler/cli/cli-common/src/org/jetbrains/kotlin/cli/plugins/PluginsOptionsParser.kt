@@ -58,7 +58,7 @@ fun processCompilerPluginOptions(
     val declaredOptions = processor.pluginOptions.associateBy { it.optionName }
     val optionsToValues = MultiMap<AbstractCliOption, CliOptionValue>()
 
-    for (optionValue in pluginOptions) {
+    for (optionValue in pluginOptions.distinct()) {
         val option = declaredOptions[optionValue.optionName]
             ?: throw CliOptionProcessingException("Unsupported plugin option: $optionValue")
         optionsToValues.putValue(option, optionValue)

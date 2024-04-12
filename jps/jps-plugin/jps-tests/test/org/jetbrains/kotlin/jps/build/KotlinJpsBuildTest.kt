@@ -43,6 +43,7 @@ import org.jetbrains.kotlin.cli.common.arguments.K2JVMCompilerArguments
 import org.jetbrains.kotlin.cli.jvm.K2JVMCompiler
 import org.jetbrains.kotlin.codegen.AsmUtil
 import org.jetbrains.kotlin.codegen.JvmCodegenUtil
+import org.jetbrains.kotlin.config.CompilerSettings
 import org.jetbrains.kotlin.config.IncrementalCompilation
 import org.jetbrains.kotlin.config.JvmDefaultMode
 import org.jetbrains.kotlin.config.KotlinFacetSettings
@@ -796,6 +797,19 @@ open class KotlinJpsBuildTest : KotlinJpsBuildTestBase() {
 
     fun testKotlinLombokProjectBuild() {
         initProject(LOMBOK)
+        buildAllModules().assertSuccessful()
+    }
+
+    fun testKotlinLombokProjectWithConfigFile() {
+        initProject(LOMBOK)
+        myProject.modules.forEach {
+            val facet = it.container.getChild(
+                JpsKotlinFacetModuleExtension.KIND
+            )
+            facet.settings.compilerArguments = K2JVMCompilerArguments()
+            val lombokConfigPath = workDir.resolve("lombok.config").also { assert(it.exists()) }
+            facet.settings.compilerSettings!!.additionalArguments += " -P plugin:org.jetbrains.kotlin.lombok:config=${lombokConfigPath}"
+        }
         buildAllModules().assertSuccessful()
     }
 
