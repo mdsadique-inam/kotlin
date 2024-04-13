@@ -116,30 +116,19 @@ class Fir2IrTypeConverter(
 
                 if (builtIns != null) {
                     if (hasEnhancedNullability) {
-                        builtIns.enhancedNullabilityAnnotationCall?.let {
-                            typeAnnotations += it
-                        }
+                        typeAnnotations += builtIns.enhancedNullabilityAnnotationCall
                     }
                     if (hasFlexibleNullability) {
-                        builtIns.flexibleNullabilityAnnotationCall?.let {
-                            typeAnnotations += it
-                        }
+                        typeAnnotations += builtIns.flexibleNullabilityAnnotationCall
                     }
                     if (hasFlexibleMutability) {
-                        builtIns.flexibleMutabilityAnnotationCall?.let {
-                            typeAnnotations += it
-                        }
+                        typeAnnotations += builtIns.flexibleMutabilityAnnotationCall
                     }
                     if (hasFlexibleArrayElementVariance) {
-                        builtIns.flexibleArrayElementVarianceAnnotationCall?.let {
-                            typeAnnotations += it
-                        }
+                        typeAnnotations += builtIns.flexibleArrayElementVarianceAnnotationCall
                     }
-
                     if (addRawTypeAnnotation) {
-                        builtIns.rawTypeAnnotationCall?.let {
-                            typeAnnotations += it
-                        }
+                        typeAnnotations += builtIns.rawTypeAnnotationCall
                     }
                 }
 

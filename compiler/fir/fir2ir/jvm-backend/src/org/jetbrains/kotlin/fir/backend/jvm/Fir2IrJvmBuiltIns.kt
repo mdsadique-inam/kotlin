@@ -9,7 +9,6 @@ import org.jetbrains.kotlin.backend.jvm.JvmIrSpecialAnnotationSymbolProvider
 import org.jetbrains.kotlin.fir.backend.*
 import org.jetbrains.kotlin.ir.declarations.IrConstructor
 import org.jetbrains.kotlin.ir.declarations.IrFactory
-import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 import org.jetbrains.kotlin.ir.expressions.impl.IrConstructorCallImpl
 import org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI
 import org.jetbrains.kotlin.ir.types.defaultType
@@ -32,7 +31,7 @@ class Fir2IrJvmBuiltIns(private val c: Fir2IrComponents, irFactory: IrFactory) :
         StandardClassIds.Annotations.FlexibleMutability.toConstructorCall()
     }
 
-    override val flexibleArrayElementVarianceAnnotationCall: IrConstructorCall? by lazy {
+    override val flexibleArrayElementVarianceAnnotationCall by lazy {
         StandardClassIds.Annotations.FlexibleArrayElementVariance.toConstructorCall()
     }
 
@@ -40,8 +39,8 @@ class Fir2IrJvmBuiltIns(private val c: Fir2IrComponents, irFactory: IrFactory) :
         StandardClassIds.Annotations.RawTypeAnnotation.toConstructorCall()
     }
 
-    private fun ClassId.toConstructorCall(): IrConstructorCallImpl? {
-        val classSymbol = provider.getClassSymbolById(this) ?: return null
+    private fun ClassId.toConstructorCall(): IrConstructorCallImpl {
+        val classSymbol = provider.getClassSymbolById(this)!!
 
         @OptIn(UnsafeDuringIrConstructionAPI::class)
         val constructorSymbol = classSymbol.owner.declarations.firstIsInstance<IrConstructor>().symbol

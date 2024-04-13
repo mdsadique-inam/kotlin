@@ -8,13 +8,13 @@ package org.jetbrains.kotlin.fir.backend
 import org.jetbrains.kotlin.ir.expressions.IrConstructorCall
 
 interface Fir2IrBuiltIns {
-    val enhancedNullabilityAnnotationCall: IrConstructorCall?
+    val enhancedNullabilityAnnotationCall: IrConstructorCall
 
-    val flexibleNullabilityAnnotationCall: IrConstructorCall?
+    val flexibleNullabilityAnnotationCall: IrConstructorCall
 
-    val flexibleMutabilityAnnotationCall: IrConstructorCall?
+    val flexibleMutabilityAnnotationCall: IrConstructorCall
 
-    val flexibleArrayElementVarianceAnnotationCall: IrConstructorCall?
+    val flexibleArrayElementVarianceAnnotationCall: IrConstructorCall
 
-    val rawTypeAnnotationCall: IrConstructorCall?
+    val rawTypeAnnotationCall: IrConstructorCall
 }
