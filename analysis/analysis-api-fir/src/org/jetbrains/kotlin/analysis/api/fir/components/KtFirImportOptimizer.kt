@@ -275,8 +275,13 @@ internal class KtFirImportOptimizer(
                 val docName = docLink.getChildOfType<KDocName>() ?: return
                 val qualifiedNameAsFqName = docName.getQualifiedNameAsFqName()
                 val importableNames = with(analysisSession) {
-                    val symbols = KDocReferenceResolver.resolveKdocFqName(qualifiedNameAsFqName, qualifiedNameAsFqName, docLink)
-                    symbols.flatMap { toImportableFqNames(it, qualifiedNameAsFqName) }
+                    val resolvedSymbols = KDocReferenceResolver.resolveKdocFqName(qualifiedNameAsFqName, qualifiedNameAsFqName, docLink)
+                    if (resolvedSymbols.isEmpty()) {
+                        unresolvedNames += qualifiedNameAsFqName.shortName()
+                        emptyList()
+                    } else {
+                        resolvedSymbols.flatMap { toImportableFqNames(it, qualifiedNameAsFqName) }
+                    }
                 }
                 importableNames.forEach { importableName ->
                     saveReferencedItem(importableName, importableName.shortName())
